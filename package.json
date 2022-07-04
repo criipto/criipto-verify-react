@@ -1,0 +1,45 @@
+{
+  "name": "@criipto/verify-react",
+  "version": "0.0.1",
+  "description": "Verify SDK for React Single Page Applications",
+  "main": "dist/criipto-verify-react.cjs.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/criipto-verify-react.esm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js"
+  },
+  "peerDependencies": {
+    "react": "^16.11.0 || ^17 || ^18",
+    "react-dom": "^16.11.0 || ^17 || ^18"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.14",
+    "@types/react-dom": "^18.0.5",
+    "css-loader": "^6.7.1",
+    "mini-css-extract-plugin": "^2.6.1",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "ts-loader": "^9.3.1",
+    "typescript": "^4.6.3",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/criipto/criipto-verify-react.git"
+  },
+  "keywords": [
+    "criipto",
+    "verify",
+    "mitid",
+    "bankid"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/criipto/criipto-verify-react/issues"
+  },
+  "homepage": "https://github.com/criipto/criipto-verify-react#readme"
+}
