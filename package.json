@@ -7,15 +7,29 @@
   "module": "dist/criipto-verify-react.esm.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "check": "tsc --noEmit",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "prepublishOnly": "npm run check && npm run build"
   },
   "peerDependencies": {
     "react": "^16.11.0 || ^17 || ^18",
     "react-dom": "^16.11.0 || ^17 || ^18"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.6",
+    "@storybook/addon-actions": "^6.5.9",
+    "@storybook/addon-essentials": "^6.5.9",
+    "@storybook/addon-interactions": "^6.5.9",
+    "@storybook/addon-links": "^6.5.9",
+    "@storybook/builder-webpack5": "^6.5.9",
+    "@storybook/manager-webpack5": "^6.5.9",
+    "@storybook/react": "^6.5.9",
+    "@storybook/testing-library": "0.0.13",
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
+    "babel-loader": "^8.2.5",
     "css-loader": "^6.7.1",
     "mini-css-extract-plugin": "^2.6.1",
     "react": "^18.1.0",
@@ -41,5 +55,8 @@
   "bugs": {
     "url": "https://github.com/criipto/criipto-verify-react/issues"
   },
-  "homepage": "https://github.com/criipto/criipto-verify-react#readme"
+  "homepage": "https://github.com/criipto/criipto-verify-react#readme",
+  "dependencies": {
+    "@criipto/auth-js": "^2.1.1"
+  }
 }
