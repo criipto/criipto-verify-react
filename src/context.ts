@@ -1,7 +1,9 @@
+import OpenIDConfiguration from '@criipto/auth-js/dist/OpenID';
 import { createContext } from 'react';
 
 export interface CriiptoVerifyContextInterface {
-  loginWithRedirect: () => Promise<void>
+  loginWithRedirect: () => Promise<void>,
+  fetchOpenIDConfiguration: () => Promise<OpenIDConfiguration>
 }
 
 /**
@@ -15,7 +17,8 @@ const stub = (): never => {
  * @ignore
  */
 const initialContext = {
-  loginWithRedirect: stub
+  loginWithRedirect: stub,
+  fetchOpenIDConfiguration: stub
 };
 
 const CriiptoVerifyContext = createContext<CriiptoVerifyContextInterface>(initialContext);
