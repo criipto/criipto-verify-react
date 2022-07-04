@@ -1,6 +1,7 @@
 {
   "name": "@criipto/verify-react",
-  "version": "0.0.1",
+  "private": false,
+  "version": "0.0.4",
   "description": "Verify SDK for React Single Page Applications",
   "main": "dist/criipto-verify-react.cjs.js",
   "types": "dist/index.d.ts",
@@ -58,6 +59,6 @@
   },
   "homepage": "https://github.com/criipto/criipto-verify-react#readme",
   "dependencies": {
-    "@criipto/auth-js": "^2.1.2"
+    "@criipto/auth-js": "^2.1.6"
   }
 }

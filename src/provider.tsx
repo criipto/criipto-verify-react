@@ -1,13 +1,15 @@
 import React, {useMemo, useState} from 'react';
-import CriiptoAuth, {AuthorizeUrlParamsOptional} from '@criipto/auth-js';
+import CriiptoAuth, {AuthorizeUrlParamsOptional, PKCEPublicPart} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface} from './context';
 
 export interface CriiptoVerifyProviderOptions {
   domain: string
   clientID: string
-  redirectUri?: string;
+  redirectUri?: string
   children: React.ReactNode
+  pkce?: PKCEPublicPart
+  state?: string
 }
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
@@ -27,7 +29,11 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       }),
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl: async (options?: AuthorizeUrlParamsOptional) => {
-        return await client.buildAuthorizeUrl(client.buildAuthorizeParams(options || {}));
+        return await client.buildAuthorizeUrl(client.buildAuthorizeParams({
+          pkce: props.pkce,
+          state: props.state,
+          ...options || {},
+        }));
       }
     }
   }, [

@@ -26,7 +26,9 @@ module.exports = {
   externalsPresets: { node: true },
   externals: [nodeExternals()],
   plugins: [
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin({
+      filename: 'criipto-verify-react.css'
+    })
   ],
   module: {
     rules: [
