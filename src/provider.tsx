@@ -1,5 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, PKCEPublicPart} from '@criipto/auth-js';
+import { Prompt } from '@criipto/auth-js/dist/types';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface} from './context';
 
@@ -10,6 +11,7 @@ export interface CriiptoVerifyProviderOptions {
   children: React.ReactNode
   pkce?: PKCEPublicPart
   state?: string
+  prompt?: Prompt
 }
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
@@ -32,6 +34,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
         return await client.buildAuthorizeUrl(client.buildAuthorizeParams({
           pkce: props.pkce,
           state: props.state,
+          prompt: props.prompt,
           ...options || {},
         }));
       }
