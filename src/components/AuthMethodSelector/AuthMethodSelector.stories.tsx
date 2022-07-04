@@ -12,7 +12,7 @@ export default {
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) => {
   return (
-    <CriiptoVerifyProvider domain={globals.domain} clientID={globals.clientID}>
+    <CriiptoVerifyProvider domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
       <AuthMethodSelector {...args} />
     </CriiptoVerifyProvider>
   );

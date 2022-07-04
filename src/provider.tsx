@@ -1,19 +1,22 @@
 import React, {useMemo, useState} from 'react';
-import CriiptoAuth from '@criipto/auth-js';
+import CriiptoAuth, {AuthorizeUrlParamsOptional} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface} from './context';
 
 export interface CriiptoVerifyProviderOptions {
   domain: string
   clientID: string
+  redirectUri?: string;
   children: React.ReactNode
 }
+
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
   const [client] = useState(
     () => new CriiptoAuth({
       domain: props.domain,
       clientID: props.clientID,
-      store: sessionStorage
+      store: sessionStorage,
+      redirectUri: props.redirectUri
     })
   );
 
@@ -22,10 +25,14 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       loginWithRedirect: () => client.redirect.authorize({
         redirectUri: window.location.origin
       }),
-      fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration()
+      fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
+      buildAuthorizeUrl: async (options?: AuthorizeUrlParamsOptional) => {
+        return await client.buildAuthorizeUrl(client.buildAuthorizeParams(options || {}));
+      }
     }
   }, [
-
+    client,
+    props.redirectUri
   ]);
 
   return (
