@@ -109,7 +109,14 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
     return {title: autoTitleCase(value).replace('DE ', '')};
   }
   if (value.startsWith('no:bankid')) {
-    return {title: autoTitleCase(value).replace('NO ', '')};
+    let subtitle : string | undefined = undefined;
+    if (value.endsWith(':substantial')) {
+      if (language === 'en') subtitle = 'Biometrics';
+			if (language === 'da') subtitle = 'Biometri ';
+			if (language === 'sv') subtitle = 'Biometri';
+			if (language === 'nb') subtitle = 'Biometri';
+    }
+    return {title: autoTitleCase(value).replace('NO ', ''), subtitle};
   }
   if (value.startsWith('no:vipps')) {
     return {title: autoTitleCase(value).replace('NO ', '')};

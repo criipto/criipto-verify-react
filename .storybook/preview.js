@@ -10,7 +10,7 @@ export const parameters = {
     domain: {
       name: 'Domain',
       description: 'Criipto Verify domain',
-      defaultValue: 'samples.criipto.id'
+      defaultValue: 'samples.criipto.io'
     },
     clientID: {
       name: 'Client ID',

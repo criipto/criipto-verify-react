@@ -12,6 +12,11 @@ export interface CriiptoVerifyProviderOptions {
   pkce?: PKCEPublicPart
   state?: string
   prompt?: Prompt
+  /**
+   * By default @criipto/verify-react will do PKCE on your behalf and return a jwt token.
+   * However if you wish you can disable this and get the raw `code` response by setting `response` to 'code'
+  */
+  response?: 'token' | 'code'
 }
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
@@ -23,6 +28,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       redirectUri: props.redirectUri
     })
   );
+
+  const responseType = props.response || 'token';
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
@@ -37,7 +44,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
           prompt: props.prompt,
           ...options || {},
         }));
-      }
+      },
+      responseType
     }
   }, [
     client,

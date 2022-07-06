@@ -13,6 +13,7 @@ import sofort from './logos/sofort.png';
 
 import './AuthMethodButton.css';
 import CriiptoVerifyContext from '../../context';
+import SEBankIDSameDeviceButton from '../SEBankIDSameDeviceButton';
 
 interface ButtonProps {
   className?: string,
@@ -62,6 +63,15 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     }).then(setHref)
     .catch(console.error);
   }, [props.href, acrValue]);
+
+	if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
+		return (
+			<SEBankIDSameDeviceButton href={href} className={className}>
+				{acrValueToLogo(acrValue) ? <img src={acrValueToLogo(acrValue)} alt="" /> : null}
+				<span>{props.children}</span>
+			</SEBankIDSameDeviceButton>
+		);
+	}
 
 	if (href) {
 		return (
