@@ -122,7 +122,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     .then(links => {
       setPKCE(pkce || undefined);
       setLinks(links);
-      const redirect = mobileOS === 'ios' ? window.location.href : 'null';
+      const redirect = mobileOS === 'ios' ? encodeURIComponent(window.location.href) : 'null';
       setHref(`${mobileOS ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl}&redirect=${redirect}`);
     })
     .catch(console.error);
