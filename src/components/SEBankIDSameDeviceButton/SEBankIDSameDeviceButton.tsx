@@ -134,13 +134,13 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   }, [refresh]);
 
   // Continously fetch new autostart token if UI is open for a long time
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (initiated) return;
-      refresh();
-    }, 25000);
-    return () => clearInterval(interval);
-  }, [refresh, initiated]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (initiated) return;
+  //     refresh();
+  //   }, 25000);
+  //   return () => clearInterval(interval);
+  // }, [refresh, initiated]);
 
   // Track when the button is clicked to stop refreshing URL
   const handleClick = () => {
