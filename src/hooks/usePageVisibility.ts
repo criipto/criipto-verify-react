@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-export default function usePageVisibility(onVisible? : () => void) {
+export default function usePageVisibility(onVisible? : () => void, deps : React.DependencyList = []) {
   const visibilityState = useRef(document.visibilityState);
   const [state, setState] = useState(visibilityState.current);
 
@@ -14,10 +14,9 @@ export default function usePageVisibility(onVisible? : () => void) {
     return () => {
       document.removeEventListener('visibilitychange', _handleVisibilityChange);
     };
-  }, []);
+  }, deps);
 
   const _handleVisibilityChange = () => {
-    console.log(document.visibilityState);
     const nextState = document.visibilityState;
     if (
       visibilityState.current.match(/hidden/) &&

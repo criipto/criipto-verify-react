@@ -66,7 +66,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
 
 	if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
 		return (
-			<SEBankIDSameDeviceButton href={href} className={className}>
+			<SEBankIDSameDeviceButton redirectUri={props.redirectUri} href={href} className={className}>
 				{acrValueToLogo(acrValue) ? <img src={acrValueToLogo(acrValue)} alt="" /> : null}
 				<span>{props.children}</span>
 			</SEBankIDSameDeviceButton>
