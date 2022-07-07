@@ -6,16 +6,27 @@ import CriiptoVerifyProvider from '../../provider';
 
 export default {
   title: 'Components/AuthMethodSelector',
-  component: AuthMethodSelector,
+  component: AuthMethodSelector
 } as ComponentMeta<typeof AuthMethodSelector>;
 
-// More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) => {
+const ClientTemplate: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) => {
   return (
-    <CriiptoVerifyProvider domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
+    <CriiptoVerifyProvider completionStrategy="client" domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
       <AuthMethodSelector {...args} />
     </CriiptoVerifyProvider>
   );
 };
 
-export const Default = Template.bind({});
+const OpenIDProviderTemplate: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) => {
+  return (
+    <CriiptoVerifyProvider completionStrategy="openidprovider" domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
+      <AuthMethodSelector {...args} />
+    </CriiptoVerifyProvider>
+  );
+};
+
+export const Default = ClientTemplate.bind({});
+Default.storyName ="Completion Strategy: Client (default)"
+
+export const OpenIDProviderCompletionStrategy = OpenIDProviderTemplate.bind({});
+OpenIDProviderCompletionStrategy.storyName ="Completion Strategy: OpenID Provider"

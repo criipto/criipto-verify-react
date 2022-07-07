@@ -12,16 +12,17 @@ interface Props {
 }
 
 export default function AuthMethodSelector(props: Props) {
-  const context = useContext(CriiptoVerifyContext);
+  const {fetchOpenIDConfiguration} = useContext(CriiptoVerifyContext);
   const language = props.language || 'en';
   const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
 
   useEffect(() => {
+    if (props.acrValues) return;
+
     (async () => {
-      const configuration = await context.fetchOpenIDConfiguration();
-      setConfiguration(configuration);
+      setConfiguration(await fetchOpenIDConfiguration());
     })();
-  }, []);
+  }, [props.acrValues]);
 
   const acrValues = filterAcrValues(props.acrValues ?? configuration?.acr_values_supported ?? []);
 
