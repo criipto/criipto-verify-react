@@ -165,11 +165,11 @@ export default function SEBankIDSameDeviceButton(props: Props) {
         </React.Fragment>
       ) : element}
       {error && <p>{error}</p>}
-      {log && (
+      {/* {log && (
         <pre>
           {JSON.stringify(log, null, 2)}
         </pre>
-      )}
+      )} */}
     </React.Fragment>
   )
 }
