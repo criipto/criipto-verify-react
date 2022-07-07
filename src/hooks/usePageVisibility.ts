@@ -7,10 +7,6 @@ export default function usePageVisibility(onVisible? : () => void, deps : React.
   useEffect(() => {
     document.addEventListener('visibilitychange', _handleVisibilityChange);
 
-    document.addEventListener('pagehide', event => {
-      console.log('pageHide', event);
-    });
-
     return () => {
       document.removeEventListener('visibilitychange', _handleVisibilityChange);
     };
@@ -19,7 +15,7 @@ export default function usePageVisibility(onVisible? : () => void, deps : React.
   const _handleVisibilityChange = () => {
     const nextState = document.visibilityState;
     if (
-      visibilityState.current.match(/hidden/) &&
+      visibilityState.current === 'hidden' &&
       nextState === 'visible'
     ) {
       if (onVisible) onVisible();

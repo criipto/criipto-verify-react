@@ -4,21 +4,17 @@ import CriiptoVerifyContext from '../../context';
 import { getMobileOS } from '../../device';
 import usePageVisibility from '../../hooks/usePageVisibility';
 
+import Desktop from './Desktop';
+import Android from './Android';
+import IOS from './iOS';
+
+import {autoHydratedState, Links} from './shared';
+
 interface Props {
   className: string
   children: React.ReactNode
   href?: string
   redirectUri?: string
-}
-
-interface Links {
-  cancelUrl: string
-  completeUrl: string
-  pollUrl: string
-  launchLinks: {
-    customFileHandlerUrl: string
-    universalLink: string
-  }
 }
 
 const mobileOS = getMobileOS();
@@ -32,18 +28,24 @@ function searchParamsToPOJO(input: URLSearchParams) {
 
 export default function SEBankIDSameDeviceButton(props: Props) {
   const [href, setHref] = useState(props.href);
-  const [links, setLinks] = useState<Links | null>(null);
-  const [pkce, setPKCE] = useState<PKCE | undefined>(undefined);
+  const [links, setLinks] = useState<Links | null>(autoHydratedState?.links ?? null);
+  const [pkce, setPKCE] = useState<PKCE | undefined>(autoHydratedState?.pkce ?? undefined);
   const [error, setError] = useState<string | null>(null);
-  const [initiated, setInitiated] = useState(false);
-  const {buildAuthorizeUrl, completionStrategy, generatePKCE, domain, handleResponse} = useContext(CriiptoVerifyContext);
-  const {redirectUri} = props;
+  const [log, setLog] = useState<(string | string[])[]>([]);
+  const [initiated, setInitiated] = useState(autoHydratedState ? true : false);
+  const {buildAuthorizeUrl, completionStrategy, generatePKCE, domain, handleResponse, redirectUri: defaultRedirectURi} = useContext(CriiptoVerifyContext);
+  const redirectUri = props.redirectUri || defaultRedirectURi;
 
   const reset = () => {
     setPKCE(undefined);
     setLinks(null);
     setHref(props.href);
   };
+
+  const handleLog = (...statements: string[]) => {
+    console.log(statements);
+    setLog(logs => logs.concat([statements]));
+  }
 
   const handleComplete = useCallback(async (completeUrl: string) => {
     const required = {pkce};
@@ -65,49 +67,12 @@ export default function SEBankIDSameDeviceButton(props: Props) {
 
     await handleResponse(params, {
       pkce: required.pkce,
-      redirectUri: redirectUri
+      redirectUri
     })
   }, [completionStrategy, pkce]);
 
-  // Mobile visibility scenario
-  usePageVisibility(async () => {
-    if (!links || !mobileOS) return;
-
-    handleComplete(links.completeUrl);
-  }, [links]);
-
-  // Desktop polling scenario
-  useEffect(() => {
-    if (!links) return;
-    if (mobileOS) return;
-    if (!initiated) return;
-    
-    let timeout : string | undefined;
-    const poll = async () => {
-      const response = await fetch(links.pollUrl);
-
-      if (response.status === 202) {
-        setTimeout(poll, 1000);
-        return;
-      } else if (response.status >= 400) {
-        const error = await response.text();
-        setError(error);
-        return;
-      } else {
-        const {targetUrl} = await response.json();
-        await handleComplete(`https://${domain}${targetUrl}`);
-        return;
-      }
-    };
-
-    setTimeout(poll, 1000);
-    return () => {
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [links, initiated]);
-
   const refresh = useCallback(async () => {
-    console.log('SEBankID: Refresh authorize url');
+    handleLog('SEBankID: Refresh authorize url');
     const pkce = await generatePKCE();
 
     buildAuthorizeUrl({
@@ -123,37 +88,88 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       setPKCE(pkce || undefined);
       setLinks(links);
       const redirect = mobileOS === 'ios' ? encodeURIComponent(window.location.href) : 'null';
-      setHref(`${mobileOS ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl}&redirect=${redirect}`);
+      const newHref = `${mobileOS ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl}&redirect=${redirect}`;
+
+      handleLog(window.location.href);
+      handleLog(newHref);
+      setHref(newHref);
     })
     .catch(console.error);
   }, [buildAuthorizeUrl, redirectUri]);
 
   // Generate URL on first button render
   useEffect(() => {
+    if (initiated) return;
     refresh();
-  }, [refresh]);
+  }, [refresh, initiated]);
 
   // Continously fetch new autostart token if UI is open for a long time
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (initiated) return;
-  //     refresh();
-  //   }, 25000);
-  //   return () => clearInterval(interval);
-  // }, [refresh, initiated]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (initiated) return;
+      refresh();
+    }, 25000);
+    return () => clearInterval(interval);
+  }, [refresh, initiated]);
 
   // Track when the button is clicked to stop refreshing URL
-  const handleClick = () => {
+  const handleInitiate = () => {
+    handleLog('Initiated');
     setInitiated(true);
     setError(null);
   }
 
+  const element = (
+    <a className={`criipto-verify-button ${props.className}`} href={href} onClick={handleInitiate}>
+      {props.children}
+    </a>
+  );
+
   return (
     <React.Fragment>
-      <a className={`criipto-verify-button ${props.className}`} href={href} onClick={handleClick}>
-        {props.children}
-      </a>
+      {links ? (
+        <React.Fragment>
+          {mobileOS === null ? (
+            <Desktop
+              links={links}
+              onError={setError}
+              onComplete={handleComplete}
+              onInitiate={handleInitiate}
+              onLog={handleLog}
+            >
+              {element}
+            </Desktop>
+          ) : mobileOS === 'android' ? (
+            <Android
+              links={links}
+              onError={setError}
+              onComplete={handleComplete}
+              onInitiate={handleInitiate}
+              onLog={handleLog}
+            >
+              {element}
+            </Android>
+          ) : mobileOS === 'ios' ? (
+            <IOS
+              links={links}
+              onError={setError}
+              onComplete={handleComplete}
+              onInitiate={handleInitiate}
+              onLog={handleLog}
+              redirectUri={redirectUri!}
+              pkce={pkce}
+            >
+              {element}
+            </IOS>
+          ) : element}
+        </React.Fragment>
+      ) : element}
       {error && <p>{error}</p>}
+      {log && (
+        <pre>
+          {JSON.stringify(log, null, 2)}
+        </pre>
+      )}
     </React.Fragment>
   )
 }

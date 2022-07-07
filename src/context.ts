@@ -12,6 +12,7 @@ export interface CriiptoVerifyContextInterface {
   completionStrategy: 'client' | 'openidprovider',
   result: Result | null
   domain: string
+  redirectUri?: string
 }
 
 /**

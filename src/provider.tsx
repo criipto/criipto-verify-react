@@ -82,7 +82,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       responseType,
       completionStrategy,
       result,
-      domain: client.domain
+      domain: client.domain,
+      redirectUri
     }
   }, [
     client,
