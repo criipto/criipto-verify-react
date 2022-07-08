@@ -3,30 +3,48 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import AuthMethodSelector from './AuthMethodSelector';
 import CriiptoVerifyProvider from '../../provider';
+import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
 export default {
   title: 'Components/AuthMethodSelector',
-  component: AuthMethodSelector
+  component: AuthMethodSelector,
+  argTypes: {
+    language: {
+      name: 'Language',
+      control: 'select',
+      defaultValue: 'en',
+      options: ['en', 'da', 'nb', 'sv']
+    },
+    action: {
+      name: 'Action',
+      control: 'select',
+      defaultValue: 'login',
+      options: ['confirm', 'accept', 'approve', 'sign', 'login']
+    },
+    completionStrategy: {
+      name: 'Completion strategy',
+      control: 'select',
+      defaultValue: 'client',
+      options: ['client', 'openidprovider']
+    },
+    response: {
+      name: 'Response mode',
+      control: 'select',
+      defaultValue: 'token',
+      options: ['token', 'code']
+    }
+  }
 } as ComponentMeta<typeof AuthMethodSelector>;
 
-const ClientTemplate: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) => {
+const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) => {
   return (
-    <CriiptoVerifyProvider completionStrategy="client" domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
-      <AuthMethodSelector {...args} />
+    <CriiptoVerifyProvider completionStrategy={(args as any).completionStrategy} response={(args as any).response} action={(args as any).action} domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
+      <StoryResponseRenderer>
+        <AuthMethodSelector {...args}  />
+      </StoryResponseRenderer>
     </CriiptoVerifyProvider>
   );
 };
 
-const OpenIDProviderTemplate: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) => {
-  return (
-    <CriiptoVerifyProvider completionStrategy="openidprovider" domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
-      <AuthMethodSelector {...args} />
-    </CriiptoVerifyProvider>
-  );
-};
-
-export const Default = ClientTemplate.bind({});
-Default.storyName ="Completion Strategy: Client (default)"
-
-export const OpenIDProviderCompletionStrategy = OpenIDProviderTemplate.bind({});
-OpenIDProviderCompletionStrategy.storyName ="Completion Strategy: OpenID Provider"
+export const Default = Template.bind({});
+Default.storyName = "AuthMethodSelector"

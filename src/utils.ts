@@ -1,3 +1,5 @@
+import { Action } from "./context";
+
 export const DKMITID_PREFIX = 'urn:grn:authn:dk:mitid';
 
 export function lowestMitIDValue(input: string[]) : string | null {
@@ -32,7 +34,47 @@ function autoTitleCase(input: string) {
   return segments.join(' ');
 }
 
+function assertUnreachable(x: never): never {
+  throw new Error("Didn't expect to get here");
+}
+
 export type Language = 'en' | 'da' | 'sv' | 'nb';
+
+export function stringifyAction(language: Language, action: Action) : string {
+  console.log(action);
+  if (action === 'login') {
+    if (language === 'da') return 'Login med';
+    else if (language === 'sv') return 'Logga in med'
+    else if (language === 'nb') return 'Logg inn med';
+    return 'Login with';
+  }
+  if (action === 'approve') {
+    if (language === 'da') return 'Godkend med';
+    else if (language === 'sv') return 'Godkänn med'
+    else if (language === 'nb') return 'Godkjenne med';
+    return 'Approve with';
+  }
+  if (action === 'sign') {
+    if (language === 'da') return 'Signera med';
+    else if (language === 'sv') return 'Signera med'
+    else if (language === 'nb') return 'Signer med';
+    return 'Sign with';
+  }
+  if (action === 'confirm') {
+    if (language === 'da') return 'Bekræft med';
+    else if (language === 'sv') return 'Bekräfta med'
+    else if (language === 'nb') return 'Bekreft med';
+    return 'Confirm with';
+  }
+  if (action === 'accept') {
+    if (language === 'da') return 'Acceptera med';
+    else if (language === 'sv') return 'Bekräfta med'
+    else if (language === 'nb') return 'Godta med';
+    return 'Accept with';
+  }
+
+  assertUnreachable(action);
+}
 
 export function acrValueToTitle(language: Language, value: string) : {title: string, subtitle?: string} {
 	value = value.replace('urn:grn:authn:', '');

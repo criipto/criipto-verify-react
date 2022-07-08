@@ -1,8 +1,8 @@
 import React, {useMemo, useState} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, generatePKCE, OAuth2Error, PKCEPublicPart, Prompt} from '@criipto/auth-js';
 
-import CriiptoVerifyContext, {CriiptoVerifyContextInterface} from './context';
-
+import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
+ 
 export interface CriiptoVerifyProviderOptions {
   domain: string
   clientID: string
@@ -11,6 +11,11 @@ export interface CriiptoVerifyProviderOptions {
   pkce?: PKCEPublicPart
   state?: string
   prompt?: Prompt
+  /**
+   * Will ammend the login_hint parameter with `action:{action}` which will adjust texsts in certain flows.
+   * Default: 'login'
+   */
+  action?: Action
   /**
    * Note: In most cases modifying this setting **is not needed**. Defaults will work with almost all React SPA cases.
    * By default @criipto/verify-react will do PKCE on your behalf and return a jwt token.
@@ -26,7 +31,13 @@ export interface CriiptoVerifyProviderOptions {
   completionStrategy?: 'client' | 'openidprovider'
 }
 
-export type Result = {id_token: string} | {code: string} | OAuth2Error;
+function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action}) {
+  const {options, action} = params;
+  let hints = options?.loginHint ? options?.loginHint.split(' ') : [];
+
+  if (action) hints.push(`action:${action}`);
+  return hints.length ? undefined : hints.join(' ');
+}
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
   const [client] = useState(
@@ -42,6 +53,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const {redirectUri} = props;
   const responseType = props.response || 'token';
   const completionStrategy = props.completionStrategy || 'client';
+  const action = props.action || 'login';
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
@@ -55,6 +67,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
           state: props.state,
           prompt: props.prompt,
           ...options || {},
+          loginHint: buildLoginHint({options, action})
         }));
       },
       generatePKCE: async () => {
@@ -83,14 +96,16 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       completionStrategy,
       result,
       domain: client.domain,
-      redirectUri
+      redirectUri,
+      action
     }
   }, [
     client,
     redirectUri,
     responseType,
     completionStrategy,
-    result
+    result,
+    action
   ]);
 
   return (

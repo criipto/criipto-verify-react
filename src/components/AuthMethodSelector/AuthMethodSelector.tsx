@@ -1,7 +1,7 @@
 import {OpenIDConfiguration} from '@criipto/auth-js';
 import React, { useContext, useEffect, useState } from 'react';
 import CriiptoVerifyContext from '../../context';
-import { acrValueToTitle, filterAcrValues, Language } from '../../utils';
+import { acrValueToTitle, filterAcrValues, Language, stringifyAction } from '../../utils';
 import AuthMethodButton from '../AuthMethodButton/AuthMethodButton';
 
 import './AuthMethodSelector.css';
@@ -13,8 +13,13 @@ interface Props {
   redirectUri?: string
 }
 
+function lowercaseFirst(input?: string) {
+  if (!input) return input;
+  return input.substring(0, 1).toLowerCase() + input.substr(1, input.length);
+}
+
 export default function AuthMethodSelector(props: Props) {
-  const {fetchOpenIDConfiguration} = useContext(CriiptoVerifyContext);
+  const {fetchOpenIDConfiguration, action} = useContext(CriiptoVerifyContext);
   const language = props.language || 'en';
   const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
 
@@ -37,8 +42,8 @@ export default function AuthMethodSelector(props: Props) {
           onClick={props.onSelect ? (() => props.onSelect!(acrValue)) : undefined}
           redirectUri={props.redirectUri}
         >
-          {acrValueToTitle(language, acrValue).title}<br />
-          {acrValueToTitle(language, acrValue).subtitle}
+          {stringifyAction(language, action) ? `${stringifyAction(language, action)} ` : ''}{acrValueToTitle(language, acrValue).title}&nbsp;
+          {lowercaseFirst(acrValueToTitle(language, acrValue).subtitle)}
         </AuthMethodButton>
       ))}
     </div>
