@@ -1,0 +1,8 @@
+.criipto-eid-selector {
+  display: flex;
+  gap: 15px;
+  flex-flow: column;
+  padding: 20px;
+  
+  max-width: 500px;
+}

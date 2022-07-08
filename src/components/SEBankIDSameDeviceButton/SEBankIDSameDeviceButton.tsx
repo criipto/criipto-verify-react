@@ -13,6 +13,7 @@ import {autoHydratedState, Links} from './shared';
 interface Props {
   className: string
   children: React.ReactNode
+  logo: React.ReactNode
   href?: string
   redirectUri?: string
 }
@@ -105,6 +106,8 @@ export default function SEBankIDSameDeviceButton(props: Props) {
 
   // Continously fetch new autostart token if UI is open for a long time
   useEffect(() => {
+    if (initiated) return;
+
     const interval = setInterval(() => {
       if (initiated) return;
       refresh();
@@ -119,8 +122,16 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     setError(null);
   }
 
+  const handleError = (error: string) => {
+    setInitiated(false);
+    setError(error);
+  }
+
   const element = (
-    <a className={`criipto-verify-button ${props.className}`} href={href} onClick={handleInitiate}>
+    <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href} onClick={handleInitiate}>
+      <div className="criipto-eid-logo">
+        {initiated ? <div className="criipto-eid-loader"></div> : props.logo}
+      </div>
       {props.children}
     </a>
   );
@@ -132,7 +143,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
           {mobileOS === null ? (
             <Desktop
               links={links}
-              onError={setError}
+              onError={handleError}
               onComplete={handleComplete}
               onInitiate={handleInitiate}
               onLog={handleLog}
@@ -142,7 +153,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
           ) : mobileOS === 'android' ? (
             <Android
               links={links}
-              onError={setError}
+              onError={handleError}
               onComplete={handleComplete}
               onInitiate={handleInitiate}
               onLog={handleLog}
@@ -152,7 +163,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
           ) : mobileOS === 'ios' ? (
             <IOS
               links={links}
-              onError={setError}
+              onError={handleError}
               onComplete={handleComplete}
               onInitiate={handleInitiate}
               onLog={handleLog}

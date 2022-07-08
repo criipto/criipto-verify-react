@@ -4,6 +4,8 @@ import CriiptoVerifyContext from '../../context';
 import { acrValueToTitle, filterAcrValues, Language } from '../../utils';
 import AuthMethodButton from '../AuthMethodButton/AuthMethodButton';
 
+import './AuthMethodSelector.css';
+
 interface Props {
   acrValues?: string[],
   language?: Language,
@@ -27,7 +29,7 @@ export default function AuthMethodSelector(props: Props) {
   const acrValues = filterAcrValues(props.acrValues ?? configuration?.acr_values_supported ?? []);
 
   return (
-    <React.Fragment>
+    <div className="criipto-eid-selector">
       {acrValues.map(acrValue => (
         <AuthMethodButton
           acrValue={acrValue}
@@ -39,6 +41,6 @@ export default function AuthMethodSelector(props: Props) {
           {acrValueToTitle(language, acrValue).subtitle}
         </AuthMethodButton>
       ))}
-    </React.Fragment>
+    </div>
   )
 }
