@@ -106,6 +106,8 @@ export default function SEBankIDSameDeviceButton(props: Props) {
 
   // Continously fetch new autostart token if UI is open for a long time
   useEffect(() => {
+    if (initiated) return;
+
     const interval = setInterval(() => {
       if (initiated) return;
       refresh();
@@ -118,6 +120,11 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     handleLog('Initiated');
     setInitiated(true);
     setError(null);
+  }
+
+  const handleError = (error: string) => {
+    setInitiated(false);
+    setError(error);
   }
 
   const element = (
@@ -136,7 +143,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
           {mobileOS === null ? (
             <Desktop
               links={links}
-              onError={setError}
+              onError={handleError}
               onComplete={handleComplete}
               onInitiate={handleInitiate}
               onLog={handleLog}
@@ -146,7 +153,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
           ) : mobileOS === 'android' ? (
             <Android
               links={links}
-              onError={setError}
+              onError={handleError}
               onComplete={handleComplete}
               onInitiate={handleInitiate}
               onLog={handleLog}
@@ -156,7 +163,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
           ) : mobileOS === 'ios' ? (
             <IOS
               links={links}
-              onError={setError}
+              onError={handleError}
               onComplete={handleComplete}
               onInitiate={handleInitiate}
               onLog={handleLog}
