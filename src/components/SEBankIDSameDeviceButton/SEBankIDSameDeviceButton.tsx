@@ -13,6 +13,7 @@ import {autoHydratedState, Links} from './shared';
 interface Props {
   className: string
   children: React.ReactNode
+  logo: React.ReactNode
   href?: string
   redirectUri?: string
 }
@@ -120,7 +121,10 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   }
 
   const element = (
-    <a className={`criipto-verify-button ${props.className}`} href={href} onClick={handleInitiate}>
+    <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href} onClick={handleInitiate}>
+      <div className="criipto-eid-logo">
+        {initiated ? <div className="criipto-eid-loader"></div> : props.logo}
+      </div>
       {props.children}
     </a>
   );

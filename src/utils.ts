@@ -116,7 +116,7 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 			if (language === 'sv') subtitle = 'Biometri';
 			if (language === 'nb') subtitle = 'Biometri';
     }
-    return {title: autoTitleCase(value).replace('NO ', ''), subtitle};
+    return {title: subtitle ? 'BankID' : autoTitleCase(value).replace('NO ', ''), subtitle};
   }
   if (value.startsWith('no:vipps')) {
     return {title: autoTitleCase(value).replace('NO ', '')};

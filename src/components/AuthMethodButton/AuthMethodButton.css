@@ -1,75 +1,182 @@
-.criipto-verify-button.criipto-verify-button-eid {
-  background: #F9F8F4;
-  box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.25);
-  border-radius: 3px;
-  color: black;
+.criipto-eid-btn {
+  padding: 6px 24px 6px 16px;
+  height: 60px;
+  padding: 6px 24px 6px 16px;
+  box-sizing: border-box;
+  text-decoration: none;
+
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: calc(100% - 10px);
-  box-sizing: border-box;
-  text-decoration: none;
-  min-height: 70px;
-  border: 0;
-  text-align: left;
+  gap: 16px;
 
-  margin: 12px 5px; /* Side margins to preserve drop shadow */
-  padding: 12px 24px;
-
-  font-family: "Raleway", sans-serif;
-  font-style: normal;
-  font-size: 13px;
-  line-height: 18px;
-}
-
-.criipto-verify-button.criipto-verify-button-eid strong {
-  font-weight: 700;
-}
-
-.criipto-verify-button.criipto-verify-button-eid img {
-  height: 24px;
-  padding-right: 20px;
-}
-
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-no-bankid img {
-  height: 18px;
-}
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-dk-nemid {
-  color: #0B6062;
-}
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-dk-nemid img {
-  width: 66px;
-  height: auto;
-}
-
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-dk-mitid {
-  background: #0060E6;
-  box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.25);
-  color: white;
-  font-family: "IBM Plex Sans", "Raleway", sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
-  line-height: 124%;
+
+  color: #FFF;
+  background: #604FED;
 }
 
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-dk-mitid img {
-  width: 66px;
-  height: auto;
+.criipto-eid-btn .criipto-eid-logo {
+  width: 88px;
+  height: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-se-bankid {
-  color: #235971;
-}
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-se-bankid img {
-  width: 40px;
-  height: auto;
+.criipto-eid-btn .criipto-eid-logo img {
+  max-width: 100%;
+  max-height: 100%;
 }
 
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-no-bankid img {
-  height: 13px;
+.criipto-eid-btn.criipto-eid-btn--dk-mitid {
+  background: #0060E6;
+}
+.criipto-eid-btn.criipto-eid-btn--dk-mitid:hover {
+  background: #0051C3;
 }
 
-.criipto-verify-button.criipto-verify-button-eid.criipto-verify-button-fi img {
-  height: 40px;
+.criipto-eid-btn.criipto-eid-btn--dk-nemid {
+  background: #0B6062;
+}
+.criipto-eid-btn.criipto-eid-btn--dk-nemid:hover {
+  background: #094E50;
+}
+
+.criipto-eid-btn.criipto-eid-btn--se-bankid {
+  background: #235971;
+}
+.criipto-eid-btn.criipto-eid-btn--se-bankid:hover {
+  background: #1C485B;
+}
+
+.criipto-eid-btn.criipto-eid-btn--no-bankid {
+  background: #39134C;
+}
+.criipto-eid-btn.criipto-eid-btn--no-bankid:hover {
+  background: #2A0E38;
+}
+
+.criipto-eid-btn.criipto-eid-btn--no-vipps {
+  background: #FF5B24;
+}
+.criipto-eid-btn.criipto-eid-btn--no-vipps:hover {
+  background: #E85321;
+}
+
+.criipto-eid-btn.criipto-eid-btn--de-sofort {
+  background: #EF809F;
+}
+.criipto-eid-btn.criipto-eid-btn--de-sofort:hover {
+  background: #DE7794;
+}
+
+.criipto-eid-btn.criipto-eid-btn--de-yes {
+  background: #4B47FA;
+}
+.criipto-eid-btn.criipto-eid-btn--de-yes:hover {
+  background: #4340E0;
+}
+
+.criipto-eid-btn.criipto-eid-btn--nl-digid {
+  background: #333333;
+}
+.criipto-eid-btn.criipto-eid-btn--nl-digid:hover {
+  background: #111111;
+}
+
+.criipto-eid-btn.criipto-eid-btn--be-eid {
+  background: #87CEA3;
+}
+.criipto-eid-btn.criipto-eid-btn--be-eid:hover {
+  background: #78B891;
+}
+
+.criipto-eid-btn.criipto-eid-btn--itsme {
+  background: #FD4825;
+}
+.criipto-eid-btn.criipto-eid-btn--itsme:hover {
+  background: #E44020;
+}
+
+.criipto-eid-btn.criipto-eid-btn--fi {
+  background: #333333;
+}
+.criipto-eid-btn.criipto-eid-btn--fi:hover {
+  background: #111111;
+}
+
+.criipto-eid-btn.criipto-eid-btn--disabled, .criipto-eid-btn.criipto-eid-btn--disabled:hover {
+  background: #D0D3EB;
+}
+
+.criipto-eid-btn .criipto-eid-loader::before {
+  left: -18px;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  background-color: rgba(255, 255, 255, 0.2);
+  animation: dotFlashingFirst 1.5s infinite;
+}
+
+.criipto-eid-btn .criipto-eid-loader {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  margin-right: 18px;
+  border-radius: 7px;
+  background-color: rgba(255, 255, 255, 0.2);
+  animation: dotFlashingSecond 1.5s infinite linear;
+}
+
+.criipto-eid-btn .criipto-eid-loader::before, .criipto-eid-btn .criipto-eid-loader::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+.criipto-eid-btn .criipto-eid-loader::after {
+  left: 18px;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  background-color: rgba(255, 255, 255, 0.2);
+  animation: dotFlashingLast 1.5s infinite;
+}
+
+@keyframes dotFlashingFirst {
+  0% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  33% {
+    background-color: rgba(255, 255, 255, 1);
+  }
+  66%, 100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes dotFlashingSecond {
+  0%, 33% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  66% {
+    background-color: rgba(255, 255, 255, 1);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes dotFlashingLast {
+  0%, 66% {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    background-color: rgba(255, 255, 255, 1);
+  }
 }
