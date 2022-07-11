@@ -47,4 +47,19 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
 };
 
 export const Default = Template.bind({});
-Default.storyName = "AuthMethodSelector"
+Default.storyName = "All"
+
+export const OneOfEach = Template.bind({
+  
+});
+OneOfEach.storyName = "One of each";
+OneOfEach.args = {
+  acrValues: [
+    'urn:grn:authn:dk:nemid:poces',
+    'urn:grn:authn:dk:mitid:low',
+    'urn:grn:authn:se:bankid:same-device',
+    'urn:grn:authn:no:vipps',
+    'urn:grn:authn:no:bankid:substantial',
+    'urn:grn:authn:itsme:basic'
+  ]
+}

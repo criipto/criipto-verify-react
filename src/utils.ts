@@ -75,19 +75,33 @@ export function stringifyAction(language: Language, action: Action) : string {
   assertUnreachable(action);
 }
 
+export function acrValueToProviderPrefix(value: string) {
+  value = value.replace('urn:grn:authn:', '');
+
+  if (value.startsWith('fi')) {
+    return 'fi';
+  }
+  else if (value.startsWith('itsme')) {
+    return 'itsme';
+  } else {
+    return value.split(':').slice(0, 2).join(':');
+  }
+}
+
 export function acrValueToTitle(language: Language, value: string) : {title: string, subtitle?: string} {
 	value = value.replace('urn:grn:authn:', '');
+  const provider = acrValueToProviderPrefix(value);
 
-  if (value.startsWith('be:eid')) {
+  if (provider === 'be:eid') {
     return {title: autoTitleCase(value).replace('BEEID', 'Belgian eID')};
   }
-  if (value.startsWith('nl:digid')) {
+  if (provider === 'nl:digid') {
     return {title: autoTitleCase(value).replace('NL ', '')};
   }
-  if (value.startsWith('dk:mitid')) {
+  if (provider === 'dk:mitid') {
     return {title: 'MitID'};
   }
-  if (value.startsWith('dk:nemid')) {
+  if (provider === 'dk:nemid') {
 		let subtitle : string | undefined = undefined;
 		let suffix = value.replace('dk:nemid:', '');
 		
@@ -115,13 +129,13 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 			subtitle
 		}
   }
-  if (value.startsWith('fi')) {
+  if (provider === 'fi') {
     return {title: autoTitleCase(value).replace('FI', 'FTN')};
   }
-  if (value.startsWith('itsme')) {
+  if (provider === 'itsme') {
     return {title: autoTitleCase(value).replace('me', 'ME')};
   }
-  if (value.startsWith('se:bankid')) {
+  if (provider === 'se:bankid') {
 		let subtitle : string | undefined = undefined;
 		let suffix = value.replace('se:bankid:', '');
 
@@ -146,10 +160,10 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 
     return {title: 'BankID', subtitle};
   }
-  if (value.startsWith('de:sofort')) {
+  if (provider === 'de:sofort') {
     return {title: autoTitleCase(value).replace('DE ', '')};
   }
-  if (value.startsWith('no:bankid')) {
+  if (provider === 'no:bankid') {
     let subtitle : string | undefined = undefined;
     if (value.endsWith(':substantial')) {
       if (language === 'en') subtitle = 'Biometrics';
@@ -159,7 +173,7 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
     }
     return {title: subtitle ? 'BankID' : autoTitleCase(value).replace('NO ', ''), subtitle};
   }
-  if (value.startsWith('no:vipps')) {
+  if (provider === 'no:vipps') {
     return {title: autoTitleCase(value).replace('NO ', '')};
   }
 

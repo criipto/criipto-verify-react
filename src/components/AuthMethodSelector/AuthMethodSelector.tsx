@@ -1,7 +1,7 @@
 import {OpenIDConfiguration} from '@criipto/auth-js';
 import React, { useContext, useEffect, useState } from 'react';
 import CriiptoVerifyContext from '../../context';
-import { acrValueToTitle, filterAcrValues, Language, stringifyAction } from '../../utils';
+import { acrValueToTitle, filterAcrValues, Language, stringifyAction, acrValueToProviderPrefix } from '../../utils';
 import AuthMethodButton from '../AuthMethodButton/AuthMethodButton';
 
 import './AuthMethodSelector.css';
@@ -16,6 +16,12 @@ interface Props {
 function lowercaseFirst(input?: string) {
   if (!input) return input;
   return input.substring(0, 1).toLowerCase() + input.substr(1, input.length);
+}
+
+function isSingle(acrValue: string, acrValues: string[]) {
+  const provider = acrValueToProviderPrefix(acrValue);
+  const count = acrValues.reduce((memo, acrValue) => memo + (acrValueToProviderPrefix(acrValue) === provider ? 1 : 0), 0);
+  return count === 1;
 }
 
 export default function AuthMethodSelector(props: Props) {
@@ -43,7 +49,7 @@ export default function AuthMethodSelector(props: Props) {
           redirectUri={props.redirectUri}
         >
           {stringifyAction(language, action) ? `${stringifyAction(language, action)} ` : ''}{acrValueToTitle(language, acrValue).title}&nbsp;
-          {lowercaseFirst(acrValueToTitle(language, acrValue).subtitle)}
+          {isSingle(acrValue, acrValues) ? null : lowercaseFirst(acrValueToTitle(language, acrValue).subtitle)}
         </AuthMethodButton>
       ))}
     </div>
