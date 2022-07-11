@@ -34,9 +34,8 @@ export interface CriiptoVerifyProviderOptions {
 function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action}) {
   const {options, action} = params;
   let hints = options?.loginHint ? options?.loginHint.split(' ') : [];
-
   if (action) hints.push(`action:${action}`);
-  return hints.length ? undefined : hints.join(' ');
+  return hints.length ? hints.join(' ') : undefined;
 }
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
