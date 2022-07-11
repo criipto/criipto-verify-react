@@ -41,7 +41,6 @@ function assertUnreachable(x: never): never {
 export type Language = 'en' | 'da' | 'sv' | 'nb';
 
 export function stringifyAction(language: Language, action: Action) : string {
-  console.log(action);
   if (action === 'login') {
     if (language === 'da') return 'Login med';
     else if (language === 'sv') return 'Logga in med'
