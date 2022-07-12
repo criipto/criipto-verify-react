@@ -2,6 +2,7 @@ import React, {useMemo, useState} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, generatePKCE, OAuth2Error, PKCEPublicPart, Prompt} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
+import { RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
  
 export interface CriiptoVerifyProviderOptions {
   domain: string
@@ -31,10 +32,32 @@ export interface CriiptoVerifyProviderOptions {
   completionStrategy?: 'client' | 'openidprovider'
 }
 
+const ACTION_SUPPORTING_ACR_VALUES = [
+  'urn:grn:authn:dk:mitid:low',
+  'urn:grn:authn:dk:mitid:substantial',
+  'urn:grn:authn:dk:mitid:high',
+  'urn:grn:authn:se:bankid:same-device',
+  'urn:grn:authn:se:bankid:another-device',
+  'urn:grn:authn:se:bankid:another-device:qr',
+];
+
 function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action}) {
   const {options, action} = params;
+  const acrValues = options?.acrValues ? Array.isArray(options?.acrValues) ? options?.acrValues : [options?.acrValues] : [];
   let hints = options?.loginHint ? options?.loginHint.split(' ') : [];
-  if (action) hints.push(`action:${action}`);
+  if (action) {
+    if (acrValues.length === 1) {
+      if (ACTION_SUPPORTING_ACR_VALUES.includes(acrValues[0])) {
+        hints.push(`action:${action}`);
+      }
+    } else if (acrValues.length >= 2) {
+      if (acrValues.some(v => ACTION_SUPPORTING_ACR_VALUES.includes(v))) {
+        hints.push(`action:${action}`);
+      }
+    } else {
+      hints.push(`action:${action}`);
+    }
+  }
   return hints.length ? hints.join(' ') : undefined;
 }
 
@@ -56,8 +79,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
-      loginWithRedirect: () => client.redirect.authorize({
-        redirectUri: window.location.origin
+      loginWithRedirect: (params?: RedirectAuthorizeParams) => client.redirect.authorize({
+        ...params,
+        redirectUri: params?.redirectUri || redirectUri || window.location.origin
       }),
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl: async (options?: AuthorizeUrlParamsOptional) => {
