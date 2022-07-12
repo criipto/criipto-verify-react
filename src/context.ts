@@ -1,11 +1,12 @@
 import CriiptoAuth, {OpenIDConfiguration, AuthorizeUrlParamsOptional, PKCE, AuthorizeResponse, OAuth2Error} from '@criipto/auth-js';
+import { RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
 import { createContext } from 'react';
 
 export type Result = {id_token: string} | {code: string} | OAuth2Error;
 export type Action = 'confirm' | 'accept' | 'approve' | 'sign' | 'login';
 
 export interface CriiptoVerifyContextInterface {
-  loginWithRedirect: () => Promise<void>,
+  loginWithRedirect: (params?: RedirectAuthorizeParams) => Promise<void>,
   fetchOpenIDConfiguration: () => Promise<OpenIDConfiguration>,
   buildAuthorizeUrl: (options?: AuthorizeUrlParamsOptional) => Promise<string>,
   generatePKCE: () => Promise<PKCE | undefined>,

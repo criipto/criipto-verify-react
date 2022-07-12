@@ -2,6 +2,7 @@ import React, {useMemo, useState} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, generatePKCE, OAuth2Error, PKCEPublicPart, Prompt} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
+import { RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
  
 export interface CriiptoVerifyProviderOptions {
   domain: string
@@ -78,8 +79,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
-      loginWithRedirect: () => client.redirect.authorize({
-        redirectUri: window.location.origin
+      loginWithRedirect: (params?: RedirectAuthorizeParams) => client.redirect.authorize({
+        ...params,
+        redirectUri: params?.redirectUri || redirectUri || window.location.origin
       }),
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl: async (options?: AuthorizeUrlParamsOptional) => {
