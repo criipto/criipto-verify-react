@@ -54,7 +54,7 @@ interface AuthMethodButtonProps {
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const {acrValue} = props;
   const context = useContext(CriiptoVerifyContext);
-const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
+  const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
 
   const [href, setHref] = useState(props.href);
 
