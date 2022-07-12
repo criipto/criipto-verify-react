@@ -31,10 +31,28 @@ export interface CriiptoVerifyProviderOptions {
   completionStrategy?: 'client' | 'openidprovider'
 }
 
+const ACTION_SUPPORTING_ACR_VALUES = [
+  'urn:grn:authn:dk:mitid:low',
+  'urn:grn:authn:dk:mitid:substantial',
+  'urn:grn:authn:dk:mitid:high',
+  'urn:grn:authn:se:bankid:same-device',
+  'urn:grn:authn:se:bankid:another-device',
+  'urn:grn:authn:se:bankid:another-qr',
+];
+
 function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action}) {
   const {options, action} = params;
+  const acrValues = options?.acrValues ? Array.isArray(options?.acrValues) ? options?.acrValues : [options?.acrValues] : [];
   let hints = options?.loginHint ? options?.loginHint.split(' ') : [];
-  if (action) hints.push(`action:${action}`);
+  if (action) {
+    if (acrValues.length === 1) {
+      if (ACTION_SUPPORTING_ACR_VALUES.includes(acrValues[0])) {
+        hints.push(`action:${action}`);  
+      }
+    } else {
+      hints.push(`action:${action}`);
+    }
+  }
   return hints.length ? hints.join(' ') : undefined;
 }
 
