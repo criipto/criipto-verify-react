@@ -13,6 +13,7 @@ import sebankid from './logos/sebankid@2x.png';
 import sofort from './logos/sofort@2x.png';
 
 import './AuthMethodButton.css';
+import { getMobileOS } from '../../device';
 import CriiptoVerifyContext from '../../context';
 import SEBankIDSameDeviceButton from '../SEBankIDSameDeviceButton';
 
@@ -25,6 +26,8 @@ interface ButtonProps {
 interface AnchorButtonProps extends ButtonProps {
   href: string
 }
+
+const mobileOS = getMobileOS();
 
 export function AnchorButton(props: AnchorButtonProps) {
   return (
@@ -49,58 +52,65 @@ interface AuthMethodButtonProps {
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
-	const {acrValue} = props;
+  const {acrValue} = props;
   const context = useContext(CriiptoVerifyContext);
-	const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
+  const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
 
   const [href, setHref] = useState(props.href);
 
   useEffect(() => {
     if (props.href) return;
 
+    let loginHint : string | undefined = undefined;
+
+    if (acrValue.startsWith('urn:grn:authn:dk:mitid') && mobileOS) {
+      loginHint = `appswitch:${mobileOS} target:web`;
+    }
+
     context.buildAuthorizeUrl({
       redirectUri: props.redirectUri,
-      acrValues: acrValue
+      acrValues: acrValue,
+      loginHint
     }).then(setHref)
     .catch(console.error);
   }, [props.href, acrValue]);
 
-	if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
-		return (
-			<SEBankIDSameDeviceButton
-				redirectUri={props.redirectUri}
-				href={href}
-				className={className}
-				logo={<img src={acrValueToLogo(acrValue)} alt="" />}
-			>
-				{props.children}
-			</SEBankIDSameDeviceButton>
-		);
-	}
+  if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
+    return (
+      <SEBankIDSameDeviceButton
+        redirectUri={props.redirectUri}
+        href={href}
+        className={className}
+        logo={<img src={acrValueToLogo(acrValue)} alt="" />}
+      >
+        {props.children}
+      </SEBankIDSameDeviceButton>
+    );
+  }
 
-	if (href) {
-		return (
-			<AnchorButton {...props} href={href} className={className}>
-				{acrValueToLogo(acrValue) ? (
-					<div className="criipto-eid-logo">
-						<img src={acrValueToLogo(acrValue)} alt="" />
-					</div>
-				) : null}
-				{props.children}
-			</AnchorButton>
-		);
-	}
+  if (href) {
+    return (
+      <AnchorButton {...props} href={href} className={className}>
+        {acrValueToLogo(acrValue) ? (
+          <div className="criipto-eid-logo">
+            <img src={acrValueToLogo(acrValue)} alt="" />
+          </div>
+        ) : null}
+        {props.children}
+      </AnchorButton>
+    );
+  }
 
-	return (
-		<Button {...props} className={className}>
-			{acrValueToLogo(acrValue) ? (
-				<div className="criipto-eid-logo">
-					<img src={acrValueToLogo(acrValue)} alt="" />
-				</div>
-			) : null}
-			{props.children}
-		</Button>
-	);
+  return (
+    <Button {...props} className={className}>
+      {acrValueToLogo(acrValue) ? (
+        <div className="criipto-eid-logo">
+          <img src={acrValueToLogo(acrValue)} alt="" />
+        </div>
+      ) : null}
+      {props.children}
+    </Button>
+  );
 }
 
 function acrValueToClassName(value: string) {
@@ -118,37 +128,37 @@ function acrValueToClassName(value: string) {
 }
 
 function acrValueToLogo(value : string) {
-	if (value.startsWith('urn:grn:authn:be:eid')) {
-		return beeid;
-	}
-	if (value.startsWith('urn:grn:authn:nl:digid')) {
-		return digid;
-	}
-	if (value.startsWith('urn:grn:authn:dk:mitid')) {
-		return dkmitid;
-	}
-	if (value.startsWith('urn:grn:authn:dk:nemid')) {
-		return dknemid;
-	}
-	if (value.startsWith('urn:grn:authn:fi:bank-id')) {
-		return ftnbankid;
-	}
-	if (value.startsWith('urn:grn:authn:fi')) {
-		return ftnmobile;
-	}
-	if (value.startsWith('urn:grn:authn:itsme')) {
-		return itsme;
-	}
-	if (value.startsWith('urn:grn:authn:se:bankid')) {
-		return sebankid;
-	}
-	if (value.startsWith('urn:grn:authn:de:sofort')) {
-		return sofort;
-	}
-	if (value.startsWith('urn:grn:authn:no:bankid')) {
-		return nobankid;
-	}
-	if (value.startsWith('urn:grn:authn:no:vipps')) {
-		return novipps;
-	}
+  if (value.startsWith('urn:grn:authn:be:eid')) {
+    return beeid;
+  }
+  if (value.startsWith('urn:grn:authn:nl:digid')) {
+    return digid;
+  }
+  if (value.startsWith('urn:grn:authn:dk:mitid')) {
+    return dkmitid;
+  }
+  if (value.startsWith('urn:grn:authn:dk:nemid')) {
+    return dknemid;
+  }
+  if (value.startsWith('urn:grn:authn:fi:bank-id')) {
+    return ftnbankid;
+  }
+  if (value.startsWith('urn:grn:authn:fi')) {
+    return ftnmobile;
+  }
+  if (value.startsWith('urn:grn:authn:itsme')) {
+    return itsme;
+  }
+  if (value.startsWith('urn:grn:authn:se:bankid')) {
+    return sebankid;
+  }
+  if (value.startsWith('urn:grn:authn:de:sofort')) {
+    return sofort;
+  }
+  if (value.startsWith('urn:grn:authn:no:bankid')) {
+    return nobankid;
+  }
+  if (value.startsWith('urn:grn:authn:no:vipps')) {
+    return novipps;
+  }
 }
