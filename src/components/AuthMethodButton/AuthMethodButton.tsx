@@ -13,6 +13,7 @@ import sebankid from './logos/sebankid@2x.png';
 import sofort from './logos/sofort@2x.png';
 
 import './AuthMethodButton.css';
+import { getMobileOS } from '../../device';
 import CriiptoVerifyContext from '../../context';
 import SEBankIDSameDeviceButton from '../SEBankIDSameDeviceButton';
 
@@ -25,6 +26,8 @@ interface ButtonProps {
 interface AnchorButtonProps extends ButtonProps {
   href: string
 }
+
+const mobileOS = getMobileOS();
 
 export function AnchorButton(props: AnchorButtonProps) {
   return (
@@ -58,9 +61,16 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   useEffect(() => {
     if (props.href) return;
 
+		let loginHint : string | undefined = undefined;
+
+		if (acrValue.startsWith('urn:grn:authn:dk:mitid') && mobileOS) {
+			loginHint = `appswitch:${mobileOS} target:web`;
+		}
+
     context.buildAuthorizeUrl({
       redirectUri: props.redirectUri,
-      acrValues: acrValue
+      acrValues: acrValue,
+			loginHint
     }).then(setHref)
     .catch(console.error);
   }, [props.href, acrValue]);
