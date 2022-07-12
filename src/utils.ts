@@ -54,7 +54,7 @@ export function stringifyAction(language: Language, action: Action) : string {
     return 'Approve with';
   }
   if (action === 'sign') {
-    if (language === 'da') return 'Signera med';
+    if (language === 'da') return 'Underskriv med';
     else if (language === 'sv') return 'Signera med'
     else if (language === 'nb') return 'Signer med';
     return 'Sign with';
@@ -66,9 +66,9 @@ export function stringifyAction(language: Language, action: Action) : string {
     return 'Confirm with';
   }
   if (action === 'accept') {
-    if (language === 'da') return 'Acceptera med';
-    else if (language === 'sv') return 'Bekräfta med'
-    else if (language === 'nb') return 'Godta med';
+    if (language === 'da') return 'Accepter med';
+    else if (language === 'sv') return 'Acceptera med'
+    else if (language === 'nb') return 'Aksepterer med';
     return 'Accept with';
   }
 
