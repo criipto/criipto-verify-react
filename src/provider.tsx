@@ -47,7 +47,11 @@ function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: 
   if (action) {
     if (acrValues.length === 1) {
       if (ACTION_SUPPORTING_ACR_VALUES.includes(acrValues[0])) {
-        hints.push(`action:${action}`);  
+        hints.push(`action:${action}`);
+      }
+    } else if (acrValues.length >= 2) {
+      if (acrValues.some(v => ACTION_SUPPORTING_ACR_VALUES.includes(v))) {
+        hints.push(`action:${action}`);
       }
     } else {
       hints.push(`action:${action}`);
