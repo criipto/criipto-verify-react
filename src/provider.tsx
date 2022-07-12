@@ -37,7 +37,7 @@ const ACTION_SUPPORTING_ACR_VALUES = [
   'urn:grn:authn:dk:mitid:high',
   'urn:grn:authn:se:bankid:same-device',
   'urn:grn:authn:se:bankid:another-device',
-  'urn:grn:authn:se:bankid:another-qr',
+  'urn:grn:authn:se:bankid:another-device:qr',
 ];
 
 function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action}) {
