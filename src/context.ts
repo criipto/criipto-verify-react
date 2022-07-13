@@ -1,8 +1,8 @@
-import CriiptoAuth, {OpenIDConfiguration, AuthorizeUrlParamsOptional, PKCE, AuthorizeResponse, OAuth2Error} from '@criipto/auth-js';
+import CriiptoAuth, {OpenIDConfiguration, AuthorizeUrlParamsOptional, PKCE, AuthorizeResponse, OAuth2Error, PKCEPublicPart} from '@criipto/auth-js';
 import { RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
 import { createContext } from 'react';
 
-export type Result = {id_token: string} | {code: string} | OAuth2Error;
+export type Result = {id_token: string, state?: string} | {code: string, state?: string} | OAuth2Error;
 export type Action = 'confirm' | 'accept' | 'approve' | 'sign' | 'login';
 
 export interface CriiptoVerifyContextInterface {
@@ -16,7 +16,10 @@ export interface CriiptoVerifyContextInterface {
   result: Result | null
   domain: string
   redirectUri?: string,
-  action: Action
+  action: Action,
+  pkce?: PKCE | PKCEPublicPart,
+  store: Storage,
+  isLoading: boolean
 }
 
 /**
@@ -39,7 +42,10 @@ const initialContext = {
   completionStrategy: 'client' as 'client' | 'openidprovider',
   result: null,
   domain: '',
-  action: 'login' as Action
+  action: 'login' as Action,
+  pkce: undefined,
+  store: sessionStorage,
+  isLoading: false
 };
 
 const CriiptoVerifyContext = createContext<CriiptoVerifyContextInterface>(initialContext);

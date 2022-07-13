@@ -71,7 +71,14 @@ export default {
 
 const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) => {
   return (
-    <CriiptoVerifyProvider completionStrategy={(args as any).completionStrategy} response={(args as any).response} action={(args as any).action} domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
+    <CriiptoVerifyProvider
+      completionStrategy={(args as any).completionStrategy}
+      response={(args as any).response}
+      action={(args as any).action}
+      domain={globals.domain}
+      clientID={globals.clientID}
+      redirectUri={window.location.href}
+    >
       <StoryResponseRenderer>
         <AuthMethodSelector {...args}  />
       </StoryResponseRenderer>

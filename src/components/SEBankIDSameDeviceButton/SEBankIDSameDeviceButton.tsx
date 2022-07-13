@@ -2,7 +2,6 @@ import { PKCE, AuthorizeResponse } from '@criipto/auth-js';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import CriiptoVerifyContext from '../../context';
 import { getMobileOS } from '../../device';
-import usePageVisibility from '../../hooks/usePageVisibility';
 
 import Desktop from './Desktop';
 import Android from './Android';
@@ -34,7 +33,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<(string | string[])[]>([]);
   const [initiated, setInitiated] = useState(autoHydratedState ? true : false);
-  const {buildAuthorizeUrl, completionStrategy, generatePKCE, domain, handleResponse, redirectUri: defaultRedirectURi} = useContext(CriiptoVerifyContext);
+  const {buildAuthorizeUrl, completionStrategy, generatePKCE, handleResponse, redirectUri: defaultRedirectURi} = useContext(CriiptoVerifyContext);
   const redirectUri = props.redirectUri || defaultRedirectURi;
 
   const reset = () => {
@@ -69,7 +68,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     await handleResponse(params, {
       pkce: required.pkce,
       redirectUri
-    })
+    });
   }, [completionStrategy, pkce]);
 
   const refresh = useCallback(async () => {

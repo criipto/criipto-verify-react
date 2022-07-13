@@ -27,7 +27,13 @@ export default {
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
   return (
-    <CriiptoVerifyProvider completionStrategy={(args as any).completionStrategy} response={(args as any).response} domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
+    <CriiptoVerifyProvider
+      completionStrategy={(args as any).completionStrategy}
+      response={(args as any).response}
+      domain={globals.domain}
+      clientID={globals.clientID}
+      redirectUri={window.location.href}
+    >
       <StoryResponseRenderer>
         <AuthMethodButton {...args}>
           {acrValueToTitle('en', args.acrValue).title}<br />
@@ -43,3 +49,10 @@ SEBankIDSameDeviceButton.args = {
   acrValue: 'urn:grn:authn:se:bankid:same-device'
 };
 SEBankIDSameDeviceButton.storyName = "se:bankid:same-device";
+
+
+export const DKMitID = Template.bind({});
+DKMitID.args = {
+  acrValue: 'urn:grn:authn:dk:mitid:low'
+};
+DKMitID.storyName = "dk:mitid:low";
