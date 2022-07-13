@@ -6,7 +6,12 @@ interface Props {
 }
 
 export default function StoryResponseRenderer(props: Props) : JSX.Element {
-  const {result} = useCriiptoVerify();
+  const {result, isLoading} = useCriiptoVerify();
+
+  if (isLoading) {
+    return <span>'Loading ...'</span>;
+  }
+
   if (result) {
     return (
       <pre>

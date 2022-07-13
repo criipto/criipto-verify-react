@@ -16,6 +16,7 @@ import './AuthMethodButton.css';
 import { getMobileOS } from '../../device';
 import CriiptoVerifyContext from '../../context';
 import SEBankIDSameDeviceButton from '../SEBankIDSameDeviceButton';
+import { savePKCEState } from '@criipto/auth-js';
 
 interface ButtonProps {
   className?: string,
@@ -57,6 +58,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
 
   const [href, setHref] = useState(props.href);
+  const redirectUri = props.redirectUri || context.redirectUri;
 
   useEffect(() => {
     if (props.href) return;
@@ -68,12 +70,25 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     }
 
     context.buildAuthorizeUrl({
-      redirectUri: props.redirectUri,
+      redirectUri,
       acrValues: acrValue,
       loginHint
     }).then(setHref)
     .catch(console.error);
-  }, [props.href, acrValue]);
+  }, [props.href, acrValue, context.pkce, redirectUri]);
+
+  const handleClick : React.MouseEventHandler = (event) => {
+    if (context.pkce && "code_verifier" in context.pkce) {
+      console.log('savePKCEState');
+      // just-in-time saving of PKCE, in case of man-in-the-browser
+      savePKCEState(context.store, {
+        pkce_code_verifier: context.pkce.code_verifier,
+        redirect_uri: redirectUri!
+      });
+    }
+
+    if (props.onClick) props.onClick(event);
+  }
 
   if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
     return (
@@ -90,7 +105,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
 
   if (href) {
     return (
-      <AnchorButton {...props} href={href} className={className}>
+      <AnchorButton {...props} href={href} className={className} onClick={handleClick}>
         {acrValueToLogo(acrValue) ? (
           <div className="criipto-eid-logo">
             <img src={acrValueToLogo(acrValue)} alt="" />
@@ -102,7 +117,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   }
 
   return (
-    <Button {...props} className={className}>
+    <Button {...props} className={className} onClick={handleClick}>
       {acrValueToLogo(acrValue) ? (
         <div className="criipto-eid-logo">
           <img src={acrValueToLogo(acrValue)} alt="" />

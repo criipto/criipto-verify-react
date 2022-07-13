@@ -58,7 +58,7 @@ function LoginButton(props: any) {
 
 const Template = (args: any, {globals} : any) => {
   return (
-    <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID} redirectUri="https://httpbin.org/get">
+    <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID}>
       <StoryResponseRenderer>
         <LoginButton acrValues={args.acrValues} />
       </StoryResponseRenderer>
