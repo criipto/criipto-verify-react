@@ -2,7 +2,7 @@ import { useContext } from "react";
 import CriiptoVerifyContext from "./context";
 
 export default function useCriiptoVerify() {
-  const {result, loginWithRedirect, isLoading} = useContext(CriiptoVerifyContext);
+  const {result, loginWithRedirect, loginWithPopup, isLoading} = useContext(CriiptoVerifyContext);
 
-  return {result, loginWithRedirect, isLoading};
+  return {result, loginWithRedirect, loginWithPopup, isLoading};
 }

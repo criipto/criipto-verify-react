@@ -2,7 +2,9 @@ import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, PKCE, PKCEPublicPart, Prompt, savePKCEState} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
-import { RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
+import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
+
+import '@criipto/auth-js/dist/index.css';
  
 export interface CriiptoVerifyProviderOptions {
   domain: string
@@ -12,6 +14,7 @@ export interface CriiptoVerifyProviderOptions {
   pkce?: PKCEPublicPart
   state?: string
   prompt?: Prompt
+  uiLocales?: string
   /**
    * Will ammend the login_hint parameter with `action:{action}` which will adjust texsts in certain flows.
    * Default: 'login'
@@ -20,7 +23,7 @@ export interface CriiptoVerifyProviderOptions {
   /**
    * Note: In most cases modifying this setting **is not needed**. Defaults will work with almost all React SPA cases.
    * By default @criipto/verify-react will do PKCE on your behalf and return a jwt token.
-   * However if you wish you can disable this and get the raw `code` response by setting `response` to 'code'
+   * However if you wish you can disable this and get the raw `code` response by setting `response` to 'code'.
   */
   response?: 'token' | 'code'
   /*
@@ -99,6 +102,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       pkce,
       state: props.state,
       prompt: props.prompt,
+      uiLocales: props.uiLocales,
       redirectUri,
       ...options || {},
       loginHint: buildLoginHint({options, action})
@@ -107,15 +111,27 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     pkce,
     props.state,
     props.prompt,
-    action
+    props.uiLocales,
+    action,
+    redirectUri
   ]);
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
-      loginWithRedirect: (params?: RedirectAuthorizeParams) => client.redirect.authorize(buildOptions({
-        ...params,
-        redirectUri: params?.redirectUri || redirectUri
-      })),
+      loginWithRedirect: (params?: RedirectAuthorizeParams) => {
+        if (responseType !== 'token') throw new Error('loginWithRedirect is only supported with response=token');
+        return client.redirect.authorize(buildOptions(params))
+      },
+      loginWithPopup: (params?: PopupAuthorizeParams) => {
+        if (responseType !== 'token') throw new Error('loginWithPopup is only supported with response=token');
+        return client.popup.authorize(buildOptions(params)).then(response => {
+          if (response?.code) setResult({code: response.code});
+          else if (response?.id_token) setResult({id_token: response.id_token});
+          else setResult(null);
+        }).catch((err: OAuth2Error) => {
+          setResult(err);
+        })
+      },
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl: async (options?: AuthorizeUrlParamsOptional) => {
         // const pkce = options?.pkce || await generatePKCE();

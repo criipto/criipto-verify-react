@@ -50,20 +50,38 @@ export default {
   }
 };
 
-function LoginButton(props: any) {
+function LoginWithRedirectButton(props: any) {
   const {loginWithRedirect} = useCriiptoVerify();
 
   return <button onClick={() => loginWithRedirect({acrValues: props.acrValues})}>loginWithRedirect</button>
 }
 
-const Template = (args: any, {globals} : any) => {
+const LoginWithRedirectTemplate = (args: any, {globals} : any) => {
   return (
     <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID}>
       <StoryResponseRenderer>
-        <LoginButton acrValues={args.acrValues} />
+        <LoginWithRedirectButton acrValues={args.acrValues} />
       </StoryResponseRenderer>
     </CriiptoVerifyProvider>
   );
 };
 
-export const loginWithRedirect = Template.bind({});
+export const loginWithRedirect = LoginWithRedirectTemplate.bind({});
+
+function LoginWithPopupButton(props: any) {
+  const {loginWithPopup} = useCriiptoVerify();
+
+  return <button onClick={() => loginWithPopup({acrValues: props.acrValues})}>loginWithPopup</button>
+}
+
+const LoginWithPopupTemplate = (args: any, {globals} : any) => {
+  return (
+    <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID}>
+      <StoryResponseRenderer>
+        <LoginWithPopupButton acrValues={args.acrValues} />
+      </StoryResponseRenderer>
+    </CriiptoVerifyProvider>
+  );
+};
+
+export const loginWithPopup = LoginWithPopupTemplate.bind({});
