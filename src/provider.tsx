@@ -1,5 +1,5 @@
 import React, {useMemo, useState, useCallback, useEffect} from 'react';
-import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState} from '@criipto/auth-js';
+import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
 import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
@@ -125,26 +125,43 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   ]);
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
+    const buildAuthorizeUrl = async (options?: AuthorizeUrlParamsOptional) => {
+      return await client.buildAuthorizeUrl(client.buildAuthorizeParams(buildOptions(options)));
+    };
+
     return {
-      loginWithRedirect: (params?: RedirectAuthorizeParams) => {
-        if (responseType !== 'token') throw new Error('loginWithRedirect is only supported with response=token');
-        return client.redirect.authorize(buildOptions(params))
+      loginWithRedirect: async (params?: AuthorizeUrlParamsOptional) => {
+        if (pkce && "code_verifier" in pkce) {
+          // just-in-time saving of PKCE, in case of man-in-the-browser
+          savePKCEState(store, {
+            pkce_code_verifier: pkce.code_verifier,
+            redirect_uri: redirectUri!
+          });
+        }
+
+        const url = await buildAuthorizeUrl(params);
+        window.location.href = url;
       },
       loginWithPopup: (params?: PopupAuthorizeParams) => {
-        if (responseType !== 'token') throw new Error('loginWithPopup is only supported with response=token');
+        if (responseType === 'code') {
+          return client.popup.trigger(buildOptions(params)).then(response => {
+            console.log(response);
+            if (response?.code) setResult({code: response.code});
+            else setResult(null);
+          }).catch((err: OAuth2Error) => {
+            setResult(err);
+          });
+        }
         return client.popup.authorize(buildOptions(params)).then(response => {
           if (response?.code) setResult({code: response.code});
           else if (response?.id_token) setResult({id_token: response.id_token});
           else setResult(null);
         }).catch((err: OAuth2Error) => {
           setResult(err);
-        })
+        });
       },
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
-      buildAuthorizeUrl: async (options?: AuthorizeUrlParamsOptional) => {
-        // const pkce = options?.pkce || await generatePKCE();
-        return await client.buildAuthorizeUrl(client.buildAuthorizeParams(buildOptions(options)));
-      },
+      buildAuthorizeUrl,
       generatePKCE: async () => {
         if (responseType !== 'token' || completionStrategy !== 'client') return;
         return await generatePKCE();
@@ -201,6 +218,15 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     }
 
     setIsLoading(true);
+
+    const params = parseAuthorizeResponseFromLocation(window.location);
+    if (params.code && responseType === 'code') {
+      setIsLoading(false);
+      setResult({code: params.code});
+      refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
+      return;
+    }
+
     client.redirect.match().then(response => {
       setIsLoading(false);
       if (response?.code) setResult({code: response.code});
@@ -212,7 +238,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       setResult(err);
       refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
     });
-  }, [props.pkce]);
+  }, [props.pkce, responseType]);
 
   return (
     <CriiptoVerifyContext.Provider value={context}>

@@ -46,6 +46,12 @@ export default {
       options: ALL_ACR_VALUES,
       control: { type: 'multi-select' },
       defaultValue: ALL_ACR_VALUES
+    },
+    response: {
+      name: 'Response mode',
+      control: 'select',
+      defaultValue: 'token',
+      options: ['token', 'code']
     }
   }
 };
@@ -58,7 +64,7 @@ function LoginWithRedirectButton(props: any) {
 
 const LoginWithRedirectTemplate = (args: any, {globals} : any) => {
   return (
-    <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID}>
+    <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID} response={args.response}>
       <StoryResponseRenderer>
         <LoginWithRedirectButton acrValues={args.acrValues} />
       </StoryResponseRenderer>
@@ -76,7 +82,7 @@ function LoginWithPopupButton(props: any) {
 
 const LoginWithPopupTemplate = (args: any, {globals} : any) => {
   return (
-    <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID}>
+    <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID} response={args.response}>
       <StoryResponseRenderer>
         <LoginWithPopupButton acrValues={args.acrValues} />
       </StoryResponseRenderer>
