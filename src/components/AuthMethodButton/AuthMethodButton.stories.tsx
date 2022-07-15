@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import AuthMethodButton from './AuthMethodButton';
+import AuthMethodButton, { PopupParams } from './AuthMethodButton';
 import CriiptoVerifyProvider from '../../provider';
 import { acrValueToTitle } from '../../utils';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
@@ -56,3 +56,33 @@ DKMitID.args = {
   acrValue: 'urn:grn:authn:dk:mitid:low'
 };
 DKMitID.storyName = "dk:mitid:low";
+
+export const Popup = Template.bind({});
+Popup.args = {
+  acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
+  popup: true
+};
+Popup.storyName = "Popup - Basic backrop";
+
+export const PopupCallback = Template.bind({});
+PopupCallback.args = {
+  acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
+  popup: () => true
+};
+PopupCallback.storyName = "Popup - Callback";
+
+const CustomBackdrop : React.FC<PopupParams> = (props) => {
+  return (
+    <div>
+      Custom backdrop for {props.acrValue}
+      <button onClick={() => props.onHide()}>Hide</button>
+    </div>
+  );
+}
+
+export const PopupCustom = Template.bind({});
+PopupCustom.args = {
+  acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
+  popup: (props) => <CustomBackdrop {...props} />
+};
+PopupCustom.storyName = "Popup - Custom react backdrop";

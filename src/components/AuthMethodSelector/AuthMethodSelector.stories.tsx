@@ -65,6 +65,11 @@ export default {
       control: 'select',
       defaultValue: 'token',
       options: ['token', 'code']
+    },
+    popup: {
+      name: 'Popup',
+      control: 'boolean',
+      defaultValue: false
     }
   }
 } as ComponentMeta<typeof AuthMethodSelector>;
@@ -77,7 +82,7 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
       action={(args as any).action}
       domain={globals.domain}
       clientID={globals.clientID}
-      redirectUri={window.location.href}
+      redirectUri={args.redirectUri}
     >
       <StoryResponseRenderer>
         <AuthMethodSelector {...args} />
@@ -87,13 +92,17 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
 };
 
 export const Default = Template.bind({});
-Default.storyName = "All"
+Default.storyName = "All";
+Default.args = {
+  redirectUri: window.location.href
+};
 
 export const OneOfEach = Template.bind({
   
 });
 OneOfEach.storyName = "One of each";
 OneOfEach.args = {
+  redirectUri: window.location.href,
   acrValues: [
     'urn:grn:authn:dk:nemid:poces',
     'urn:grn:authn:dk:mitid:low',
@@ -103,8 +112,13 @@ OneOfEach.args = {
     'urn:grn:authn:itsme:basic'
   ]
 };
+Default.args = {
+  redirectUri: window.location.href
+};
 
-export const OnSelect = Template.bind({
-  onSelect: console.log.bind(console)
-});
+export const OnSelect = Template.bind({});
 OnSelect.storyName = "onSelect"
+OnSelect.args = {
+  redirectUri: window.location.href,
+  onSelect: console.log.bind(console)
+};

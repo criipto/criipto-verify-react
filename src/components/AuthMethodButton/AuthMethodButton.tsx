@@ -18,10 +18,16 @@ import CriiptoVerifyContext from '../../context';
 import SEBankIDSameDeviceButton from '../SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
 
+export type PopupParams = {
+  acrValue: string,
+  onHide: () => void
+};
+export type PopupOption = boolean | ((options: PopupParams) => boolean | React.ReactElement)
+
 interface ButtonProps {
   className?: string,
   children: React.ReactNode,
-  onClick?: React.MouseEventHandler
+  onClick?: React.MouseEventHandler,
 }
 
 interface AnchorButtonProps extends ButtonProps {
@@ -42,20 +48,22 @@ export function Button(props: ButtonProps) {
   );
 }
 
-interface AuthMethodButtonProps {
+export interface AuthMethodButtonProps {
   acrValue: string,
   href?: string;
   onClick?: React.MouseEventHandler,
   children?: React.ReactNode,
   'data-testid'?: string,
   className?: string,
-  redirectUri?: string
+  redirectUri?: string,
+  popup?: PopupOption
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const {acrValue} = props;
   const context = useContext(CriiptoVerifyContext);
   const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
+  const [backdrop, setBackdrop] = useState<React.ReactElement | null>(null);
 
   const [href, setHref] = useState(props.href);
   const redirectUri = props.redirectUri || context.redirectUri;
@@ -86,6 +94,35 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
       });
     }
 
+    if (props.popup) {
+      let willPopup =
+        typeof props.popup === "function" ?
+          props.popup({
+            acrValue,
+            onHide: () => setBackdrop(null)
+          }) :
+          props.popup === true;
+
+      if (willPopup !== false) {
+        event.preventDefault();
+
+        if (typeof willPopup === "boolean") {
+          context.loginWithPopup({
+            acrValues: [acrValue],
+            redirectUri: props.redirectUri,
+            backdrop: true
+          }); 
+        } else {
+          setBackdrop(willPopup);
+          context.loginWithPopup({
+            acrValues: [acrValue],
+            redirectUri: props.redirectUri,
+            backdrop: false
+          }); 
+        }
+      }
+    }
+
     if (props.onClick) props.onClick(event);
   }
 
@@ -102,28 +139,35 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     );
   }
 
-  if (href) {
-    return (
-      <AnchorButton {...props} href={href} className={className} onClick={handleClick}>
-        {acrValueToLogo(acrValue) ? (
-          <div className="criipto-eid-logo">
-            <img src={acrValueToLogo(acrValue)} alt="" />
-          </div>
-        ) : null}
-        {props.children}
-      </AnchorButton>
-    );
-  }
-
-  return (
-    <Button {...props} className={className} onClick={handleClick}>
+  const inner = (
+    <React.Fragment>
       {acrValueToLogo(acrValue) ? (
         <div className="criipto-eid-logo">
           <img src={acrValueToLogo(acrValue)} alt="" />
         </div>
       ) : null}
       {props.children}
-    </Button>
+    </React.Fragment>
+  );
+
+  if (href) {
+    return (
+      <React.Fragment>
+        <AnchorButton {...props} href={href} className={className} onClick={handleClick}>
+          {inner}
+        </AnchorButton>
+        {backdrop}
+      </React.Fragment>
+    );
+  }
+
+  return (
+    <React.Fragment>
+      <Button {...props} className={className} onClick={handleClick}>
+        {inner}
+      </Button>
+      {backdrop}
+    </React.Fragment>
   );
 }
 

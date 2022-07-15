@@ -76,18 +76,23 @@ export const loginWithRedirect = LoginWithRedirectTemplate.bind({});
 
 function LoginWithPopupButton(props: any) {
   const {loginWithPopup} = useCriiptoVerify();
+  console.log(props);
 
-  return <button onClick={() => loginWithPopup({acrValues: props.acrValues})}>loginWithPopup</button>
+  return <button onClick={() => loginWithPopup({acrValues: props.acrValues, backdrop: props.backdrop})}>loginWithPopup</button>
 }
 
 const LoginWithPopupTemplate = (args: any, {globals} : any) => {
   return (
     <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID} response={args.response}>
       <StoryResponseRenderer>
-        <LoginWithPopupButton acrValues={args.acrValues} />
+        <LoginWithPopupButton acrValues={args.acrValues} backdrop={args.backdrop} />
       </StoryResponseRenderer>
     </CriiptoVerifyProvider>
   );
 };
 
 export const loginWithPopup = LoginWithPopupTemplate.bind({});
+export const loginWithPopupBackdropDisabled = LoginWithPopupTemplate.bind({});
+(loginWithPopupBackdropDisabled as any).args = {
+  backdrop: false
+};

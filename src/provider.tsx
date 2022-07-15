@@ -145,7 +145,6 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       loginWithPopup: (params?: PopupAuthorizeParams) => {
         if (responseType === 'code') {
           return client.popup.trigger(buildOptions(params)).then(response => {
-            console.log(response);
             if (response?.code) setResult({code: response.code});
             else setResult(null);
           }).catch((err: OAuth2Error) => {
