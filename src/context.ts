@@ -20,7 +20,8 @@ export interface CriiptoVerifyContextInterface {
   action: Action,
   pkce?: PKCE | PKCEPublicPart,
   store: Storage,
-  isLoading: boolean
+  isLoading: boolean,
+  acrValues?: string[]
 }
 
 /**

@@ -79,7 +79,6 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
 
   const handleClick : React.MouseEventHandler = (event) => {
     if (context.pkce && "code_verifier" in context.pkce) {
-      console.log('savePKCEState');
       // just-in-time saving of PKCE, in case of man-in-the-browser
       savePKCEState(context.store, {
         pkce_code_verifier: context.pkce.code_verifier,

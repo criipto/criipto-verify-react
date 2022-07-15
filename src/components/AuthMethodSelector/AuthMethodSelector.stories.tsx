@@ -80,7 +80,7 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
       redirectUri={window.location.href}
     >
       <StoryResponseRenderer>
-        <AuthMethodSelector {...args}  />
+        <AuthMethodSelector {...args} />
       </StoryResponseRenderer>
     </CriiptoVerifyProvider>
   );
@@ -102,4 +102,9 @@ OneOfEach.args = {
     'urn:grn:authn:no:bankid:substantial',
     'urn:grn:authn:itsme:basic'
   ]
-}
+};
+
+export const OnSelect = Template.bind({
+  onSelect: console.log.bind(console)
+});
+OnSelect.storyName = "onSelect"

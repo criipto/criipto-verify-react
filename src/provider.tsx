@@ -1,10 +1,11 @@
 import React, {useMemo, useState, useCallback, useEffect} from 'react';
-import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, PKCE, PKCEPublicPart, Prompt, savePKCEState} from '@criipto/auth-js';
+import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
 import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
+import { filterAcrValues } from './utils';
  
 export interface CriiptoVerifyProviderOptions {
   domain: string
@@ -77,6 +78,13 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       redirectUri: props.redirectUri
     })
   );
+
+  const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
+  useEffect(() => {
+    (async () => {
+      setConfiguration(await client.fetchOpenIDConfiguration());
+    })();
+  }, [client]);
 
   const [result, setResult] = useState<Result | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -169,7 +177,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       action,
       pkce,
       store,
-      isLoading
+      isLoading,
+      acrValues: configuration ? filterAcrValues(configuration.acr_values_supported) : undefined
     }
   }, [
     client,
@@ -181,7 +190,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     pkce,
     props.state,
     props.prompt,
-    isLoading
+    isLoading,
+    configuration
   ]);
 
   useEffect(() => {
