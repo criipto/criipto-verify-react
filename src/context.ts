@@ -11,6 +11,7 @@ export interface CriiptoVerifyContextInterface {
   fetchOpenIDConfiguration: () => Promise<OpenIDConfiguration>,
   buildAuthorizeUrl: (options?: AuthorizeUrlParamsOptional) => Promise<string>,
   generatePKCE: () => Promise<PKCE | undefined>,
+  buildOptions: (options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) => AuthorizeUrlParamsOptional
   handleResponse: (response: AuthorizeResponse, params: {pkce?: PKCE, redirectUri?: string}) => Promise<void>,
   responseType: 'token' | 'code'
   completionStrategy: 'client' | 'openidprovider',
@@ -21,7 +22,8 @@ export interface CriiptoVerifyContextInterface {
   pkce?: PKCE | PKCEPublicPart,
   store: Storage,
   isLoading: boolean,
-  acrValues?: string[]
+  acrValues?: string[],
+  client: CriiptoAuth
 }
 
 /**
@@ -40,6 +42,7 @@ const initialContext = {
   fetchOpenIDConfiguration: stub,
   buildAuthorizeUrl: stub,
   generatePKCE: stub,
+  buildOptions: stub,
   handleResponse: stub,
   responseType: 'token' as 'token' | 'code',
   completionStrategy: 'client' as 'client' | 'openidprovider',
@@ -48,7 +51,8 @@ const initialContext = {
   action: 'login' as Action,
   pkce: undefined,
   store: sessionStorage,
-  isLoading: false
+  isLoading: false,
+  client: null as any as CriiptoAuth
 };
 
 const CriiptoVerifyContext = createContext<CriiptoVerifyContextInterface>(initialContext);

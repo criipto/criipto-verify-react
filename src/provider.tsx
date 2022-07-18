@@ -2,7 +2,7 @@ import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
-import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
+import { PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues } from './utils';
@@ -95,7 +95,11 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
   const refreshPKCE = () => {
     if (props.pkce) return;
-    if (responseType !== 'token' || completionStrategy !== 'client') return;
+    if (responseType !== 'token' || completionStrategy !== 'client') {
+      clearPKCEState(store);
+      setPKCE(undefined);
+      return;
+    }
 
     clearPKCEState(store);
 
@@ -105,13 +109,14 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     })();
   }
 
-  const buildOptions = useCallback((options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) => {
+  const buildOptions = useCallback((options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) : AuthorizeUrlParamsOptional => {
     return {
       pkce,
       state: props.state,
       prompt: props.prompt,
       uiLocales: props.uiLocales,
       redirectUri,
+      responseType: responseType === 'token' ? 'id_token' : 'code' as ResponseType,
       ...options || {},
       loginHint: buildLoginHint({options, action})
     }
@@ -131,26 +136,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
     return {
       loginWithRedirect: async (params?: AuthorizeUrlParamsOptional) => {
-        if (pkce && "code_verifier" in pkce) {
-          // just-in-time saving of PKCE, in case of man-in-the-browser
-          savePKCEState(store, {
-            pkce_code_verifier: pkce.code_verifier,
-            redirect_uri: redirectUri!
-          });
-        }
-
-        const url = await buildAuthorizeUrl(params);
-        window.location.href = url;
+        await client.redirect.authorize(buildOptions(params));
       },
       loginWithPopup: (params?: PopupAuthorizeParams) => {
-        if (responseType === 'code') {
-          return client.popup.trigger(buildOptions(params)).then(response => {
-            if (response?.code) setResult({code: response.code});
-            else setResult(null);
-          }).catch((err: OAuth2Error) => {
-            setResult(err);
-          });
-        }
         return client.popup.authorize(buildOptions(params)).then(response => {
           if (response?.code) setResult({code: response.code});
           else if (response?.id_token) setResult({id_token: response.id_token});
@@ -165,6 +153,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
         if (responseType !== 'token' || completionStrategy !== 'client') return;
         return await generatePKCE();
       },
+      buildOptions,
       handleResponse: async (response, params) => {
         if (params.pkce && responseType === 'token') {
           let _redirectUri = params.redirectUri || redirectUri;
@@ -179,6 +168,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
           });
         } else {
           if (response?.code) setResult({code: response.code});
+          else if (response?.id_token) setResult({id_token: response.id_token});
           else if (response?.error) setResult(new OAuth2Error(response.error, response.error_description));
           else setResult(null);
         }
@@ -194,7 +184,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       pkce,
       store,
       isLoading,
-      acrValues: configuration ? filterAcrValues(configuration.acr_values_supported) : undefined
+      acrValues: configuration ? filterAcrValues(configuration.acr_values_supported) : undefined,
+      client
     }
   }, [
     client,

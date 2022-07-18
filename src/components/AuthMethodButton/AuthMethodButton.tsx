@@ -89,6 +89,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     if (context.pkce && "code_verifier" in context.pkce) {
       // just-in-time saving of PKCE, in case of man-in-the-browser
       savePKCEState(context.store, {
+        response_type: 'id_token',
         pkce_code_verifier: context.pkce.code_verifier,
         redirect_uri: redirectUri!
       });
