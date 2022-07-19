@@ -14,9 +14,12 @@ export default function StoryResponseRenderer(props: Props) : JSX.Element {
 
   if (result) {
     return (
-      <pre>
-        {JSON.stringify(result, null, 2)}
-      </pre>
+      <React.Fragment>
+        <pre>
+          {JSON.stringify(result, null, 2)}
+        </pre>
+        {"error" in result ? props.children : null}
+      </React.Fragment>
     );
   }
   return props.children;

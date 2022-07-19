@@ -1,42 +1,28 @@
-import React, { useContext, useRef, useEffect, useState } from 'react';
+import { OAuth2Error, UserCancelledError } from '@criipto/auth-js';
+import React, { useContext, useRef, useLayoutEffect, useState } from 'react';
 import CriiptoVerifyContext from '../../context';
 
+interface RenderProps {
+  qrElement: React.ReactElement
+  isAcknowledged: boolean
+  isCancelled: boolean
+  error: OAuth2Error | Error | null
+  retry: () => void
+}
 interface Props {
-  /*
-   * Add a CSS class to all wrapper elements rendered
-   * This can be both the QR code wrapper, as well as the "acknowledged" message wrapper
-   */
-  className?: string
-  style?: React.CSSProperties
-
-  /*
-   * Add a class specifically to the QR code wrapper
-   */
-  qrWrapperClassName?: string
-  qrWrapperStyle?: React.CSSProperties
-
-  /*
-   * An element to render in place of the QR Code when the device has acknowledged the request.
-   */
-  acknowledgedElement?: React.ReactElement
-  acknowledgedWrapperClassName?: string
-  acknowledgedWrapperStyle?: React.CSSProperties
-}
-
-function mergeClasses(...classes: (string | undefined)[]) : string {
-  return classes.reduce((memo, className) => className ? memo + ` ${className}` : memo, '')!;
-}
-
-function mergeStyles(...styles: (React.CSSProperties | undefined)[]) : React.CSSProperties {
-  return styles.reduce((memo, style) => style ? ({...memo, ...style}) : memo, {})!;
+  children?: (props: RenderProps) => React.ReactElement
 }
 
 export default function QRCode(props: Props) {
   const elementRef = useRef<HTMLDivElement>(null);
   const {client, buildOptions, handleResponse, pkce} = useContext(CriiptoVerifyContext);
+  const [requestId, setRequestId] = useState(() => Math.random().toString());
   const [isAcknowledged, setAcknowledged] = useState(false);
+  const [isCancelled, setCancelled] = useState(false);
+  const [error, setError] = useState<OAuth2Error | Error | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (!elementRef.current) return;
     const promise = client.qr.authorize(elementRef.current!, buildOptions());
 
     promise.onAcknowledged = () => {
@@ -49,8 +35,13 @@ export default function QRCode(props: Props) {
         pkce: pkce && "code_verifier" in pkce ? pkce : undefined
       });
     }).catch(err => {
+      if (err instanceof UserCancelledError) {
+        setCancelled(true);
+        return;
+      }
       if (promise.cancelled) return;
-      console.log(err);
+
+      setError(error);
       handleResponse({
         error: err
       }, {});
@@ -59,24 +50,25 @@ export default function QRCode(props: Props) {
     return () => {
       promise.cancel();
     };
-  }, [buildOptions]);
+  }, [elementRef.current, client, buildOptions, handleResponse, requestId]);
 
-  if (isAcknowledged) {
-    if (props.acknowledgedElement) return props.acknowledgedElement;
-    return (
-      <div
-        className={mergeClasses(props.className, props.acknowledgedWrapperClassName)}
-        style={mergeStyles(props.style, props.acknowledgedWrapperStyle)}
-      >
-        Complete the login process on your phone.
-      </div>
-    );
+  const handleRetry = () => {
+    setAcknowledged(false);
+    setCancelled(false);
+    setError(null);
+    setRequestId(Math.random().toString());
+  };
+
+  const qrElement = <div ref={elementRef} />;
+  if (props.children) {
+    return props.children({
+      qrElement,
+      isAcknowledged,
+      isCancelled,
+      error,
+      retry: handleRetry
+    });
   }
 
-  return (
-    <div
-      ref={elementRef}
-      className={mergeClasses(props.className, props.qrWrapperClassName)} 
-      style={mergeStyles(props.style, props.qrWrapperStyle)} />
-  );
+  return qrElement;
 }

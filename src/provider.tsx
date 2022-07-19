@@ -2,7 +2,7 @@ import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
-import { PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
+import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues } from './utils';
@@ -111,13 +111,13 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
   const buildOptions = useCallback((options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) : AuthorizeUrlParamsOptional => {
     return {
-      pkce,
-      state: props.state,
-      prompt: props.prompt,
-      uiLocales: props.uiLocales,
       redirectUri,
       responseType: responseType === 'token' ? 'id_token' : 'code' as ResponseType,
       ...options || {},
+      state: props.state ?? options?.state,
+      prompt: props.prompt ?? options?.prompt,
+      uiLocales: props.uiLocales ?? options?.uiLocales,
+      pkce: options?.pkce ?? pkce,
       loginHint: buildLoginHint({options, action})
     }
   }, [
@@ -129,11 +129,33 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     redirectUri
   ]);
 
-  const context = useMemo<CriiptoVerifyContextInterface>(() => {
-    const buildAuthorizeUrl = async (options?: AuthorizeUrlParamsOptional) => {
-      return await client.buildAuthorizeUrl(client.buildAuthorizeParams(buildOptions(options)));
-    };
+  const buildAuthorizeUrl = useCallback(async (options?: AuthorizeUrlParamsOptional) => {
+    return await client.buildAuthorizeUrl(client.buildAuthorizeParams(buildOptions(options)));
+  }, [client, buildOptions]);
 
+  const handleResponse = useCallback(async (response : AuthorizeResponse, params: {pkce?: PKCE, redirectUri?: string}) => {
+    if (params.pkce && responseType === 'token') {
+      let _redirectUri = params.redirectUri || redirectUri;
+      if (!_redirectUri) throw new Error('redirectUri must be configured globally or per authentication component');
+
+      await client.processResponse(response, {code_verifier: params.pkce.code_verifier, redirect_uri: _redirectUri}).then(response => {
+        if (response?.code) setResult({code: response.code});
+        else if (response?.id_token) setResult({id_token: response.id_token});
+        else setResult(null);
+      }).catch((err: OAuth2Error) => {
+        setResult(err);
+      });
+    } else {
+      if (response?.code) setResult({code: response.code});
+      else if (response?.id_token) setResult({id_token: response.id_token});
+      else if (response?.error) setResult(new OAuth2Error(response.error, response.error_description));
+      else setResult(null);
+    }
+
+    refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
+  }, [refreshPKCE, responseType, setResult, client]);
+
+  const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
       loginWithRedirect: async (params?: AuthorizeUrlParamsOptional) => {
         await client.redirect.authorize(buildOptions(params));
@@ -154,27 +176,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
         return await generatePKCE();
       },
       buildOptions,
-      handleResponse: async (response, params) => {
-        if (params.pkce && responseType === 'token') {
-          let _redirectUri = params.redirectUri || redirectUri;
-          if (!_redirectUri) throw new Error('redirectUri must be configured globally or per authentication component');
-
-          await client.processResponse(response, {code_verifier: params.pkce.code_verifier, redirect_uri: _redirectUri}).then(response => {
-            if (response?.code) setResult({code: response.code});
-            else if (response?.id_token) setResult({id_token: response.id_token});
-            else setResult(null);
-          }).catch((err: OAuth2Error) => {
-            setResult(err);
-          });
-        } else {
-          if (response?.code) setResult({code: response.code});
-          else if (response?.id_token) setResult({id_token: response.id_token});
-          else if (response?.error) setResult(new OAuth2Error(response.error, response.error_description));
-          else setResult(null);
-        }
-
-        refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
-      },
+      handleResponse,
       responseType,
       completionStrategy,
       result,
@@ -198,6 +200,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     props.state,
     props.prompt,
     isLoading,
+    handleResponse,
     configuration
   ]);
 

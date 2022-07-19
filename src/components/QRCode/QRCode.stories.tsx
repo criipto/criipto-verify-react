@@ -33,7 +33,19 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
       redirectUri={window.location.href}
     >
       <StoryResponseRenderer>
-        <QRCode style={{width: '400px'}} />
+        <QRCode>
+          {({qrElement, isAcknowledged, isCancelled, retry, error}) => (
+            <div style={{width: '400px'}}>
+              {isCancelled ? (
+                <p>Login cancelled. <button onClick={retry}>Retry</button></p>
+              ) : error ? (
+                <p>An error occurred. <button onClick={retry}>Retry</button></p>
+              ) : isAcknowledged ? (
+                <p>Complete login on device.</p>
+              ) : qrElement}
+            </div>
+          )}
+        </QRCode>
       </StoryResponseRenderer>
     </CriiptoVerifyProvider>
   );
