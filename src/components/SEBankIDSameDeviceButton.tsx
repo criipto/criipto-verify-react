@@ -1,13 +1,13 @@
 import { PKCE, AuthorizeResponse } from '@criipto/auth-js';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import CriiptoVerifyContext from '../../context';
-import { getMobileOS } from '../../device';
+import CriiptoVerifyContext from '..//context';
+import { getMobileOS } from '../device';
 
-import Desktop from './Desktop';
-import Android from './Android';
-import IOS from './iOS';
+import Desktop from './SEBankIDSameDeviceButton/Desktop';
+import Android from './SEBankIDSameDeviceButton/Android';
+import IOS from './SEBankIDSameDeviceButton/iOS';
 
-import {autoHydratedState, Links} from './shared';
+import {autoHydratedState, Links} from './SEBankIDSameDeviceButton/shared';
 
 interface Props {
   className: string

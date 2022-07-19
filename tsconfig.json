@@ -103,5 +103,8 @@
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "src/**/*.stories.*"
   ]
 }

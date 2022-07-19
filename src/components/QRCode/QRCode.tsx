@@ -2,18 +2,16 @@ import { OAuth2Error, UserCancelledError } from '@criipto/auth-js';
 import React, { useContext, useRef, useLayoutEffect, useState } from 'react';
 import CriiptoVerifyContext from '../../context';
 
-interface RenderProps {
-  qrElement: React.ReactElement
-  isAcknowledged: boolean
-  isCancelled: boolean
-  error: OAuth2Error | Error | null
-  retry: () => void
-}
-interface Props {
-  children?: (props: RenderProps) => React.ReactElement
-}
-
-export default function QRCode(props: Props) {
+// Inlined types less readable (for library developers) but improves intellisense for consumers
+const QRCode : React.FC<{
+  children?: (props: {
+    qrElement: React.ReactElement
+    isAcknowledged: boolean
+    isCancelled: boolean
+    error: OAuth2Error | Error | null
+    retry: () => void
+  }) => React.ReactElement
+}> = (props) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const {client, buildOptions, handleResponse, pkce} = useContext(CriiptoVerifyContext);
   const [requestId, setRequestId] = useState(() => Math.random().toString());
@@ -72,3 +70,4 @@ export default function QRCode(props: Props) {
 
   return qrElement;
 }
+export default QRCode;

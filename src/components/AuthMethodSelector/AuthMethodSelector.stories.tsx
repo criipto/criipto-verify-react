@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import AuthMethodSelector from './AuthMethodSelector';
+import AuthMethodSelector from '../AuthMethodSelector';
 import CriiptoVerifyProvider from '../../provider';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 

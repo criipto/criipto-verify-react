@@ -8,11 +8,12 @@
   "module": "dist/criipto-verify-react.esm.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist/",
     "build": "webpack --config webpack.config.js",
     "check": "tsc --noEmit",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "prepublishOnly": "npm run check && npm run build"
+    "prepublishOnly": "npm run check && npm run clean && npm run build"
   },
   "peerDependencies": {
     "react": "^16.11.0 || ^17 || ^18",

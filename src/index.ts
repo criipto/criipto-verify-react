@@ -1,7 +1,7 @@
 import {default as CriiptoVerifyProvider} from './provider';
 import {default as AuthMethodSelector} from './components/AuthMethodSelector';
 import {default as AuthMethodButton} from './components/AuthMethodButton';
-import {default as QRCode} from './components/QRCode';
+import {default as QRCode} from './components/QRCode/QRCode';
 import {default as useCriiptoVerify} from './use-criipto-verify';
 
 export {type Result} from './context';

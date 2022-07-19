@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import AuthMethodButton, { PopupParams } from './AuthMethodButton';
+import AuthMethodButton, { PopupParams } from '../AuthMethodButton';
 import CriiptoVerifyProvider from '../../provider';
 import { acrValueToTitle } from '../../utils';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';

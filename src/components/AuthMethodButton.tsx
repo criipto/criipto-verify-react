@@ -1,21 +1,21 @@
 import React, {useContext, useEffect, useState} from 'react';
 
-import beeid from './logos/beeid@2x.png';
-import digid from './logos/nldigid@2x.png';
-import dkmitid from './logos/dkmitid@2x.png';
-import dknemid from './logos/dknemid@2x.png';
-import ftnmobile from './logos/ftnmobile@2x.png';
-import ftnbankid from './logos/ftnbankid@2x.png';
-import itsme from './logos/itsme@2x.png';
-import nobankid from './logos/nobankid@2x.png';
-import novipps from './logos/novipps@2x.png';
-import sebankid from './logos/sebankid@2x.png';
-import sofort from './logos/sofort@2x.png';
+import beeid from './AuthMethodButton/logos/beeid@2x.png';
+import digid from './AuthMethodButton/logos/nldigid@2x.png';
+import dkmitid from './AuthMethodButton/logos/dkmitid@2x.png';
+import dknemid from './AuthMethodButton/logos/dknemid@2x.png';
+import ftnmobile from './AuthMethodButton/logos/ftnmobile@2x.png';
+import ftnbankid from './AuthMethodButton/logos/ftnbankid@2x.png';
+import itsme from './AuthMethodButton/logos/itsme@2x.png';
+import nobankid from './AuthMethodButton/logos/nobankid@2x.png';
+import novipps from './AuthMethodButton/logos/novipps@2x.png';
+import sebankid from './AuthMethodButton/logos/sebankid@2x.png';
+import sofort from './AuthMethodButton/logos/sofort@2x.png';
 
-import './AuthMethodButton.css';
-import { getMobileOS } from '../../device';
-import CriiptoVerifyContext from '../../context';
-import SEBankIDSameDeviceButton from '../SEBankIDSameDeviceButton';
+import './AuthMethodButton/AuthMethodButton.css';
+import { getMobileOS } from '../device';
+import CriiptoVerifyContext from '..//context';
+import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
 
 export type PopupParams = {
