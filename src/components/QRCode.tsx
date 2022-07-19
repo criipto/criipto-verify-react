@@ -1,6 +1,6 @@
 import { OAuth2Error, UserCancelledError } from '@criipto/auth-js';
 import React, { useContext, useRef, useLayoutEffect, useState } from 'react';
-import CriiptoVerifyContext from '../../context';
+import CriiptoVerifyContext from '../context';
 
 // Inlined types less readable (for library developers) but improves intellisense for consumers
 const QRCode : React.FC<{
