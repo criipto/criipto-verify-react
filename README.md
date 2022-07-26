@@ -11,7 +11,7 @@ Accept MitID, NemID, Swedish BankID, Norwegian BankID and more logins in your Re
 Using [npm](https://npmjs.org/)
 
 ```sh
-npm install @criipto/criipto-verify-react
+npm install @criipto/verify-react
 ```
 
 ## Getting Started
