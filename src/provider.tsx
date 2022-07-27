@@ -112,7 +112,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const buildOptions = useCallback((options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) : AuthorizeUrlParamsOptional => {
     return {
       redirectUri,
-      responseType: responseType === 'token' ? 'id_token' : 'code' as ResponseType,
+      responseType: 'code' as ResponseType,
       ...options || {},
       state: props.state ?? options?.state,
       prompt: props.prompt ?? options?.prompt,
