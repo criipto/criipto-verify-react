@@ -19,6 +19,10 @@
   background: #604FED;
 }
 
+.criipto-eid-btn:hover, .criipto-eid-btn:active {
+  color: #FFF;
+}
+
 .criipto-eid-btn .criipto-eid-logo {
   width: 88px;
   height: 30px;
