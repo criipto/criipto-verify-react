@@ -110,14 +110,14 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
         if (typeof willPopup === "boolean") {
           context.loginWithPopup({
             acrValues: [acrValue],
-            redirectUri: props.redirectUri,
+            redirectUri: redirectUri,
             backdrop: true
           }); 
         } else {
           setBackdrop(willPopup);
           context.loginWithPopup({
             acrValues: [acrValue],
-            redirectUri: props.redirectUri,
+            redirectUri: redirectUri,
             backdrop: false
           }); 
         }
