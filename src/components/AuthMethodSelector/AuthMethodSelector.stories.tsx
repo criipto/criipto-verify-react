@@ -83,6 +83,7 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={args.redirectUri}
+      uiLocales={args.language}
     >
       <StoryResponseRenderer>
         <AuthMethodSelector {...args} />

@@ -23,6 +23,7 @@ export interface CriiptoVerifyContextInterface {
   store: Storage,
   isLoading: boolean,
   acrValues?: string[],
+  uiLocales?: string,
   client: CriiptoAuth
 }
 

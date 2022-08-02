@@ -26,8 +26,8 @@ function isSingle(acrValue: string, acrValues: string[]) {
 }
 
 export default function AuthMethodSelector(props: Props) {
-  const {fetchOpenIDConfiguration, action} = useContext(CriiptoVerifyContext);
-  const language = props.language || 'en';
+  const {fetchOpenIDConfiguration, action, uiLocales} = useContext(CriiptoVerifyContext);
+  const language = props.language || uiLocales as Language || 'en';
   const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
 
   useEffect(() => {

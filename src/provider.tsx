@@ -92,6 +92,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const responseType = props.response || 'token';
   const completionStrategy = props.completionStrategy || 'client';
   const action = props.action || 'login';
+  const uiLocales = props.uiLocales;
 
   const refreshPKCE = () => {
     if (props.pkce) return;
@@ -116,7 +117,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       ...options || {},
       state: props.state ?? options?.state,
       prompt: props.prompt ?? options?.prompt,
-      uiLocales: props.uiLocales ?? options?.uiLocales,
+      uiLocales: uiLocales ?? options?.uiLocales,
       pkce: options?.pkce ?? pkce,
       loginHint: buildLoginHint({options, action})
     }
@@ -124,7 +125,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     pkce,
     props.state,
     props.prompt,
-    props.uiLocales,
+    uiLocales,
     action,
     redirectUri
   ]);
@@ -187,7 +188,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       store,
       isLoading,
       acrValues: configuration ? filterAcrValues(configuration.acr_values_supported) : undefined,
-      client
+      client,
+      uiLocales
     }
   }, [
     client,
@@ -201,7 +203,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     props.prompt,
     isLoading,
     handleResponse,
-    configuration
+    configuration,
+    uiLocales
   ]);
 
   useEffect(() => {
