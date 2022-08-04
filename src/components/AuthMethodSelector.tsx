@@ -33,9 +33,15 @@ export default function AuthMethodSelector(props: Props) {
   useEffect(() => {
     if (props.acrValues) return;
 
+    let isSubscribed = true;
     (async () => {
-      setConfiguration(await fetchOpenIDConfiguration());
+      const configuration = await fetchOpenIDConfiguration();
+      if (isSubscribed) setConfiguration(configuration);
     })();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [props.acrValues]);
 
   const acrValues = filterAcrValues(props.acrValues ?? configuration?.acr_values_supported ?? []);

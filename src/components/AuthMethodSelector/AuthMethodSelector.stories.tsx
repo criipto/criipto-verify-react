@@ -52,7 +52,7 @@ export default {
     acrValues: {
       options: ALL_ACR_VALUES,
       control: { type: 'multi-select' },
-      defaultValue: ALL_ACR_VALUES
+      defaultValue: undefined
     },
     completionStrategy: {
       name: 'Completion strategy',
@@ -95,7 +95,8 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
 export const Default = Template.bind({});
 Default.storyName = "All";
 Default.args = {
-  redirectUri: window.location.href
+  redirectUri: window.location.href,
+  acrValues: ALL_ACR_VALUES
 };
 
 export const OneOfEach = Template.bind({
@@ -113,13 +114,20 @@ OneOfEach.args = {
     'urn:grn:authn:itsme:basic'
   ]
 };
-Default.args = {
-  redirectUri: window.location.href
+
+export const NoAcrValues = Template.bind({
+  
+});
+NoAcrValues.storyName = "acr_values from oidc metadata";
+NoAcrValues.args = {
+  redirectUri: window.location.href,
+  acrValues: undefined
 };
 
 export const OnSelect = Template.bind({});
 OnSelect.storyName = "onSelect"
 OnSelect.args = {
   redirectUri: window.location.href,
+  acrValues: ALL_ACR_VALUES,
   onSelect: console.log.bind(console)
 };
