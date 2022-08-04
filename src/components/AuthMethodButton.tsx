@@ -71,6 +71,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   useEffect(() => {
     if (props.href) return;
 
+    let isSubscribed = true;
     let loginHint : string | undefined = undefined;
 
     if (acrValue.startsWith('urn:grn:authn:dk:mitid') && mobileOS) {
@@ -81,8 +82,14 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
       redirectUri,
       acrValues: acrValue,
       loginHint
-    }).then(setHref)
+    }).then(href => {
+      if (isSubscribed) setHref(href);
+    })
     .catch(console.error);
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [props.href, acrValue, context.pkce, redirectUri]);
 
   const handleClick : React.MouseEventHandler = (event) => {

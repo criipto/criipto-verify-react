@@ -21,19 +21,22 @@ export default function SEBankIDSameDeviceDesktop(props: Props) {
 
   useEffect(() => {
     if (!initiated) return;
-    
+    let isSubscribed = true;
     let timeout : string | undefined;
     const poll = async () => {
+      if (!isSubscribed) return;
       const response = await fetch(links.pollUrl);
 
       if (response.status === 202) {
         setTimeout(poll, 1000);
         return;
       } else if (response.status >= 400) {
+        if (!isSubscribed) return;
         const error = await response.text();
         onError(error);
         return;
       } else {
+        if (!isSubscribed) return;
         const {targetUrl} = await response.json();
         await onComplete(`https://${domain}${targetUrl}`);
         return;
@@ -42,6 +45,7 @@ export default function SEBankIDSameDeviceDesktop(props: Props) {
 
     setTimeout(poll, 1000);
     return () => {
+      isSubscribed = false;
       if (timeout) clearTimeout(timeout);
     };
   }, [initiated]);

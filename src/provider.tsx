@@ -81,9 +81,15 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
   const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
   useEffect(() => {
+    let isSubscribed = true;
     (async () => {
-      setConfiguration(await client.fetchOpenIDConfiguration());
+      const configuration = await client.fetchOpenIDConfiguration();
+      if (isSubscribed) setConfiguration(configuration);
     })();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [client]);
 
   const [result, setResult] = useState<Result | null>(null);
@@ -213,6 +219,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       return;
     }
 
+    let isSubscribed = true;
     setIsLoading(true);
 
     const params = parseAuthorizeResponseFromLocation(window.location);
@@ -224,16 +231,22 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     }
 
     client.redirect.match().then(response => {
+      if (!isSubscribed) return;
       setIsLoading(false);
       if (response?.code) setResult({code: response.code});
       else if (response?.id_token) setResult({id_token: response.id_token});
       else setResult(null);
       refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
     }).catch((err: OAuth2Error) => {
+      if (!isSubscribed) return;
       setIsLoading(false);
       setResult(err);
       refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
     });
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [props.pkce, responseType]);
 
   return (
