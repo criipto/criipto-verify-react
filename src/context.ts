@@ -18,6 +18,7 @@ export type Claims = {
 export interface CriiptoVerifyContextInterface {
   loginWithRedirect: (params?: RedirectAuthorizeParams) => Promise<void>,
   loginWithPopup: (params?: PopupAuthorizeParams) => Promise<void>,
+  checkSession: () => Promise<void>,
   logout: (params?: {redirectUri?: string}) => Promise<void>,
   fetchOpenIDConfiguration: () => Promise<OpenIDConfiguration>,
   buildAuthorizeUrl: (options?: AuthorizeUrlParamsOptional) => Promise<string>,
@@ -52,6 +53,7 @@ const stub = (): never => {
 const initialContext = {
   loginWithRedirect: stub,
   loginWithPopup: stub,
+  checkSession: stub,
   logout: stub,
   fetchOpenIDConfiguration: stub,
   buildAuthorizeUrl: stub,

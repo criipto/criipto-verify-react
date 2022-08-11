@@ -43,7 +43,6 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   };
 
   const handleLog = (...statements: string[]) => {
-    console.log(statements);
     setLog(logs => logs.concat([statements]));
   }
 

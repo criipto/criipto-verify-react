@@ -22,7 +22,8 @@ export interface CriiptoVerifyProviderOptions {
   uiLocales?: string
   /**
    * Enables storage and automatic refresh of tokens
-   * by utilizing browser storage and SSO silent logins
+   * by utilizing browser storage and SSO silent logins.
+   * Make sure "SSO for OAuth2" is enabled on your Criipto Domain.
    * Only works for `response: 'token'` (default)
    */
   sessionStore?: Storage,
@@ -116,33 +117,10 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const uiLocales = props.uiLocales;
   const sessionStore = props.sessionStore;
 
-  const isSessionActive = useCallback(() => {
-    if (responseType !== 'token') return false;
-    if (!sessionStore) return false;
-    if (!claims) return false;
-    return true;
+  const hasClaims = useCallback(() => {
+    return claims !== null && responseType === 'token';
   }, [sessionStore, responseType, claims]);
-  const now = useNow(isSessionActive, 3000);
-
-  useEffect(() => {
-    if (!sessionStore) return;
-    if (!claims) {
-      // No result available, fetch from session store
-      const token = sessionStore.getItem(SESSION_KEY);
-      if (!token) return;
-
-      setResult({id_token: token});
-      return;
-    }
-    if (!now) return;
-
-    // token expired
-    if (claims.exp < (now / 1000)) {
-      setResult(null);
-      sessionStore.removeItem(SESSION_KEY);
-      return;
-    }
-  }, [sessionStore, claims, now, result]);
+  const now = useNow(hasClaims, 3000);
 
   const refreshPKCE = () => {
     if (props.pkce) return;
@@ -212,6 +190,17 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
   }, [refreshPKCE, responseType, setResult, client, sessionStore]);
 
+  const checkSession = useCallback(async () => {
+    return client.checkSession({redirectUri}).then(response => {
+      if (response?.code) setResult({code: response.code});
+      else if (response?.id_token) {
+        setResult({id_token: response.id_token});
+        sessionStore?.setItem(SESSION_KEY, response.id_token);
+      }
+      else setResult(null);
+    });
+  }, [sessionStore, client, redirectUri]);
+
   const logout = useCallback(async (params?: {redirectUri?: string}) => {
     sessionStore?.removeItem(SESSION_KEY);
     await client.logout({
@@ -233,6 +222,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
           setResult(err);
         });
       },
+      checkSession,
       logout,
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl,
@@ -271,7 +261,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     handleResponse,
     logout,
     configuration,
-    uiLocales
+    uiLocales,
+    checkSession
   ]);
 
   useEffect(() => {
@@ -309,6 +300,56 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       isSubscribed = false;
     };
   }, [props.pkce, responseType]);
+
+  /*
+   * Fetch claims from session store if available
+   */
+  useEffect(() => {
+    if (!sessionStore || claims) return;
+    if (!claims) {
+      // No result available, fetch from session store
+      const token = sessionStore.getItem(SESSION_KEY);
+      if (!token) return;
+
+      setResult({id_token: token});
+      return;
+    }
+  }, [sessionStore, claims]);
+  
+  /*
+   * Unset result if claims are expired
+   */
+  useEffect(() => {
+    if (!claims) return;
+    if (!now) return;
+
+    if (claims.exp < (now / 1000)) {
+      setResult(null);
+      sessionStore?.removeItem(SESSION_KEY);
+      return;
+    }
+  }, [sessionStore, claims, now, result]);
+
+  /**
+   * Fresh page load SSO check
+   */
+  useEffect(() => {
+    if (!sessionStore) return;
+    if (client.redirect.hasMatch()) return; // Do not issue SSO check if we're just being redirected back to
+    if (sessionStore.getItem(SESSION_KEY)) return;
+    let isSubscribed = true;
+
+    setIsLoading(true);
+    checkSession().catch(err => {
+      console.error("session silent check error", err);
+    }).finally(() => {
+      if (isSubscribed) setIsLoading(false);
+    });
+
+    return () => {
+      isSubscribed = false
+    };
+  }, [sessionStore, client, redirectUri]);
 
   return (
     <CriiptoVerifyContext.Provider value={context}>

@@ -20,7 +20,7 @@ const Session : React.FC = () => {
   const {claims, error, isLoading, logout} = useCriiptoVerify();
 
   if (isLoading) {
-    return <span>'Loading ...'</span>;
+    return <span>Loading ...</span>;
   }
   if (error) {
     return <span>{error.error} {error.error_description}</span>;
