@@ -69,6 +69,67 @@ export default function App() {
 }
 ```
 
+## Sessions
+
+If you want to use `@criipto/verify-react` for session management (rather than one-off authentication) you can configure a `sessionStore`:
+
+```jsx
+// src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { CriiptoVerifyProvider } from '@criipto/verify-react';
+
+import App from './App';
+
+ReactDOM.render(
+  <CriiptoVerifyProvider
+    domain="{YOUR_CRIIPTO_DOMAIN}"
+    clientID="{YOUR_CRIIPTO_APPLICATION_CLIENT_ID}"
+    redirectUri={window.location.href}
+    sessionStorage={window.sessionStorage} // or window.localStorage
+  >
+    <App />
+  </CriiptoVerifyProvider>,
+  document.getElementById('root')
+);
+```
+
+When a sessionStore is configured the library will store the id_token your chosen storage (sessionStorage or localStorage) and invalidate the token once it expires.
+
+The library will also attempt to retrieve a user token on page load via SSO (if your criipto domain has SSO enabled).
+
+You may wish to increase the "Token lifetime" setting of your Criipto Application.
+
+```jsx
+// src/App.js
+import React from 'react';
+import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
+
+export default function App() {
+  const {claims, error, isLoading} = useCriiptoVerify();
+
+  if (isLoading) {
+    return <div>Loading</div>
+  }
+  else if (claims) {
+    return (
+      <pre>
+        {JSON.stringify(claims, null, 2)}
+      </pre>
+    )
+  } else {
+    <React.Fragment>
+      {error ? (
+        <p>
+          An error occured: {error.error} ({error.error_description}). Please try again:
+        </p>
+      ) : null}
+      <AuthMethodSelector />
+    </React.Fragment>
+  }
+}
+```
+
 ## XHR/fetch caveats
 
 The library may require to do fetch requests against Criipto to fetch application configuration. Make sure that the host that the react app runs on is included in the list of callback URLs for your application.
