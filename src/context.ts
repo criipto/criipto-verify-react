@@ -4,10 +4,21 @@ import { createContext } from 'react';
 
 export type Result = {id_token: string, state?: string} | {code: string, state?: string} | OAuth2Error;
 export type Action = 'confirm' | 'accept' | 'approve' | 'sign' | 'login';
+export type Claims = {
+  iss: string
+  aud: string
+  identityscheme: string
+  authenticationtype: string
+  sub: string
+  iat: string
+  exp: string
+  [key: string]: string
+}
 
 export interface CriiptoVerifyContextInterface {
   loginWithRedirect: (params?: RedirectAuthorizeParams) => Promise<void>,
   loginWithPopup: (params?: PopupAuthorizeParams) => Promise<void>,
+  logout: (params?: {redirectUri?: string}) => Promise<void>,
   fetchOpenIDConfiguration: () => Promise<OpenIDConfiguration>,
   buildAuthorizeUrl: (options?: AuthorizeUrlParamsOptional) => Promise<string>,
   generatePKCE: () => Promise<PKCE | undefined>,
@@ -16,6 +27,7 @@ export interface CriiptoVerifyContextInterface {
   responseType: 'token' | 'code'
   completionStrategy: 'client' | 'openidprovider',
   result: Result | null
+  claims: Claims | null
   domain: string
   redirectUri?: string,
   action: Action,
@@ -40,6 +52,7 @@ const stub = (): never => {
 const initialContext = {
   loginWithRedirect: stub,
   loginWithPopup: stub,
+  logout: stub,
   fetchOpenIDConfiguration: stub,
   buildAuthorizeUrl: stub,
   generatePKCE: stub,
@@ -48,6 +61,7 @@ const initialContext = {
   responseType: 'token' as 'token' | 'code',
   completionStrategy: 'client' as 'client' | 'openidprovider',
   result: null,
+  claims: null,
   domain: '',
   action: 'login' as Action,
   pkce: undefined,

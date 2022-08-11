@@ -1,11 +1,14 @@
 import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
-import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
+import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims} from './context';
 import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues } from './utils';
+import jwtDecode from 'jwt-decode';
+
+const SESSION_KEY = `@criipto-verify-react/session`;
  
 export interface CriiptoVerifyProviderOptions {
   domain: string
@@ -16,6 +19,12 @@ export interface CriiptoVerifyProviderOptions {
   state?: string
   prompt?: Prompt
   uiLocales?: string
+  /**
+   * Enables storage and automatic refresh of tokens
+   * by utilizing browser storage and SSO silent logins
+   * Only works for `response: 'token'` (default)
+   */
+  sessionStore?: Storage,
   /**
    * Will ammend the login_hint parameter with `action:{action}` which will adjust texsts in certain flows.
    * Default: 'login'
@@ -93,12 +102,25 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   }, [client]);
 
   const [result, setResult] = useState<Result | null>(null);
+  const claims = useMemo(() => {
+    if (!result) return null;
+    if (!("id_token" in result)) return null;
+    return jwtDecode<Claims>(result.id_token);
+  }, [result]);
   const [isLoading, setIsLoading] = useState(false);
   const [pkce, setPKCE] = useState<PKCE | PKCEPublicPart | undefined>(props.pkce);
   const responseType = props.response || 'token';
   const completionStrategy = props.completionStrategy || 'client';
   const action = props.action || 'login';
   const uiLocales = props.uiLocales;
+  const sessionStore = props.sessionStore;
+
+  useEffect(() => {
+    if (!sessionStore) return;
+    if (!result) {
+      sessionStore
+    };
+  }, [sessionStore, result]);
 
   const refreshPKCE = () => {
     if (props.pkce) return;
@@ -164,16 +186,21 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
-      loginWithRedirect: async (params?: AuthorizeUrlParamsOptional) => {
+      loginWithRedirect: async (params) => {
         await client.redirect.authorize(buildOptions(params));
       },
-      loginWithPopup: (params?: PopupAuthorizeParams) => {
+      loginWithPopup: (params) => {
         return client.popup.authorize(buildOptions(params)).then(response => {
           if (response?.code) setResult({code: response.code});
           else if (response?.id_token) setResult({id_token: response.id_token});
           else setResult(null);
         }).catch((err: OAuth2Error) => {
           setResult(err);
+        });
+      },
+      logout: async (params) => {
+        await client.logout({
+          redirectUri: params?.redirectUri ?? redirectUri
         });
       },
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
@@ -187,6 +214,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       responseType,
       completionStrategy,
       result,
+      claims,
       domain: client.domain,
       redirectUri,
       action,
@@ -203,6 +231,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     responseType,
     completionStrategy,
     result,
+    claims,
     action,
     pkce,
     props.state,
