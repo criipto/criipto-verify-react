@@ -1,11 +1,15 @@
 import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
-import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result} from './context';
+import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims} from './context';
 import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues } from './utils';
+import jwtDecode from 'jwt-decode';
+import useNow from './hooks/useNow';
+
+const SESSION_KEY = `@criipto-verify-react/session`;
  
 export interface CriiptoVerifyProviderOptions {
   domain: string
@@ -16,6 +20,13 @@ export interface CriiptoVerifyProviderOptions {
   state?: string
   prompt?: Prompt
   uiLocales?: string
+  /**
+   * Enables storage and automatic refresh of tokens
+   * by utilizing browser storage and SSO silent logins.
+   * Make sure "SSO for OAuth2" is enabled on your Criipto Domain.
+   * Only works for `response: 'token'` (default)
+   */
+  sessionStore?: Storage,
   /**
    * Will ammend the login_hint parameter with `action:{action}` which will adjust texsts in certain flows.
    * Default: 'login'
@@ -93,12 +104,23 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   }, [client]);
 
   const [result, setResult] = useState<Result | null>(null);
+  const claims = useMemo(() => {
+    if (!result) return null;
+    if (!("id_token" in result)) return null;
+    return jwtDecode<Claims>(result.id_token);
+  }, [result]);
   const [isLoading, setIsLoading] = useState(false);
   const [pkce, setPKCE] = useState<PKCE | PKCEPublicPart | undefined>(props.pkce);
   const responseType = props.response || 'token';
   const completionStrategy = props.completionStrategy || 'client';
   const action = props.action || 'login';
   const uiLocales = props.uiLocales;
+  const sessionStore = props.sessionStore;
+
+  const hasClaims = useCallback(() => {
+    return claims !== null && responseType === 'token';
+  }, [sessionStore, responseType, claims]);
+  const now = useNow(hasClaims, 3000);
 
   const refreshPKCE = () => {
     if (props.pkce) return;
@@ -147,27 +169,51 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
       await client.processResponse(response, {code_verifier: params.pkce.code_verifier, redirect_uri: _redirectUri}).then(response => {
         if (response?.code) setResult({code: response.code});
-        else if (response?.id_token) setResult({id_token: response.id_token});
+        else if (response?.id_token) {
+          setResult({id_token: response.id_token});
+          sessionStore?.setItem(SESSION_KEY, response.id_token);
+        }
         else setResult(null);
       }).catch((err: OAuth2Error) => {
         setResult(err);
       });
     } else {
       if (response?.code) setResult({code: response.code});
-      else if (response?.id_token) setResult({id_token: response.id_token});
+      else if (response?.id_token) {
+        setResult({id_token: response.id_token});
+        sessionStore?.setItem(SESSION_KEY, response.id_token);
+      }
       else if (response?.error) setResult(new OAuth2Error(response.error, response.error_description));
       else setResult(null);
     }
 
     refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
-  }, [refreshPKCE, responseType, setResult, client]);
+  }, [refreshPKCE, responseType, setResult, client, sessionStore]);
+
+  const checkSession = useCallback(async () => {
+    return client.checkSession({redirectUri}).then(response => {
+      if (response?.code) setResult({code: response.code});
+      else if (response?.id_token) {
+        setResult({id_token: response.id_token});
+        sessionStore?.setItem(SESSION_KEY, response.id_token);
+      }
+      else setResult(null);
+    });
+  }, [sessionStore, client, redirectUri]);
+
+  const logout = useCallback(async (params?: {redirectUri?: string}) => {
+    sessionStore?.removeItem(SESSION_KEY);
+    await client.logout({
+      redirectUri: params?.redirectUri ?? redirectUri
+    });
+  }, [sessionStore, client]);
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
-      loginWithRedirect: async (params?: AuthorizeUrlParamsOptional) => {
+      loginWithRedirect: async (params) => {
         await client.redirect.authorize(buildOptions(params));
       },
-      loginWithPopup: (params?: PopupAuthorizeParams) => {
+      loginWithPopup: (params) => {
         return client.popup.authorize(buildOptions(params)).then(response => {
           if (response?.code) setResult({code: response.code});
           else if (response?.id_token) setResult({id_token: response.id_token});
@@ -176,6 +222,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
           setResult(err);
         });
       },
+      checkSession,
+      logout,
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl,
       generatePKCE: async () => {
@@ -187,6 +235,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       responseType,
       completionStrategy,
       result,
+      claims,
       domain: client.domain,
       redirectUri,
       action,
@@ -203,14 +252,17 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     responseType,
     completionStrategy,
     result,
+    claims,
     action,
     pkce,
     props.state,
     props.prompt,
     isLoading,
     handleResponse,
+    logout,
     configuration,
-    uiLocales
+    uiLocales,
+    checkSession
   ]);
 
   useEffect(() => {
@@ -248,6 +300,56 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       isSubscribed = false;
     };
   }, [props.pkce, responseType]);
+
+  /*
+   * Fetch claims from session store if available
+   */
+  useEffect(() => {
+    if (!sessionStore || claims) return;
+    if (!claims) {
+      // No result available, fetch from session store
+      const token = sessionStore.getItem(SESSION_KEY);
+      if (!token) return;
+
+      setResult({id_token: token});
+      return;
+    }
+  }, [sessionStore, claims]);
+  
+  /*
+   * Unset result if claims are expired
+   */
+  useEffect(() => {
+    if (!claims) return;
+    if (!now) return;
+
+    if (claims.exp < (now / 1000)) {
+      setResult(null);
+      sessionStore?.removeItem(SESSION_KEY);
+      return;
+    }
+  }, [sessionStore, claims, now, result]);
+
+  /**
+   * Fresh page load SSO check
+   */
+  useEffect(() => {
+    if (!sessionStore) return;
+    if (client.redirect.hasMatch()) return; // Do not issue SSO check if we're just being redirected back to
+    if (sessionStore.getItem(SESSION_KEY)) return;
+    let isSubscribed = true;
+
+    setIsLoading(true);
+    checkSession().catch(err => {
+      console.error("session silent check error", err);
+    }).finally(() => {
+      if (isSubscribed) setIsLoading(false);
+    });
+
+    return () => {
+      isSubscribed = false
+    };
+  }, [sessionStore, client, redirectUri]);
 
   return (
     <CriiptoVerifyContext.Provider value={context}>
