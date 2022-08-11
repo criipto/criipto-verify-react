@@ -10,9 +10,9 @@ export type Claims = {
   identityscheme: string
   authenticationtype: string
   sub: string
-  iat: string
-  exp: string
-  [key: string]: string
+  iat: number
+  exp: number
+  [key: string]: string | number
 }
 
 export interface CriiptoVerifyContextInterface {

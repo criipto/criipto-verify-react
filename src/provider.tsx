@@ -7,6 +7,7 @@ import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, Respo
 import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues } from './utils';
 import jwtDecode from 'jwt-decode';
+import useNow from './hooks/useNow';
 
 const SESSION_KEY = `@criipto-verify-react/session`;
  
@@ -115,12 +116,33 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const uiLocales = props.uiLocales;
   const sessionStore = props.sessionStore;
 
+  const isSessionActive = useCallback(() => {
+    if (responseType !== 'token') return false;
+    if (!sessionStore) return false;
+    if (!claims) return false;
+    return true;
+  }, [sessionStore, responseType, claims]);
+  const now = useNow(isSessionActive, 3000);
+
   useEffect(() => {
     if (!sessionStore) return;
-    if (!result) {
-      sessionStore
-    };
-  }, [sessionStore, result]);
+    if (!claims) {
+      // No result available, fetch from session store
+      const token = sessionStore.getItem(SESSION_KEY);
+      if (!token) return;
+
+      setResult({id_token: token});
+      return;
+    }
+    if (!now) return;
+
+    // token expired
+    if (claims.exp < (now / 1000)) {
+      setResult(null);
+      sessionStore.removeItem(SESSION_KEY);
+      return;
+    }
+  }, [sessionStore, claims, now, result]);
 
   const refreshPKCE = () => {
     if (props.pkce) return;
@@ -169,20 +191,33 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
       await client.processResponse(response, {code_verifier: params.pkce.code_verifier, redirect_uri: _redirectUri}).then(response => {
         if (response?.code) setResult({code: response.code});
-        else if (response?.id_token) setResult({id_token: response.id_token});
+        else if (response?.id_token) {
+          setResult({id_token: response.id_token});
+          sessionStore?.setItem(SESSION_KEY, response.id_token);
+        }
         else setResult(null);
       }).catch((err: OAuth2Error) => {
         setResult(err);
       });
     } else {
       if (response?.code) setResult({code: response.code});
-      else if (response?.id_token) setResult({id_token: response.id_token});
+      else if (response?.id_token) {
+        setResult({id_token: response.id_token});
+        sessionStore?.setItem(SESSION_KEY, response.id_token);
+      }
       else if (response?.error) setResult(new OAuth2Error(response.error, response.error_description));
       else setResult(null);
     }
 
     refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
-  }, [refreshPKCE, responseType, setResult, client]);
+  }, [refreshPKCE, responseType, setResult, client, sessionStore]);
+
+  const logout = useCallback(async (params?: {redirectUri?: string}) => {
+    sessionStore?.removeItem(SESSION_KEY);
+    await client.logout({
+      redirectUri: params?.redirectUri ?? redirectUri
+    });
+  }, [sessionStore, client]);
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
@@ -198,11 +233,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
           setResult(err);
         });
       },
-      logout: async (params) => {
-        await client.logout({
-          redirectUri: params?.redirectUri ?? redirectUri
-        });
-      },
+      logout,
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl,
       generatePKCE: async () => {
@@ -238,6 +269,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     props.prompt,
     isLoading,
     handleResponse,
+    logout,
     configuration,
     uiLocales
   ]);
