@@ -1,5 +1,5 @@
 import { OAuth2Error, UserCancelledError } from '@criipto/auth-js';
-import React, { useContext, useRef, useLayoutEffect, useState } from 'react';
+import React, { useContext, useRef, useEffect , useState, useCallback } from 'react';
 import CriiptoVerifyContext from '../context';
 
 // Inlined types less readable (for library developers) but improves intellisense for consumers
@@ -19,9 +19,13 @@ const QRCode : React.FC<{
   const [isCancelled, setCancelled] = useState(false);
   const [error, setError] = useState<OAuth2Error | Error | null>(null);
 
-  useLayoutEffect(() => {
+  const authorize = useCallback(() => {
+    return client.qr.authorize(elementRef.current!, buildOptions());
+  }, [client, buildOptions])
+
+  useEffect (() => {
     if (!elementRef.current) return;
-    const promise = client.qr.authorize(elementRef.current!, buildOptions());
+    const promise = authorize();
 
     promise.onAcknowledged = () => {
       setAcknowledged(true);
@@ -48,7 +52,7 @@ const QRCode : React.FC<{
     return () => {
       promise.cancel();
     };
-  }, [elementRef.current, client, buildOptions, handleResponse, requestId]);
+  }, [authorize, pkce, handleResponse, requestId]);
 
   const handleRetry = () => {
     setAcknowledged(false);
