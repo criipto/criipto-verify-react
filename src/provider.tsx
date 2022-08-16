@@ -81,14 +81,12 @@ const store = sessionStorage;
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
   const redirectUri = props.redirectUri || window.location.href;
 
-  const [client] = useState(
-    () => new CriiptoAuth({
-      domain: props.domain,
-      clientID: props.clientID,
-      store,
-      redirectUri: props.redirectUri
-    })
-  );
+  const client = useMemo(() => new CriiptoAuth({
+    domain: props.domain,
+    clientID: props.clientID,
+    store,
+    redirectUri: props.redirectUri
+  }), [props.domain, props.clientID, props.redirectUri]);
 
   const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
   useEffect(() => {

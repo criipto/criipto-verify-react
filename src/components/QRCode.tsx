@@ -1,13 +1,24 @@
-import { OAuth2Error, UserCancelledError } from '@criipto/auth-js';
+import { OAuth2Error, QrNotEnabledError, UserCancelledError } from '@criipto/auth-js';
+import CriiptoConfiguration from '@criipto/auth-js/dist/CriiptoConfiguration';
 import React, { useContext, useRef, useEffect , useState, useCallback } from 'react';
 import CriiptoVerifyContext from '../context';
 
 // Inlined types less readable (for library developers) but improves intellisense for consumers
 const QRCode : React.FC<{
-  children?: (props: {
+  children: (props: {
     qrElement: React.ReactElement
+    /**
+     * Will be true once the QR code has been scanned
+     */
     isAcknowledged: boolean
+    /**
+     * Will be true if the user cancels the login on his mobile device
+     */
     isCancelled: boolean
+    /**
+     * Whether or not QR codes are enabled for this Criipto Applicaiton
+     */
+    isEnabled: boolean | undefined
     error: OAuth2Error | Error | null
     retry: () => void
   }) => React.ReactElement
@@ -18,6 +29,20 @@ const QRCode : React.FC<{
   const [isAcknowledged, setAcknowledged] = useState(false);
   const [isCancelled, setCancelled] = useState(false);
   const [error, setError] = useState<OAuth2Error | Error | null>(null);
+  const [criiptoConfiguration, setCriiptoConfiguration] = useState<CriiptoConfiguration | null>(null);
+
+  useEffect(() => {
+    let isSubsribed = true;
+    
+    client.fetchCriiptoConfiguration().then(c => {
+      if (!isSubsribed) return;
+      setCriiptoConfiguration(c);
+    })
+
+    return () => {
+      isSubsribed = false;
+    }
+  }, [client]);
 
   const authorize = useCallback(() => {
     return client.qr.authorize(elementRef.current!, buildOptions());
@@ -63,16 +88,13 @@ const QRCode : React.FC<{
   };
 
   const qrElement = <div ref={elementRef} />;
-  if (props.children) {
-    return props.children({
-      qrElement,
-      isAcknowledged,
-      isCancelled,
-      error,
-      retry: handleRetry
-    });
-  }
-
-  return qrElement;
+  return props.children({
+    qrElement,
+    isAcknowledged,
+    isCancelled,
+    isEnabled: criiptoConfiguration?.client.qr_enabled,
+    error,
+    retry: handleRetry
+  });
 }
 export default QRCode;
