@@ -2,7 +2,7 @@ import CriiptoAuth, {OpenIDConfiguration, AuthorizeUrlParamsOptional, PKCE, Auth
 import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
 import { createContext } from 'react';
 
-export type Result = {id_token: string, state?: string} | {code: string, state?: string} | OAuth2Error;
+export type Result = {id_token: string, state?: string} | {code: string, state?: string} | OAuth2Error | Error;
 export type Action = 'confirm' | 'accept' | 'approve' | 'sign' | 'login';
 export type Claims = {
   iss: string

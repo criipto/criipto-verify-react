@@ -25,6 +25,8 @@ const QRCode : React.FC<{
 
   useEffect (() => {
     if (!elementRef.current) return;
+    if (error) return;
+
     const promise = authorize();
 
     promise.onAcknowledged = () => {
@@ -41,18 +43,17 @@ const QRCode : React.FC<{
         setCancelled(true);
         return;
       }
+
       if (promise.cancelled) return;
 
-      setError(error);
-      handleResponse({
-        error: err
-      }, {});
+      setError(err);
+      handleResponse(err, {});
     });
 
     return () => {
       promise.cancel();
     };
-  }, [authorize, pkce, handleResponse, requestId]);
+  }, [authorize, pkce, handleResponse, requestId, error]);
 
   const handleRetry = () => {
     setAcknowledged(false);

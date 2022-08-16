@@ -162,8 +162,10 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     return await client.buildAuthorizeUrl(client.buildAuthorizeParams(buildOptions(options)));
   }, [client, buildOptions]);
 
-  const handleResponse = useCallback(async (response : AuthorizeResponse, params: {pkce?: PKCE, redirectUri?: string}) => {
-    if (params.pkce && responseType === 'token') {
+  const handleResponse = useCallback(async (response : AuthorizeResponse | (Error | OAuth2Error), params: {pkce?: PKCE, redirectUri?: string}) => {
+    if (response instanceof Error) {
+      setResult(response);
+    } else if (params.pkce && responseType === 'token') {
       let _redirectUri = params.redirectUri || redirectUri;
       if (!_redirectUri) throw new Error('redirectUri must be configured globally or per authentication component');
 

@@ -39,7 +39,7 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
               {isCancelled ? (
                 <p>Login cancelled. <button onClick={retry}>Retry</button></p>
               ) : error ? (
-                <p>An error occurred. <button onClick={retry}>Retry</button></p>
+                <p>An error occurred. {error.message}. <button onClick={retry}>Retry</button></p>
               ) : isAcknowledged ? (
                 <p>Complete login on device.</p>
               ) : qrElement}
