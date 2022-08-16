@@ -1,4 +1,4 @@
-import { OAuth2Error, QrNotEnabledError, UserCancelledError } from '@criipto/auth-js';
+import { OAuth2Error, QrNotEnabledError, savePKCEState, UserCancelledError } from '@criipto/auth-js';
 import CriiptoConfiguration from '@criipto/auth-js/dist/CriiptoConfiguration';
 import React, { useContext, useRef, useEffect , useState, useCallback } from 'react';
 import CriiptoVerifyContext from '../context';
@@ -20,16 +20,21 @@ const QRCode : React.FC<{
      */
     isEnabled: boolean | undefined
     error: OAuth2Error | Error | null
-    retry: () => void
+    retry: () => void,
+    /**
+     * A method for triggering a full screen redirect to authentication (useful if user is on mobile device already)
+     */
+    redirect: () => Promise<void>
   }) => React.ReactElement
 }> = (props) => {
   const elementRef = useRef<HTMLDivElement>(null);
-  const {client, buildOptions, handleResponse, pkce} = useContext(CriiptoVerifyContext);
+  const {client, buildOptions, buildAuthorizeUrl, handleResponse, pkce, store} = useContext(CriiptoVerifyContext);
   const [requestId, setRequestId] = useState(() => Math.random().toString());
   const [isAcknowledged, setAcknowledged] = useState(false);
   const [isCancelled, setCancelled] = useState(false);
   const [error, setError] = useState<OAuth2Error | Error | null>(null);
   const [criiptoConfiguration, setCriiptoConfiguration] = useState<CriiptoConfiguration | null>(null);
+  const [redirectLink, setRedirectLink] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     let isSubsribed = true;
@@ -44,9 +49,51 @@ const QRCode : React.FC<{
     }
   }, [client]);
 
+  useEffect(() => {
+    if (!criiptoConfiguration) return;
+    let isSubscribed = true;
+    buildAuthorizeUrl().then(url => {
+      if (!isSubscribed) return;
+      const intermediaryUrl = (criiptoConfiguration.client.qr_intermediary_url ?? criiptoConfiguration.qr_intermediary_url).replace('/{id}', '').replace('{id}', '');
+      const authorizeUrl = new URL(url);
+      const authorizeParams = new URLSearchParams(authorizeUrl.search);
+      authorizeParams.set('domain', authorizeUrl.hostname);
+      authorizeUrl.hostname = new URL(intermediaryUrl).hostname;
+      authorizeUrl.pathname = new URL(intermediaryUrl).pathname + '/authorize';
+
+      authorizeUrl.search = authorizeParams.toString();
+      setRedirectLink(authorizeUrl.toString());
+    });
+    return () => {
+      isSubscribed = false;
+    };
+  }, [buildAuthorizeUrl, criiptoConfiguration]);
+
+  const redirect = useCallback(async () => {
+    if (!criiptoConfiguration) return;
+    const intermediaryUrl = (criiptoConfiguration.client.qr_intermediary_url ?? criiptoConfiguration.qr_intermediary_url).replace('/{id}', '').replace('{id}', '');
+    const authorizeUrl = new URL(await buildAuthorizeUrl());
+    const authorizeParams = new URLSearchParams(authorizeUrl.search);
+    authorizeParams.set('domain', authorizeUrl.hostname);
+    authorizeUrl.hostname = new URL(intermediaryUrl).hostname;
+    authorizeUrl.pathname = new URL(intermediaryUrl).pathname + '/authorize';
+    authorizeUrl.search = authorizeParams.toString();
+
+    if (pkce && "code_verifier" in pkce) {
+      // just-in-time saving of PKCE, in case of man-in-the-browser
+      savePKCEState(store, {
+        response_type: 'id_token',
+        pkce_code_verifier: pkce.code_verifier,
+        redirect_uri: authorizeParams.get('redirect_uri')!
+      });
+    }
+
+    window.location.href = authorizeUrl.toString();
+  }, [buildAuthorizeUrl, criiptoConfiguration])
+
   const authorize = useCallback(() => {
     return client.qr.authorize(elementRef.current!, buildOptions());
-  }, [client, buildOptions])
+  }, [client, buildOptions]);
 
   useEffect (() => {
     if (!elementRef.current) return;
@@ -94,7 +141,8 @@ const QRCode : React.FC<{
     isCancelled,
     isEnabled: criiptoConfiguration?.client.qr_enabled,
     error,
-    retry: handleRetry
+    retry: handleRetry,
+    redirect
   });
 }
 export default QRCode;

@@ -34,7 +34,7 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
     >
       <StoryResponseRenderer>
         <QRCode>
-          {({qrElement, isAcknowledged, isCancelled, isEnabled, retry, error}) => (
+          {({qrElement, isAcknowledged, isCancelled, isEnabled, retry, error, redirect}) => (
             <div style={{width: '400px'}}>
               {isEnabled === false ? (
                 <p>QR is not enabled for this Criipto Application.</p>
@@ -45,6 +45,8 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
               ) : isAcknowledged ? (
                 <p>Complete login on device.</p>
               ) : qrElement}
+
+              <button onClick={redirect}>Authenticate on this device</button>
             </div>
           )}
         </QRCode>
