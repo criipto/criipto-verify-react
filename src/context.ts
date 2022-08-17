@@ -3,7 +3,8 @@ import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/
 import { createContext } from 'react';
 
 export type Result = {id_token: string, state?: string} | {code: string, state?: string} | OAuth2Error | Error;
-export type Action = 'confirm' | 'accept' | 'approve' | 'sign' | 'login';
+export const actions = ['confirm', 'accept', 'approve', 'sign', 'login'] as const;
+export type Action = typeof actions[number];
 export type Claims = {
   iss: string
   aud: string

@@ -8,6 +8,18 @@ import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 export default {
   title: 'Components/QRCode',
   argTypes: {
+    language: {
+      name: 'Language',
+      control: 'select',
+      defaultValue: 'en',
+      options: ['en', 'da', 'nb', 'sv']
+    },
+    action: {
+      name: 'Action',
+      control: 'select',
+      defaultValue: 'login',
+      options: ['confirm', 'accept', 'approve', 'sign', 'login']
+    },
     completionStrategy: {
       name: 'Completion strategy',
       control: 'select',
@@ -28,6 +40,8 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
     <CriiptoVerifyProvider
       completionStrategy={(args as any).completionStrategy}
       response={(args as any).response}
+      uiLocales={(args as any).language}
+      action={(args as any).action}
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={window.location.href}

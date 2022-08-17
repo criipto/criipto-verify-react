@@ -1,7 +1,7 @@
 import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
-import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims} from './context';
+import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions} from './context';
 import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
@@ -20,6 +20,7 @@ export interface CriiptoVerifyProviderOptions {
   state?: string
   prompt?: Prompt
   uiLocales?: string
+  loginHint?: string
   /**
    * Enables storage and automatic refresh of tokens
    * by utilizing browser storage and SSO silent logins.
@@ -76,6 +77,17 @@ function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: 
   return hints.length ? hints.join(' ') : undefined;
 }
 
+function parseAction(input?: string) : Action | undefined {
+  if (!input) return;
+
+  const segments = input.split(" ");
+  const actionCandidate = segments.find(s => s.startsWith('action:'));
+  if (!actionCandidate) return;
+  const action = actionCandidate.replace('action:','');
+  if (actions.includes(action as any)) return action as Action;
+  return;
+}
+
 const store = sessionStorage;
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
@@ -111,8 +123,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const [pkce, setPKCE] = useState<PKCE | PKCEPublicPart | undefined>(props.pkce);
   const responseType = props.response || 'token';
   const completionStrategy = props.completionStrategy || 'client';
-  const action = props.action || 'login';
   const uiLocales = props.uiLocales;
+  const loginHint = props.loginHint;
+  const action = props.action ?? parseAction(loginHint) ?? 'login';
   const sessionStore = props.sessionStore;
 
   const hasClaims = useCallback(() => {

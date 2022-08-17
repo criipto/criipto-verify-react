@@ -46,8 +46,13 @@ export default {
     action: {
       name: 'Action',
       control: 'select',
-      defaultValue: 'login',
+      defaultValue: undefined,
       options: ['confirm', 'accept', 'approve', 'sign', 'login']
+    },
+    loginHint: {
+      name: 'Login hint',
+      control: 'text',
+      defaultValue: undefined
     },
     acrValues: {
       options: ALL_ACR_VALUES,
@@ -80,6 +85,7 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
       completionStrategy={(args as any).completionStrategy}
       response={(args as any).response}
       action={(args as any).action}
+      loginHint={(args as any).loginHint}
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={args.redirectUri}
