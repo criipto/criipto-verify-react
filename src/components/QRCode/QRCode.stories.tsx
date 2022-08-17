@@ -33,7 +33,7 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
       redirectUri={window.location.href}
     >
       <StoryResponseRenderer>
-        <QRCode>
+        <QRCode margin={args.margin}>
           {({qrElement, isAcknowledged, isCancelled, isEnabled, retry, error, redirect}) => (
             <div style={{width: '400px'}}>
               {isEnabled === false ? (
@@ -56,3 +56,6 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
 };
 
 export const Default = Template.bind({});
+Default.args = {
+  margin: 4
+}
