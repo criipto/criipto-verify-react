@@ -6,6 +6,7 @@ import CriiptoVerifyContext from '../context';
 // Inlined types less readable (for library developers) but improves intellisense for consumers
 const QRCode : React.FC<{
   margin?: number,
+  className?: string,
   children: (props: {
     qrElement: React.ReactElement
     /**
@@ -28,7 +29,7 @@ const QRCode : React.FC<{
     redirect: () => Promise<void>
   }) => React.ReactElement
 }> = (props) => {
-  const {children, margin} = props;
+  const {children, margin, className} = props;
   const elementRef = useRef<HTMLDivElement>(null);
   const {client, buildOptions, buildAuthorizeUrl, handleResponse, pkce, store} = useContext(CriiptoVerifyContext);
   const [requestId, setRequestId] = useState(() => Math.random().toString());
@@ -141,7 +142,7 @@ const QRCode : React.FC<{
     setRequestId(Math.random().toString());
   };
 
-  const qrElement = <div ref={elementRef} />;
+  const qrElement = <div ref={elementRef} className={className} />;
   return children({
     qrElement,
     isAcknowledged,
