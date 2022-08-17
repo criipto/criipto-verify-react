@@ -6,6 +6,8 @@ import CriiptoVerifyProvider from '../../provider';
 import { acrValueToTitle } from '../../utils';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
+import customLogo from './logos/ftnbankid@2x.png';
+
 export default {
   title: 'Components/AuthMethodButton',
   argTypes: {
@@ -50,12 +52,17 @@ SEBankIDSameDeviceButton.args = {
 };
 SEBankIDSameDeviceButton.storyName = "se:bankid:same-device";
 
-
 export const DKMitID = Template.bind({});
 DKMitID.args = {
   acrValue: 'urn:grn:authn:dk:mitid:low'
 };
 DKMitID.storyName = "dk:mitid:low";
+
+export const CustomLogo = Template.bind({});
+CustomLogo.args = {
+  acrValue: "urn:grn:authn:se:bankid:another-device:qr",
+  logo: <img src={customLogo} alt="" />
+};
 
 export const Popup = Template.bind({});
 Popup.args = {

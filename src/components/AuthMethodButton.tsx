@@ -59,8 +59,9 @@ export interface AuthMethodButtonProps {
   popup?: PopupOption,
   /**
    * base64 image string, e.x. data:image/png;base64,
+   * or a ReactElement
    */
-  logo?: string
+  logo?: React.ReactElement | string
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
@@ -138,7 +139,9 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     if (props.onClick) props.onClick(event);
   }
 
-  const logo = props.logo ?? acrValueToLogo(acrValue);
+  const logo =
+    typeof props.logo === "string" ? <img src={props.logo} alt="" /> :
+    props.logo ?? (acrValueToLogo(acrValue) ? <img src={acrValueToLogo(acrValue)} alt="" /> : null);
 
   if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
     return (
@@ -146,7 +149,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
         redirectUri={props.redirectUri}
         href={href}
         className={className}
-        logo={<img src={logo} alt="" />}
+        logo={logo}
       >
         {props.children}
       </SEBankIDSameDeviceButton>
@@ -157,7 +160,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     <React.Fragment>
       {logo ? (
         <div className="criipto-eid-logo">
-          <img src={logo} alt="" />
+          {logo}
         </div>
       ) : null}
       {props.children}
