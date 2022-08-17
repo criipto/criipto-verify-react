@@ -19,6 +19,7 @@ export interface CriiptoVerifyProviderOptions {
   pkce?: PKCEPublicPart
   state?: string
   prompt?: Prompt
+  scope?: string
   uiLocales?: string
   loginHint?: string
   /**
@@ -62,6 +63,7 @@ function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: 
   const acrValues = options?.acrValues ? Array.isArray(options?.acrValues) ? options?.acrValues : [options?.acrValues] : [];
   let hints = options?.loginHint ? options?.loginHint.split(' ') : [];
   if (action) {
+    hints = hints.filter(h => !h.startsWith('action:'));
     if (acrValues.length === 1) {
       if (ACTION_SUPPORTING_ACR_VALUES.includes(acrValues[0])) {
         hints.push(`action:${action}`);
@@ -156,6 +158,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       ...options || {},
       state: props.state ?? options?.state,
       prompt: props.prompt ?? options?.prompt,
+      scope: props.scope ?? options?.scope,
       uiLocales: uiLocales ?? options?.uiLocales,
       pkce: options?.pkce ?? pkce,
       loginHint: buildLoginHint({options, action})
@@ -164,6 +167,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     pkce,
     props.state,
     props.prompt,
+    props.scope,
     uiLocales,
     action,
     redirectUri
