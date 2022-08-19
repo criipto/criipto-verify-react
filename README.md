@@ -86,7 +86,7 @@ ReactDOM.render(
     domain="{YOUR_CRIIPTO_DOMAIN}"
     clientID="{YOUR_CRIIPTO_APPLICATION_CLIENT_ID}"
     redirectUri={window.location.href}
-    sessionStorage={window.sessionStorage} // or window.localStorage
+    sessionStore={window.sessionStorage} // or window.localStorage
   >
     <App />
   </CriiptoVerifyProvider>,
