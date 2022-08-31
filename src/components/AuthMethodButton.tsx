@@ -17,6 +17,7 @@ import { getMobileOS } from '../device';
 import CriiptoVerifyContext from '..//context';
 import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
+import { useVerifyRuntime } from '../verify-host-context';
 
 export type PopupParams = {
   acrValue: string,
@@ -71,7 +72,8 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const [backdrop, setBackdrop] = useState<React.ReactElement | null>(null);
 
   const [href, setHref] = useState(props.href);
-  const redirectUri = props.redirectUri || context.redirectUri;
+  const verifyHostContext = useVerifyRuntime();
+  const redirectUri = props.redirectUri ?? (verifyHostContext.isVerifyRuntime ? verifyHostContext.authorizeOptions.redirectUri : undefined) ?? context.redirectUri;
 
   useEffect(() => {
     if (props.href) return;
@@ -84,6 +86,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     }
 
     context.buildAuthorizeUrl({
+      ...(verifyHostContext.isVerifyRuntime ? verifyHostContext.authorizeOptions : undefined),
       redirectUri,
       acrValues: acrValue,
       loginHint
@@ -143,7 +146,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     typeof props.logo === "string" ? <img src={props.logo} alt="" /> :
     props.logo ?? (acrValueToLogo(acrValue) ? <img src={acrValueToLogo(acrValue)} alt="" /> : null);
 
-  if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
+  if (acrValue === 'urn:grn:authn:se:bankid:same-device' && !verifyHostContext.isVerifyRuntime) {
     return (
       <SEBankIDSameDeviceButton
         redirectUri={props.redirectUri}

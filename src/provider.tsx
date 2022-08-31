@@ -8,6 +8,7 @@ import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues } from './utils';
 import jwtDecode from 'jwt-decode';
 import useNow from './hooks/useNow';
+import { useVerifyRuntime } from './verify-host-context';
 
 const SESSION_KEY = `@criipto-verify-react/session`;
  
@@ -30,7 +31,7 @@ export interface CriiptoVerifyProviderOptions {
    */
   sessionStore?: Storage,
   /**
-   * Will ammend the login_hint parameter with `action:{action}` which will adjust texsts in certain flows.
+   * Will ammend the login_hint parameter with `action:{action}` which will adjust texts in certain flows.
    * Default: 'login'
    */
   action?: Action
@@ -129,15 +130,16 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const loginHint = props.loginHint;
   const action = props.action ?? parseAction(loginHint) ?? 'login';
   const sessionStore = props.sessionStore;
+  const verifyRuntimeContext = useVerifyRuntime();
 
   const hasClaims = useCallback(() => {
     return claims !== null && responseType === 'token';
   }, [sessionStore, responseType, claims]);
   const now = useNow(hasClaims, 3000);
 
-  const refreshPKCE = () => {
+  const refreshPKCE = useCallback(() => {
     if (props.pkce) return;
-    if (responseType !== 'token' || completionStrategy !== 'client') {
+    if (responseType !== 'token' || completionStrategy !== 'client' || verifyRuntimeContext.isVerifyRuntime) {
       clearPKCEState(store);
       setPKCE(undefined);
       return;
@@ -149,7 +151,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       const pkce = await generatePKCE();
       setPKCE(pkce);
     })();
-  }
+  }, [props.pkce, responseType, completionStrategy, verifyRuntimeContext]);
 
   const buildOptions = useCallback((options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) : AuthorizeUrlParamsOptional => {
     return {
