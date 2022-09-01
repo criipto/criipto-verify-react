@@ -1,22 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 
-import beeid from './AuthMethodButton/logos/beeid@2x.png';
-import digid from './AuthMethodButton/logos/nldigid@2x.png';
-import dkmitid from './AuthMethodButton/logos/dkmitid@2x.png';
-import dknemid from './AuthMethodButton/logos/dknemid@2x.png';
-import ftnmobile from './AuthMethodButton/logos/ftnmobile@2x.png';
-import ftnbankid from './AuthMethodButton/logos/ftnbankid@2x.png';
-import itsme from './AuthMethodButton/logos/itsme@2x.png';
-import nobankid from './AuthMethodButton/logos/nobankid@2x.png';
-import novipps from './AuthMethodButton/logos/novipps@2x.png';
-import sebankid from './AuthMethodButton/logos/sebankid@2x.png';
-import sofort from './AuthMethodButton/logos/sofort@2x.png';
-
 import './AuthMethodButton/AuthMethodButton.css';
 import { getMobileOS } from '../device';
-import CriiptoVerifyContext from '..//context';
+import CriiptoVerifyContext from '../context';
 import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
+import AuthMethodButtonLogo, {AuthMethodButtonLogoProps} from './AuthMethodButton/Logo';
 
 export type PopupParams = {
   acrValue: string,
@@ -61,7 +50,7 @@ export interface AuthMethodButtonProps {
    * base64 image string, e.x. data:image/png;base64,
    * or a ReactElement
    */
-  logo?: React.ReactElement | string
+  logo?: AuthMethodButtonLogoProps["logo"]
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
@@ -139,17 +128,13 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     if (props.onClick) props.onClick(event);
   }
 
-  const logo =
-    typeof props.logo === "string" ? <img src={props.logo} alt="" /> :
-    props.logo ?? (acrValueToLogo(acrValue) ? <img src={acrValueToLogo(acrValue)} alt="" /> : null);
-
   if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
     return (
       <SEBankIDSameDeviceButton
         redirectUri={props.redirectUri}
         href={href}
         className={className}
-        logo={logo}
+        logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
       >
         {props.children}
       </SEBankIDSameDeviceButton>
@@ -158,11 +143,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
 
   const inner = (
     <React.Fragment>
-      {logo ? (
-        <div className="criipto-eid-logo">
-          {logo}
-        </div>
-      ) : null}
+      <AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />
       {props.children}
     </React.Fragment>
   );
@@ -200,40 +181,4 @@ function acrValueToClassName(value: string) {
   }, []);
 
   return classNames.map(className => `criipto-eid-btn--${className}`).join(' ');
-}
-
-function acrValueToLogo(value : string) {
-  if (value.startsWith('urn:grn:authn:be:eid')) {
-    return beeid;
-  }
-  if (value.startsWith('urn:grn:authn:nl:digid')) {
-    return digid;
-  }
-  if (value.startsWith('urn:grn:authn:dk:mitid')) {
-    return dkmitid;
-  }
-  if (value.startsWith('urn:grn:authn:dk:nemid')) {
-    return dknemid;
-  }
-  if (value.startsWith('urn:grn:authn:fi:bank-id')) {
-    return ftnbankid;
-  }
-  if (value.startsWith('urn:grn:authn:fi')) {
-    return ftnmobile;
-  }
-  if (value.startsWith('urn:grn:authn:itsme')) {
-    return itsme;
-  }
-  if (value.startsWith('urn:grn:authn:se:bankid')) {
-    return sebankid;
-  }
-  if (value.startsWith('urn:grn:authn:de:sofort')) {
-    return sofort;
-  }
-  if (value.startsWith('urn:grn:authn:no:bankid')) {
-    return nobankid;
-  }
-  if (value.startsWith('urn:grn:authn:no:vipps')) {
-    return novipps;
-  }
 }
