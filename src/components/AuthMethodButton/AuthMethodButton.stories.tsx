@@ -58,6 +58,13 @@ DKMitID.args = {
 };
 DKMitID.storyName = "dk:mitid:low";
 
+export const Href = Template.bind({});
+Href.args = {
+  acrValue: "urn:grn:authn:se:bankid:another-device:qr",
+  href: 'https://localhost:44362/oauth2/authorize?scope=openid&client_id=urn:auth0:th-test&redirect_uri=https://jwt.io/&response_type=id_token&response_mode=fragment&nonce=ecnon&state=etats&acr_values=urn:grn:authn:se:bankid:another-device:qr'
+};
+Href.storyName = "href";
+
 export const CustomLogo = Template.bind({});
 CustomLogo.args = {
   acrValue: "urn:grn:authn:se:bankid:another-device:qr",

@@ -6,6 +6,7 @@ import CriiptoVerifyContext from '../context';
 import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
 import AuthMethodButtonLogo, {AuthMethodButtonLogoProps} from './AuthMethodButton/Logo';
+import { AnchorButton, Button } from './Button';
 
 export type PopupParams = {
   acrValue: string,
@@ -13,29 +14,7 @@ export type PopupParams = {
 };
 export type PopupOption = boolean | ((options: PopupParams) => boolean | React.ReactElement)
 
-interface ButtonProps {
-  className?: string,
-  children: React.ReactNode,
-  onClick?: React.MouseEventHandler,
-}
-
-interface AnchorButtonProps extends ButtonProps {
-  href: string
-}
-
 const mobileOS = getMobileOS();
-
-export function AnchorButton(props: AnchorButtonProps) {
-  return (
-    <a className={`criipto-verify-button ${props.className}`} href={props.href} onClick={props.onClick}>{props.children}</a>
-  );
-}
-
-export function Button(props: ButtonProps) {
-  return (
-    <button className={`criipto-verify-button ${props.className}`} type="button"  onClick={props.onClick}>{props.children}</button>
-  );
-}
 
 export interface AuthMethodButtonProps {
   acrValue: string,
@@ -87,6 +66,8 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   }, [props.href, acrValue, context.pkce, redirectUri]);
 
   const handleClick : React.MouseEventHandler = (event) => {
+    if (props.href) return;
+
     if (context.pkce && "code_verifier" in context.pkce) {
       // just-in-time saving of PKCE, in case of man-in-the-browser
       savePKCEState(context.store, {
@@ -128,7 +109,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     if (props.onClick) props.onClick(event);
   }
 
-  if (acrValue === 'urn:grn:authn:se:bankid:same-device') {
+  if (!props.href && acrValue === 'urn:grn:authn:se:bankid:same-device') {
     return (
       <SEBankIDSameDeviceButton
         redirectUri={props.redirectUri}
