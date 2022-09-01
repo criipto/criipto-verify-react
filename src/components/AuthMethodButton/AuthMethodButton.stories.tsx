@@ -37,10 +37,7 @@ const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
       redirectUri={window.location.href}
     >
       <StoryResponseRenderer>
-        <AuthMethodButton {...args}>
-          {acrValueToTitle('en', args.acrValue).title}<br />
-          {acrValueToTitle('en', args.acrValue).subtitle}
-        </AuthMethodButton>
+        <AuthMethodButton {...args} />
       </StoryResponseRenderer>
     </CriiptoVerifyProvider>
   );
@@ -48,40 +45,46 @@ const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
 
 export const SEBankIDSameDeviceButton = Template.bind({});
 SEBankIDSameDeviceButton.args = {
-  acrValue: 'urn:grn:authn:se:bankid:same-device'
+  acrValue: 'urn:grn:authn:se:bankid:same-device',
+  standalone: false
 };
 SEBankIDSameDeviceButton.storyName = "se:bankid:same-device";
 
 export const DKMitID = Template.bind({});
 DKMitID.args = {
-  acrValue: 'urn:grn:authn:dk:mitid:low'
+  acrValue: 'urn:grn:authn:dk:mitid:low',
+  standalone: false
 };
 DKMitID.storyName = "dk:mitid:low";
 
 export const Href = Template.bind({});
 Href.args = {
   acrValue: "urn:grn:authn:se:bankid:another-device:qr",
-  href: 'https://localhost:44362/oauth2/authorize?scope=openid&client_id=urn:auth0:th-test&redirect_uri=https://jwt.io/&response_type=id_token&response_mode=fragment&nonce=ecnon&state=etats&acr_values=urn:grn:authn:se:bankid:another-device:qr'
+  href: 'https://localhost:44362/oauth2/authorize?scope=openid&client_id=urn:auth0:th-test&redirect_uri=https://jwt.io/&response_type=id_token&response_mode=fragment&nonce=ecnon&state=etats&acr_values=urn:grn:authn:se:bankid:another-device:qr',
+  standalone: false
 };
 Href.storyName = "href";
 
 export const CustomLogo = Template.bind({});
 CustomLogo.args = {
   acrValue: "urn:grn:authn:se:bankid:another-device:qr",
-  logo: <img src={customLogo} alt="" />
+  logo: <img src={customLogo} alt="" />,
+  standalone: false
 };
 
 export const Popup = Template.bind({});
 Popup.args = {
   acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
-  popup: true
+  popup: true,
+  standalone: false
 };
 Popup.storyName = "Popup - Basic backrop";
 
 export const PopupCallback = Template.bind({});
 PopupCallback.args = {
   acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
-  popup: () => true
+  popup: () => true,
+  standalone: false
 };
 PopupCallback.storyName = "Popup - Callback";
 
@@ -97,6 +100,7 @@ const CustomBackdrop : React.FC<PopupParams> = (props) => {
 export const PopupCustom = Template.bind({});
 PopupCustom.args = {
   acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
-  popup: (props) => <CustomBackdrop {...props} />
+  popup: (props) => <CustomBackdrop {...props} />,
+  standalone: false
 };
 PopupCustom.storyName = "Popup - Custom react backdrop";

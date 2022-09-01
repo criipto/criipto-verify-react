@@ -2,11 +2,12 @@ import React, {useContext, useEffect, useState} from 'react';
 
 import './AuthMethodButton/AuthMethodButton.css';
 import { getMobileOS } from '../device';
-import CriiptoVerifyContext from '../context';
+import CriiptoVerifyContext, { Action } from '../context';
 import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
 import AuthMethodButtonLogo, {AuthMethodButtonLogoProps} from './AuthMethodButton/Logo';
 import { AnchorButton, Button } from './Button';
+import { acrValueToTitle, Language, stringifyAction } from '../utils';
 
 export type PopupParams = {
   acrValue: string,
@@ -29,12 +30,29 @@ export interface AuthMethodButtonProps {
    * base64 image string, e.x. data:image/png;base64,
    * or a ReactElement
    */
-  logo?: AuthMethodButtonLogoProps["logo"]
+  logo?: AuthMethodButtonLogoProps["logo"],
+
+  /**
+   * if the button is rendered alone or as part of a group of other auth method buttons
+   * will have an impact on what default text is rendered inside the button (if none is provided)
+   * i.e. Login with BankID with qrcode vs Login with BankID
+   */
+  standalone?: boolean,
+  /**
+   * Impacts the button text rendered if no text is provided via props.children
+   */
+  language?: Language,
+  /**
+   * Impacts the button text rendered if no text is provided via props.children
+   */
+  action?: Action
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
-  const {acrValue} = props;
+  const {acrValue, standalone} = props;
   const context = useContext(CriiptoVerifyContext);
+  const language = (props.language ?? context.uiLocales ?? 'en') as Language;
+  const action = (props.action ?? context.action ?? 'login') as Action;
   const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
   const [backdrop, setBackdrop] = useState<React.ReactElement | null>(null);
 
@@ -109,6 +127,13 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     if (props.onClick) props.onClick(event);
   }
 
+  const contents = props.children ?? (
+    <React.Fragment>
+      {stringifyAction(language, action) ? `${stringifyAction(language, action)} ` : ''}{acrValueToTitle(language, acrValue).title}&nbsp;
+      {standalone ? null : lowercaseFirst(acrValueToTitle(language, acrValue).subtitle)}
+    </React.Fragment>
+  )
+
   if (!props.href && acrValue === 'urn:grn:authn:se:bankid:same-device') {
     return (
       <SEBankIDSameDeviceButton
@@ -117,7 +142,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
         className={className}
         logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
       >
-        {props.children}
+        {contents}
       </SEBankIDSameDeviceButton>
     );
   }
@@ -125,7 +150,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const inner = (
     <React.Fragment>
       <AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />
-      {props.children}
+      {contents}
     </React.Fragment>
   );
 
@@ -162,4 +187,9 @@ function acrValueToClassName(value: string) {
   }, []);
 
   return classNames.map(className => `criipto-eid-btn--${className}`).join(' ');
+}
+
+function lowercaseFirst(input?: string) {
+  if (!input) return input;
+  return input.substring(0, 1).toLowerCase() + input.substr(1, input.length);
 }

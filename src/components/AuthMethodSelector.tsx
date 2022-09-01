@@ -1,7 +1,7 @@
 import {OpenIDConfiguration} from '@criipto/auth-js';
 import React, { useContext, useEffect, useState } from 'react';
 import CriiptoVerifyContext from '../context';
-import { acrValueToTitle, filterAcrValues, Language, stringifyAction, acrValueToProviderPrefix } from '../utils';
+import { filterAcrValues, Language, acrValueToProviderPrefix } from '../utils';
 import AuthMethodButton, {AuthMethodButtonProps} from './AuthMethodButton';
 
 import './AuthMethodSelector/AuthMethodSelector.css';
@@ -12,11 +12,6 @@ interface Props {
   onSelect?: (acrValue: string) => void,
   redirectUri?: string,
   popup?: AuthMethodButtonProps["popup"]
-}
-
-function lowercaseFirst(input?: string) {
-  if (!input) return input;
-  return input.substring(0, 1).toLowerCase() + input.substr(1, input.length);
 }
 
 function isSingle(acrValue: string, acrValues: string[]) {
@@ -55,10 +50,10 @@ export default function AuthMethodSelector(props: Props) {
           onClick={props.onSelect ? (() => props.onSelect!(acrValue)) : undefined}
           redirectUri={props.redirectUri}
           popup={props.popup}
-        >
-          {stringifyAction(language, action) ? `${stringifyAction(language, action)} ` : ''}{acrValueToTitle(language, acrValue).title}&nbsp;
-          {isSingle(acrValue, acrValues) ? null : lowercaseFirst(acrValueToTitle(language, acrValue).subtitle)}
-        </AuthMethodButton>
+          language={language}
+          action={action}
+          standalone={isSingle(acrValue, acrValues)}
+        />
       ))}
     </div>
   )
