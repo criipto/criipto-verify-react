@@ -23,7 +23,7 @@ export interface CriiptoVerifyProviderOptions {
   uiLocales?: string
   loginHint?: string
   /**
-   * Enables storage and automatic refresh of tokens
+   * Enables storage and automatic fetch of tokens
    * by utilizing browser storage and SSO silent logins.
    * Make sure "SSO for OAuth2" is enabled on your Criipto Domain.
    * Only works for `response: 'token'` (default)
@@ -129,11 +129,6 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const loginHint = props.loginHint;
   const action = props.action ?? parseAction(loginHint) ?? 'login';
   const sessionStore = props.sessionStore;
-
-  const hasClaims = useCallback(() => {
-    return claims !== null && responseType === 'token';
-  }, [sessionStore, responseType, claims]);
-  const now = useNow(hasClaims, 3000);
 
   const refreshPKCE = () => {
     if (props.pkce) return;
@@ -338,14 +333,19 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
    */
   useEffect(() => {
     if (!claims) return;
-    if (!now) return;
+    if (!sessionStore) return;
 
-    if (claims.exp < (now / 1000)) {
-      setResult(null);
-      sessionStore?.removeItem(SESSION_KEY);
-      return;
-    }
-  }, [sessionStore, claims, now, result]);
+    const interval = setInterval(() => {
+      const now = Date.now();
+      if (claims.exp < (now / 1000)) {
+        setResult(null);
+        sessionStore?.removeItem(SESSION_KEY);
+        return;
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [sessionStore, claims, result]);
 
   /**
    * Fresh page load SSO check
