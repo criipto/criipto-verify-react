@@ -6,7 +6,7 @@ import CriiptoVerifyProvider from '../../provider';
 import { acrValueToTitle } from '../../utils';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
-import customLogo from './logos/ftnbankid@2x.png';
+import customLogo from './logos/ftnmobile@2x.png';
 
 export default {
   title: 'Components/AuthMethodButton',

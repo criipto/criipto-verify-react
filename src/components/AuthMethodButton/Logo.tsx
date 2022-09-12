@@ -4,7 +4,6 @@ import digid from './logos/nldigid@2x.png';
 import dkmitid from './logos/dkmitid@2x.png';
 import dknemid from './logos/dknemid@2x.png';
 import ftnmobile from './logos/ftnmobile@2x.png';
-import ftnbankid from './logos/ftnbankid@2x.png';
 import itsme from './logos/itsme@2x.png';
 import nobankid from './logos/nobankid@2x.png';
 import novipps from './logos/novipps@2x.png';
@@ -22,7 +21,7 @@ export interface AuthMethodButtonLogoProps {
 export default function AuthMethodButtonLogo(props: AuthMethodButtonLogoProps) {
   const logo =
     typeof props.logo === "string" ? <img src={props.logo} alt="" /> :
-    props.logo ?? (acrValueToLogo(props.acrValue) ? <img src={acrValueToLogo(props.acrValue)} alt="" /> : null);
+    props.logo ?? (acrValueToLogo(props.acrValue) ? <img src={acrValueToLogo(props.acrValue)} alt="" /> : <span>&nbsp;</span>);
 
   if (logo) return <div className="criipto-eid-logo">{logo}</div>
   return null;
@@ -41,10 +40,7 @@ function acrValueToLogo(value : string) {
   if (value.startsWith('urn:grn:authn:dk:nemid')) {
     return dknemid;
   }
-  if (value.startsWith('urn:grn:authn:fi:bank-id')) {
-    return ftnbankid;
-  }
-  if (value.startsWith('urn:grn:authn:fi')) {
+  if (value.startsWith('urn:grn:authn:fi:mobile')) {
     return ftnmobile;
   }
   if (value.startsWith('urn:grn:authn:itsme')) {
