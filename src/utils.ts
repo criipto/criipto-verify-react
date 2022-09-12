@@ -1,6 +1,7 @@
 import { Action } from "./context";
 
 export const DKMITID_PREFIX = 'urn:grn:authn:dk:mitid';
+export const FTN_PREFIX = 'urn:grn:authn:fi';
 
 export function lowestMitIDValue(input: string[]) : string | null {
   let dkmitidMethod : string | null = null;
@@ -129,6 +130,18 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 			subtitle
 		}
   }
+  if (value === 'fi:mobile-id') {
+    if (language === 'en') return {title: 'Finnish mobile certificate'};
+    if (language === 'da') return {title: 'finsk mobil ID'};
+    if (language === 'sv') return {title: 'finsk mobil ID'};
+    if (language === 'nb') return {title: 'finsk mobil ID'};
+  }
+  if (value === 'fi:bank-id') {
+    if (language === 'en') return {title: 'Finnish BankID'};
+    if (language === 'da') return {title: 'finsk bank ID'};
+    if (language === 'sv') return {title: 'finsk bank ID'};
+    if (language === 'nb') return {title: 'finsk bank ID'};
+  }
   if (provider === 'fi') {
     return {title: autoTitleCase(value).replace('FI', 'FTN')};
   }
@@ -183,9 +196,16 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 export function filterAcrValues(input: string[]) {
   let original = input.slice();
   let dkmitidMethod : string | null = lowestMitIDValue(input);
+  let reduced = input.slice();
 
   if (dkmitidMethod) {
-    return input.filter(s => !s.startsWith(DKMITID_PREFIX)).concat([dkmitidMethod]).sort((a, b) => original.indexOf(a) - original.indexOf(b));
+    reduced = input.filter(s => !s.startsWith(DKMITID_PREFIX)).concat([dkmitidMethod]).sort((a, b) => original.indexOf(a) - original.indexOf(b));
   }
-  return input;
+
+  if (input.includes(`${FTN_PREFIX}:all`)) {
+    if (!reduced.includes(`${FTN_PREFIX}:bank-id`)) reduced.push(`${FTN_PREFIX}:bank-id`);
+    if (!reduced.includes(`${FTN_PREFIX}:mobile-id`)) reduced.push(`${FTN_PREFIX}:mobile-id`);
+    reduced = reduced.filter(s => s !== `${FTN_PREFIX}:all`);
+  }
+  return reduced;
 }
