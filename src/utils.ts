@@ -131,16 +131,16 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 		}
   }
   if (value === 'fi:mobile-id') {
-    if (language === 'en') return {title: 'Finnish mobile certificate'};
-    if (language === 'da') return {title: 'finsk mobil ID'};
-    if (language === 'sv') return {title: 'finsk mobil ID'};
-    if (language === 'nb') return {title: 'finsk mobil ID'};
+    if (language === 'en') return {title: 'Finnish Mobile ID'};
+    if (language === 'da') return {title: 'Finsk Mobil ID'};
+    if (language === 'sv') return {title: 'Finskt Mobil ID'};
+    if (language === 'nb') return {title: 'Finsk Mobil ID'};
   }
   if (value === 'fi:bank-id') {
-    if (language === 'en') return {title: 'Finnish BankID'};
-    if (language === 'da') return {title: 'finsk bank ID'};
-    if (language === 'sv') return {title: 'finsk bank ID'};
-    if (language === 'nb') return {title: 'finsk bank ID'};
+    if (language === 'en') return {title: 'Finnish Bank ID'};
+    if (language === 'da') return {title: 'Finsk Bank ID'};
+    if (language === 'sv') return {title: 'Finskt Bank ID'};
+    if (language === 'nb') return {title: 'Finsk Bank ID'};
   }
   if (provider === 'fi') {
     return {title: autoTitleCase(value).replace('FI', 'FTN')};
