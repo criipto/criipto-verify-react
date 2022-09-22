@@ -1,16 +1,27 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { AuthorizeResponse, OAuth2Error, savePKCEState } from '@criipto/auth-js';
+import { AuthorizeResponse, OAuth2Error } from '@criipto/auth-js';
 import QRCode from 'qrcode';
+import { Language } from '../utils';
 
 import CriiptoVerifyContext from "../context";
 
-// import logoSrc from './SEBankIDQRCode/logo@2x.png';
+import logo from './SEBankIDQRCode/logo@2x.png';
+import './SEBankIDQRCode/SEBankIDQRCode.css';
 
 interface Props {
   redirectUri?: string,
   qrMargin?: number,
+  /**
+   * Impacts the help text
+   */
+  language?: Language,
   children?: (props: {
     qrElement: React.ReactElement
+    /**
+     * Can be rendered instead of `qrElement` if you only wish to render the qr code with no additional content.
+     * Combine with `qrMargin`.
+     */
+    canvasElement: React.ReactElement,
     /**
      * Will be true once the user has completed login in the app and the rest of the login flow is being processed
      */
@@ -44,7 +55,8 @@ function searchParamsToPOJO(input: URLSearchParams) {
 export default function SEBankIDQrCode(props: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const {buildAuthorizeUrl, completionStrategy, pkce, handleResponse, redirectUri: defaultRedirectURi} = useContext(CriiptoVerifyContext);
+  const {buildAuthorizeUrl, completionStrategy, pkce, handleResponse, redirectUri: defaultRedirectURi, uiLocales} = useContext(CriiptoVerifyContext);
+  const language = (props.language ?? uiLocales ?? 'en') as Language;
   const redirectUri = props.redirectUri || defaultRedirectURi;
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [pollUrl, setPollUrl] = useState<string | null>(null);
@@ -127,11 +139,25 @@ export default function SEBankIDQrCode(props: Props) {
     onError: handleError
   });
 
-  const qrElement = <div ref={wrapperRef}><canvas ref={canvasRef} /></div>;
+  const canvasElement = (
+    <div ref={wrapperRef}>
+      <canvas ref={canvasRef} />
+    </div>
+  );
+  const qrElement = (
+    <div className="criipto-se-bankid-qr">
+      <aside className="criipto-se-bankid-qr--help-text">
+        <img src={logo} />
+        {language === 'en' ? 'Open the BankID app on your mobile device and scan the QR code.' : ''}
+      </aside>
+      {canvasElement}
+    </div>
+  );
 
   if (props.children) {
     return props.children({
       qrElement,
+      canvasElement,
       error,
       isCompleting,
       retry: () => handleRetry(),
@@ -162,28 +188,12 @@ export function useDraw(qrCode: string | null, options: UseDrawOptions) {
         errorCorrectionLevel: 'low',
         scale: 10,
         width,
-        margin: qrMargin ?? 4
+        margin: qrMargin ?? 2
       });
 
       if (!isSubscribed) return;
       const context = canvas.getContext('2d')!;
       context.drawImage(qrImage, 0, 0);
-
-      // MAYBE: render bankid logo in QR Code
-      // const logoWidth = canvas.width * LOGO_RATIO;
-      // const logoHeight = canvas.height * LOGO_RATIO;
-      // const logoX = (canvas.width - logoWidth) / 2;
-      // const logoY = (canvas.width - logoHeight) / 2;
-      // context.fillStyle = "#235971";
-      // context.fillRect(logoX -5 , logoY -5, logoWidth + 10, logoHeight + 10)
-
-      // context.drawImage(
-      //   logo,
-      //   logoX,
-      //   logoY,
-      //   logoWidth,
-      //   logoHeight
-      // );
     })();
     
     return () => {

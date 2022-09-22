@@ -1,0 +1,19 @@
+.criipto-se-bankid-qr {
+  background: #235971;
+  padding: 16px;
+}
+
+.criipto-se-bankid-qr--help-text {
+  color: #FFF;
+  padding-bottom: 16px;
+  display: flex;
+  flex-flow: row;
+  gap: 16px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 14px;
+  align-items: center;
+}
+
+.criipto-se-bankid-qr--help-text img {
+  height: 30px;
+}
