@@ -47,9 +47,18 @@ const Template: ComponentStory<typeof SEBankIDQRCode> = (args, {globals}) => {
       redirectUri={window.location.href}
     >
       <StoryResponseRenderer>
-        <div style={{width: '400px'}}>
-          <SEBankIDQRCode />
-        </div>
+        <SEBankIDQRCode>
+          {({qrElement, error, isCompleting, retry}) => (
+            <div style={{width: '400px'}}>
+              {error ? (
+                <React.Fragment>
+                  <p>{error.message}</p>
+                  <button onClick={retry}>Retry</button>
+                </React.Fragment>
+              ) : isCompleting ? 'Logging in' : qrElement}
+            </div>
+          )}
+        </SEBankIDQRCode>
       </StoryResponseRenderer>
     </CriiptoVerifyProvider>
   );

@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { AuthorizeResponse, savePKCEState } from '@criipto/auth-js';
+import { AuthorizeResponse, OAuth2Error, savePKCEState } from '@criipto/auth-js';
 import QRCode from 'qrcode';
 
 import CriiptoVerifyContext from "../context";
@@ -8,7 +8,16 @@ import CriiptoVerifyContext from "../context";
 
 interface Props {
   redirectUri?: string,
-  qrMargin?: number
+  qrMargin?: number,
+  children?: (props: {
+    qrElement: React.ReactElement
+    /**
+     * Will be true once the user has completed login in the app and the rest of the login flow is being processed
+     */
+    isCompleting: boolean
+    error: OAuth2Error | Error | null
+    retry: () => void
+})  => React.ReactElement
 }
 
 interface QrResponse {
@@ -39,7 +48,8 @@ export default function SEBankIDQrCode(props: Props) {
   const redirectUri = props.redirectUri || defaultRedirectURi;
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [pollUrl, setPollUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<OAuth2Error | Error | null>(null);
+  const [isCompleting, setCompleting] = useState(false);
 
   const refresh = useCallback(async () => {
     setError(null);
@@ -64,12 +74,18 @@ export default function SEBankIDQrCode(props: Props) {
     refresh();
   }, [refresh, pkce]);
 
+  const handleRetry = () => {
+    setCompleting(false);
+    refresh();
+  };
+
   const handleError = useCallback((error: string) => {
-    setError(error);
+    setError(new Error(error));
     handleResponse({error}, {pkce: pkce && "code_verifier" in pkce ? pkce : undefined, redirectUri});
   }, [pkce, redirectUri]);
 
   const handleComplete = useCallback(async (completeUrl: string) => {
+    setCompleting(true);
     const required = {pkce};
     refresh();
 
@@ -96,21 +112,57 @@ export default function SEBankIDQrCode(props: Props) {
   /**
    * Render QR codes
    */
+  useDraw(qrCode, {
+    canvas: canvasRef.current,
+    width: wrapperRef.current?.offsetWidth,
+    qrMargin: props.qrMargin
+  });
+
+  /**
+   * Poll for response
+   */
+  usePoll(pollUrl, {
+    onQrCode: setQrCode,
+    onComplete: handleComplete,
+    onError: handleError
+  });
+
+  const qrElement = <div ref={wrapperRef}><canvas ref={canvasRef} /></div>;
+
+  if (props.children) {
+    return props.children({
+      qrElement,
+      error,
+      isCompleting,
+      retry: () => handleRetry(),
+    });
+  }
+
+  return qrElement;
+}
+
+type UseDrawOptions = {
+  width?: number,
+  canvas: HTMLCanvasElement | null,
+  qrMargin?: number
+}
+export function useDraw(qrCode: string | null, options: UseDrawOptions) {
+  const {width, canvas, qrMargin} = options;
+
   useEffect(() => {
     if (!qrCode) return;
+    if (!canvas) return;
 
     let isSubscribed = true;
     (async () => {
-      const width = wrapperRef.current!.offsetWidth;
-      const canvas = canvasRef.current!;
-      canvas.width = width;
-      canvas.height = width;
+      canvas.width = width ?? 300;
+      canvas.height = width ?? 300;
 
       const qrImage = await QRCode.toCanvas(qrCode, {
         errorCorrectionLevel: 'low',
         scale: 10,
         width,
-        margin: props.qrMargin ?? 4
+        margin: qrMargin ?? 4
       });
 
       if (!isSubscribed) return;
@@ -137,22 +189,7 @@ export default function SEBankIDQrCode(props: Props) {
     return () => {
       isSubscribed = false;
     }
-  }, [qrCode, props.qrMargin]);
-
-  /**
-   * Poll for response
-   */
-  usePoll(pollUrl, {
-    onQrCode: setQrCode,
-    onComplete: handleComplete,
-    onError: handleError
-  });
-
-  return (
-    <div ref={wrapperRef}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
+  }, [qrCode, qrMargin, canvas, width]);
 }
 
 type UsePollCallbacks = {
