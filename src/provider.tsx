@@ -93,7 +93,7 @@ function parseAction(input?: string) : Action | undefined {
 const store = sessionStorage;
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
-  const redirectUri = props.redirectUri || window.location.href;
+  const redirectUri = props.redirectUri || (window.location.origin + window.location.pathname);
 
   const client = useMemo(() => new CriiptoAuth({
     domain: props.domain,
