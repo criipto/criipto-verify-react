@@ -1,6 +1,6 @@
 import { PKCE } from '@criipto/auth-js';
 import React, { useEffect, useState } from 'react';
-import {Links, saveState, autoHydratedState, clearState} from './shared';
+import {Links, saveState, hydrateState, clearState} from './shared';
 
 interface Props {
   children: React.ReactElement,
@@ -32,9 +32,10 @@ export default function SEBankIDSameDeviceIOS(props: Props) {
   };
 
   useEffect(() => {
-    if (!autoHydratedState) return;
+    const hydratedState = hydrateState();
+    if (!hydratedState) return;
     clearState();
-    onComplete(autoHydratedState.links.completeUrl);
+    onComplete(hydratedState.links.completeUrl);
   }, []);
   
   return React.cloneElement(props.children, {

@@ -1,0 +1,19 @@
+name: Node.js CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup kernel for build, increase watchers
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+      - name: Use Node.js 16.15.1
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.15.1
+      - name: Install dependencies
+        run: npm ci
+      - run: npm run test
