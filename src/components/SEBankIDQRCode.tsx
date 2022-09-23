@@ -5,8 +5,7 @@ import { assertUnreachableLanguage, Language } from '../utils';
 
 import CriiptoVerifyContext from "../context";
 
-//import logo from './SEBankIDQRCode/logo@2x.png';
-import logo from './AuthMethodButton/logos/sebankid@2x.png';
+import logo from './SEBankIDQRCode/logo@2x.png';
 import './SEBankIDQRCode/SEBankIDQRCode.css';
 
 interface Props {
@@ -165,8 +164,8 @@ export default function SEBankIDQrCode(props: Props) {
   const qrElement = (
     <div className="criipto-se-bankid-qr">
       <aside className="criipto-se-bankid-qr--help-text">
-        <img src={logo} />
         {isCompleting ? completingHelpText : initialHelpText}
+        <img src={logo} />
       </aside>
       {canvasElement}
     </div>
