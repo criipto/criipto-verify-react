@@ -81,10 +81,10 @@ export default function SEBankIDQrCode(props: Props) {
       setPollUrl(response.pollUrl);
     })
     .catch(console.error);
-  }, [buildAuthorizeUrl, redirectUri]);
+  }, [buildAuthorizeUrl, redirectUri, pkce]);
   useEffect(() => {
     refresh();
-  }, [refresh, pkce]);
+  }, [refresh]);
 
   const handleRetry = () => {
     setCompleting(false);
@@ -92,6 +92,11 @@ export default function SEBankIDQrCode(props: Props) {
   };
 
   const handleError = useCallback((error: string) => {
+    /* Timeout error */
+    if (error === 'Collect failed: startFailed') {
+      refresh();
+      return;
+    }
     setError(new Error(error));
     handleResponse({error}, {pkce: pkce && "code_verifier" in pkce ? pkce : undefined, redirectUri});
   }, [pkce, redirectUri]);

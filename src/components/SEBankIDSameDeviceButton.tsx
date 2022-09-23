@@ -1,6 +1,6 @@
-import { PKCE, AuthorizeResponse, savePKCEState } from '@criipto/auth-js';
+import { PKCE, AuthorizeResponse } from '@criipto/auth-js';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import CriiptoVerifyContext from '../context';
+import CriiptoVerifyContext from '..//context';
 import { getMobileOS } from '../device';
 
 import Desktop from './SEBankIDSameDeviceButton/Desktop';

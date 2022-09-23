@@ -133,7 +133,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
       {standalone ? null : lowercaseFirst(acrValueToTitle(language, acrValue).subtitle)}
     </React.Fragment>
   )
-
+  
   if (!props.href && acrValue === 'urn:grn:authn:se:bankid:same-device') {
     return (
       <SEBankIDSameDeviceButton
