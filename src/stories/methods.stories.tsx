@@ -76,7 +76,6 @@ export const loginWithRedirect = LoginWithRedirectTemplate.bind({});
 
 function LoginWithPopupButton(props: any) {
   const {loginWithPopup} = useCriiptoVerify();
-  console.log(props);
 
   return <button onClick={() => loginWithPopup({acrValues: props.acrValues, backdrop: props.backdrop})}>loginWithPopup</button>
 }

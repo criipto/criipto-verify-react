@@ -39,6 +39,9 @@ function assertUnreachable(x: never): never {
   throw new Error("Didn't expect to get here");
 }
 
+export function assertUnreachableLanguage(x: never): never {
+  throw new Error(`Unsupported language ${x}`);
+}
 export type Language = 'en' | 'da' | 'sv' | 'nb';
 
 export function stringifyAction(language: Language, action: Action) : string {
