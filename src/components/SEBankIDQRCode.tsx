@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { AuthorizeResponse, OAuth2Error } from '@criipto/auth-js';
 import QRCode from 'qrcode';
-import { Language } from '../utils';
+import { assertUnreachableLanguage, Language } from '../utils';
 
 import CriiptoVerifyContext from "../context";
 
@@ -148,7 +148,10 @@ export default function SEBankIDQrCode(props: Props) {
     <div className="criipto-se-bankid-qr">
       <aside className="criipto-se-bankid-qr--help-text">
         <img src={logo} />
-        {language === 'en' ? 'Open the BankID app on your mobile device and scan the QR code.' : ''}
+        {language === 'en' ? 'Open the BankID app on your mobile device and scan the QR code.' : 
+        language == 'da' ? 'Åben BankID appen på din telefon og scan QR koden.' :
+        language == 'sv' ? 'Öppna BankID-appen på din mobila enhet och skanna QR-koden.' :
+        language == 'nb' ? 'Åpne BankID-appen på mobilenheten din og skann QR-koden.' : assertUnreachableLanguage(language)}
       </aside>
       {canvasElement}
     </div>
