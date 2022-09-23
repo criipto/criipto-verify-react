@@ -5,7 +5,8 @@ import { assertUnreachableLanguage, Language } from '../utils';
 
 import CriiptoVerifyContext from "../context";
 
-import logo from './SEBankIDQRCode/logo@2x.png';
+//import logo from './SEBankIDQRCode/logo@2x.png';
+import logo from './AuthMethodButton/logos/sebankid@2x.png';
 import './SEBankIDQRCode/SEBankIDQRCode.css';
 
 interface Props {
@@ -94,7 +95,7 @@ export default function SEBankIDQrCode(props: Props) {
   const handleError = useCallback((error: string) => {
     /* Timeout error */
     if (error === 'Collect failed: startFailed') {
-      refresh();
+      handleRetry();
       return;
     }
     setError(new Error(error));
@@ -104,7 +105,6 @@ export default function SEBankIDQrCode(props: Props) {
   const handleComplete = useCallback(async (completeUrl: string) => {
     setCompleting(true);
     const required = {pkce};
-    refresh();
 
     const completeResponse = await fetch(completeUrl);
     if (completeResponse.status >= 400) {
@@ -139,6 +139,7 @@ export default function SEBankIDQrCode(props: Props) {
    * Poll for response
    */
   usePoll(pollUrl, {
+    enabled: !isCompleting,
     onQrCode: setQrCode,
     onComplete: handleComplete,
     onError: handleError
@@ -149,14 +150,23 @@ export default function SEBankIDQrCode(props: Props) {
       <canvas ref={canvasRef} />
     </div>
   );
+
+  const completingHelpText = 
+    language === 'en' ? 'Completing your login.' : 
+    language == 'da' ? 'Fuldfører dit login.' :
+    language == 'sv' ? 'Slutför din inloggning.' :
+    language == 'nb' ? 'Fullfører påloggingen.' : assertUnreachableLanguage(language);
+  const initialHelpText = 
+    language === 'en' ? 'Open the BankID app on your mobile device and scan the QR code.' : 
+    language == 'da' ? 'Åben BankID appen på din telefon og scan QR koden.' :
+    language == 'sv' ? 'Öppna BankID-appen på din mobila enhet och skanna QR-koden.' :
+    language == 'nb' ? 'Åpne BankID-appen på mobilenheten din og skann QR-koden.' : assertUnreachableLanguage(language);
+
   const qrElement = (
     <div className="criipto-se-bankid-qr">
       <aside className="criipto-se-bankid-qr--help-text">
         <img src={logo} />
-        {language === 'en' ? 'Open the BankID app on your mobile device and scan the QR code.' : 
-        language == 'da' ? 'Åben BankID appen på din telefon og scan QR koden.' :
-        language == 'sv' ? 'Öppna BankID-appen på din mobila enhet och skanna QR-koden.' :
-        language == 'nb' ? 'Åpne BankID-appen på mobilenheten din og skann QR-koden.' : assertUnreachableLanguage(language)}
+        {isCompleting ? completingHelpText : initialHelpText}
       </aside>
       {canvasElement}
     </div>
@@ -210,15 +220,17 @@ export function useDraw(qrCode: string | null, options: UseDrawOptions) {
   }, [qrCode, qrMargin, canvas, width]);
 }
 
-type UsePollCallbacks = {
+type UsePollOptions = {
+  enabled: boolean,
   onQrCode: (code: string) => void,
   onComplete: (url: string) => void,
   onError: (error: string) => void
 }
-export function usePoll(pollUrl: string | null, callback: UsePollCallbacks) {
-  const {onQrCode, onComplete, onError} = callback;
+export function usePoll(pollUrl: string | null, options: UsePollOptions) {
+  const {onQrCode, onComplete, onError, enabled} = options;
   useEffect(() => {
     if (!pollUrl) return;
+    if (!enabled) return;
 
     const delay = 2500;
     let timeout : any;
@@ -245,5 +257,5 @@ export function usePoll(pollUrl: string | null, callback: UsePollCallbacks) {
 
     timeout = setTimeout(poll, delay);
     return () => clearTimeout(timeout);
-  }, [pollUrl, onQrCode, onComplete, onError]);
+  }, [pollUrl, onQrCode, onComplete, onError, enabled]);
 }

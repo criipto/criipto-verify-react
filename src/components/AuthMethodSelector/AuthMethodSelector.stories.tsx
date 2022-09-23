@@ -121,6 +121,18 @@ OneOfEach.args = {
   ]
 };
 
+export const Sweden = Template.bind({
+  
+});
+Sweden.storyName = "Sweden";
+Sweden.args = {
+  redirectUri: window.location.href,
+  acrValues: [
+    'urn:grn:authn:se:bankid:same-device',
+    'urn:grn:authn:se:bankid:another-device:qr',
+  ]
+};
+
 export const NoAcrValues = Template.bind({
   
 });
