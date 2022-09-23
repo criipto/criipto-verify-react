@@ -205,7 +205,7 @@ export function useDraw(qrCode: string | null, options: UseDrawOptions) {
         errorCorrectionLevel: 'low',
         scale: 10,
         width,
-        margin: qrMargin ?? 2
+        margin: qrMargin ?? 4
       });
 
       if (!isSubscribed) return;
