@@ -7,7 +7,6 @@ import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, Respo
 import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues } from './utils';
 import jwtDecode from 'jwt-decode';
-import useNow from './hooks/useNow';
 
 const SESSION_KEY = `@criipto-verify-react/session`;
  

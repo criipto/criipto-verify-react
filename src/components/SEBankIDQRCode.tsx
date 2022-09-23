@@ -94,7 +94,7 @@ export default function SEBankIDQrCode(props: Props) {
 
   const handleError = useCallback((error: string) => {
     /* Timeout error */
-    if (error === 'Collect failed: startFailed') {
+    if (error === 'Collect failed: startFailed' || error === '"Collect failed: startFailed"') {
       handleRetry();
       return;
     }
