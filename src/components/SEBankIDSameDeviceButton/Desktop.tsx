@@ -38,7 +38,7 @@ export default function SEBankIDSameDeviceDesktop(props: Props) {
       } else {
         if (!isSubscribed) return;
         const {targetUrl} = await response.json();
-        await onComplete(`https://${domain}${targetUrl}`);
+        await onComplete(targetUrl);
         return;
       }
     };
