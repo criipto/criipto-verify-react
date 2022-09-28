@@ -92,7 +92,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     return () => {
       isSubscribed = false;
     };
-  }, [props.href, acrValue, context.pkce, redirectUri, action, message]);
+  }, [props.href, acrValue, context.pkce, redirectUri, message]);
 
   const handleClick : React.MouseEventHandler = (event) => {
     if (props.href) return;
