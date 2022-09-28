@@ -233,9 +233,12 @@ export function usePoll(pollUrl: string | null, options: UsePollOptions) {
 
     const delay = 2500;
     let timeout : any;
+    let isSubscribed = true;
     const poll = async () => {
+      if (!isSubscribed) return;
       const response = await fetch(pollUrl);
 
+      if (!isSubscribed) return;
       if (response.status < 400) {
         const payload = await response.json() as PollResponse;
         if (payload.qrCode) onQrCode(payload.qrCode);
@@ -255,6 +258,9 @@ export function usePoll(pollUrl: string | null, options: UsePollOptions) {
     };
 
     timeout = setTimeout(poll, delay);
-    return () => clearTimeout(timeout);
+    return () => {
+      isSubscribed = false;
+      clearTimeout(timeout);
+    }
   }, [pollUrl, onQrCode, onComplete, onError, enabled]);
 }
