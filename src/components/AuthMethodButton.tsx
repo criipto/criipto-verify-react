@@ -8,6 +8,7 @@ import { savePKCEState } from '@criipto/auth-js';
 import AuthMethodButtonLogo, {AuthMethodButtonLogoProps} from './AuthMethodButton/Logo';
 import { AnchorButton, Button } from './Button';
 import { acrValueToTitle, Language, stringifyAction } from '../utils';
+import { MESSAGE_SUPPORTING_ACR_VALUES } from '../provider';
 
 export type PopupParams = {
   acrValue: string,
@@ -55,6 +56,7 @@ export interface AuthMethodButtonProps {
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const {acrValue, standalone} = props;
   const context = useContext(CriiptoVerifyContext);
+  const {buildAuthorizeUrl} = context;
   const language = (props.language ?? context.uiLocales ?? 'en') as Language;
   const action = (props.action ?? context.action ?? 'login') as Action;
   const message = props.message ?? context.message;
@@ -74,13 +76,9 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
       if (mobileOS) {
         loginHint = `appswitch:${mobileOS} target:web`; 
       }
-      if (message) {
-        loginHint = loginHint ? `${loginHint} ` : '';
-        loginHint += `message:${btoa(message)}`;
-      }
     }
 
-    context.buildAuthorizeUrl({
+    buildAuthorizeUrl({
       redirectUri,
       acrValues: acrValue,
       loginHint
@@ -92,7 +90,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     return () => {
       isSubscribed = false;
     };
-  }, [props.href, acrValue, context.pkce, redirectUri, message]);
+  }, [props.href, buildAuthorizeUrl, acrValue, context.pkce, redirectUri]);
 
   const handleClick : React.MouseEventHandler = (event) => {
     if (props.href) return;

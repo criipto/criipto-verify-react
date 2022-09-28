@@ -52,7 +52,7 @@ export interface CriiptoVerifyProviderOptions {
   completionStrategy?: 'client' | 'openidprovider'
 }
 
-const ACTION_SUPPORTING_ACR_VALUES = [
+export const ACTION_SUPPORTING_ACR_VALUES = [
   'urn:grn:authn:dk:mitid:low',
   'urn:grn:authn:dk:mitid:substantial',
   'urn:grn:authn:dk:mitid:high',
@@ -61,8 +61,14 @@ const ACTION_SUPPORTING_ACR_VALUES = [
   'urn:grn:authn:se:bankid:another-device:qr',
 ];
 
-function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action}) {
-  const {options, action} = params;
+export const MESSAGE_SUPPORTING_ACR_VALUES = [
+  'urn:grn:authn:dk:mitid:low',
+  'urn:grn:authn:dk:mitid:substantial',
+  'urn:grn:authn:dk:mitid:high'
+]
+
+function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action, message?: string}) {
+  const {options, action, message} = params;
   const acrValues = options?.acrValues ? Array.isArray(options?.acrValues) ? options?.acrValues : [options?.acrValues] : [];
   let hints = options?.loginHint ? options?.loginHint.split(' ') : [];
   if (action) {
@@ -80,6 +86,20 @@ function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: 
     }
   }
 
+  if (message) {
+    if (acrValues.length === 1) {
+      if (MESSAGE_SUPPORTING_ACR_VALUES.includes(acrValues[0])) {
+        hints.push(`message:${btoa(message)}`);
+      }
+    } else if (acrValues.length >= 2) {
+      if (acrValues.some(v => MESSAGE_SUPPORTING_ACR_VALUES.includes(v))) {
+        hints.push(`message:${btoa(message)}`);
+      }
+    } else {
+      hints.push(`message:${btoa(message)}`);
+    }
+  }
+
   return hints.length ? hints.join(' ') : undefined;
 }
 
@@ -92,6 +112,13 @@ function parseAction(input?: string) : Action | undefined {
   const action = actionCandidate.replace('action:','');
   if (actions.includes(action as any)) return action as Action;
   return;
+}
+
+function parseMessage(input?: string) : string | undefined {
+  if (!input) return;
+  const segments = input.split(" ");
+  const messageCandidate = segments.find(s => s.startsWith('message:'));
+  return messageCandidate;
 }
 
 const store = sessionStorage;
@@ -132,7 +159,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const uiLocales = props.uiLocales;
   const loginHint = props.loginHint;
   const action = props.action ?? parseAction(loginHint) ?? 'login';
-  const message = props.message;
+  const message = props.message ?? parseMessage(loginHint);
   const sessionStore = props.sessionStore;
 
   const refreshPKCE = () => {
@@ -161,7 +188,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       scope: props.scope ?? options?.scope,
       uiLocales: uiLocales ?? options?.uiLocales,
       pkce: options?.pkce ?? pkce,
-      loginHint: buildLoginHint({options, action}),
+      loginHint: buildLoginHint({options, action, message}),
       extraUrlParams: {
         criipto_sdk: `@criipto/verify-react@${VERSION}`
       }
@@ -173,6 +200,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     props.scope,
     uiLocales,
     action,
+    message,
     redirectUri
   ]);
 

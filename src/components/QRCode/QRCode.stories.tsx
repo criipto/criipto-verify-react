@@ -20,6 +20,11 @@ export default {
       defaultValue: 'login',
       options: ['confirm', 'accept', 'approve', 'sign', 'login']
     },
+    message: {
+      name: 'Message (Danish MitID)',
+      control: 'text',
+      defaultValue: undefined
+    },
     completionStrategy: {
       name: 'Completion strategy',
       control: 'select',
@@ -42,6 +47,7 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
       response={(args as any).response}
       uiLocales={(args as any).language}
       action={(args as any).action}
+      message={(args as any).message}
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={window.location.href}
