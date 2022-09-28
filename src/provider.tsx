@@ -34,6 +34,10 @@ export interface CriiptoVerifyProviderOptions {
    */
   action?: Action
   /**
+   * Will ammend the login_hint parameter with `message:{base64(message)}` which will set a login/aprove message where available (Danish MitID).
+   */
+  message?: string
+  /**
    * Note: In most cases modifying this setting **is not needed**. Defaults will work with almost all React SPA cases.
    * By default @criipto/verify-react will do PKCE on your behalf and return a jwt token.
    * However if you wish you can disable this and get the raw `code` response by setting `response` to 'code'.
@@ -75,6 +79,7 @@ function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: 
       hints.push(`action:${action}`);
     }
   }
+
   return hints.length ? hints.join(' ') : undefined;
 }
 
@@ -127,6 +132,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const uiLocales = props.uiLocales;
   const loginHint = props.loginHint;
   const action = props.action ?? parseAction(loginHint) ?? 'login';
+  const message = props.message;
   const sessionStore = props.sessionStore;
 
   const refreshPKCE = () => {
@@ -253,6 +259,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       domain: client.domain,
       redirectUri,
       action,
+      message,
       pkce,
       store,
       isLoading,
@@ -268,6 +275,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     result,
     claims,
     action,
+    message,
     pkce,
     props.state,
     props.prompt,
