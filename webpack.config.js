@@ -28,7 +28,10 @@ module.exports = {
   plugins: [
     new MiniCssExtractPlugin({
       filename: 'criipto-verify-react.css'
-    })
+    }),
+    new webpack.DefinePlugin({
+      __VERSION__: JSON.stringify(require("./package.json").version)
+    }),
   ],
   module: {
     rules: [

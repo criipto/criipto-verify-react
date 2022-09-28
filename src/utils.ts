@@ -1,5 +1,8 @@
 import { Action } from "./context";
 
+declare var __VERSION__: string;
+export const VERSION = typeof __VERSION__ === "undefined" ? "N/A": __VERSION__;
+
 export const DKMITID_PREFIX = 'urn:grn:authn:dk:mitid';
 export const FTN_PREFIX = 'urn:grn:authn:fi';
 

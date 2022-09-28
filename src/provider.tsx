@@ -5,7 +5,7 @@ import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Cla
 import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
-import { filterAcrValues } from './utils';
+import { filterAcrValues, VERSION } from './utils';
 import jwtDecode from 'jwt-decode';
 
 const SESSION_KEY = `@criipto-verify-react/session`;
@@ -155,7 +155,10 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       scope: props.scope ?? options?.scope,
       uiLocales: uiLocales ?? options?.uiLocales,
       pkce: options?.pkce ?? pkce,
-      loginHint: buildLoginHint({options, action})
+      loginHint: buildLoginHint({options, action}),
+      extraUrlParams: {
+        criipto_sdk: `@criipto/verify-react@${VERSION}`
+      }
     }
   }, [
     pkce,
