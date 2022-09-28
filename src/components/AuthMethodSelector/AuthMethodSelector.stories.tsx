@@ -49,6 +49,11 @@ export default {
       defaultValue: undefined,
       options: ['confirm', 'accept', 'approve', 'sign', 'login']
     },
+    message: {
+      name: 'Message (Danish MitID)',
+      control: 'text',
+      defaultValue: undefined
+    },
     loginHint: {
       name: 'Login hint',
       control: 'text',
@@ -85,6 +90,7 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
       completionStrategy={(args as any).completionStrategy}
       response={(args as any).response}
       action={(args as any).action}
+      message={(args as any).message}
       loginHint={(args as any).loginHint}
       domain={globals.domain}
       clientID={globals.clientID}

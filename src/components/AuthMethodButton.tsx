@@ -46,6 +46,10 @@ export interface AuthMethodButtonProps {
    * Impacts the button text rendered if no text is provided via props.children
    */
   action?: Action
+  /**
+   * Will ammend the login_hint parameter with `message:{base64(message)}` which will set a login/aprove message where available (Danish MitID).
+   */
+  message?: string
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
@@ -53,6 +57,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const context = useContext(CriiptoVerifyContext);
   const language = (props.language ?? context.uiLocales ?? 'en') as Language;
   const action = (props.action ?? context.action ?? 'login') as Action;
+  const message = props.message ?? context.message;
   const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
   const [backdrop, setBackdrop] = useState<React.ReactElement | null>(null);
 
@@ -65,8 +70,14 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     let isSubscribed = true;
     let loginHint : string | undefined = undefined;
 
-    if (acrValue.startsWith('urn:grn:authn:dk:mitid') && mobileOS) {
-      loginHint = `appswitch:${mobileOS} target:web`;
+    if (acrValue.startsWith('urn:grn:authn:dk:mitid')) {
+      if (mobileOS) {
+        loginHint = `appswitch:${mobileOS} target:web`; 
+      }
+      if (message) {
+        loginHint = loginHint ? `${loginHint} ` : '';
+        loginHint += `message:${btoa(message)}`;
+      }
     }
 
     context.buildAuthorizeUrl({
@@ -81,7 +92,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     return () => {
       isSubscribed = false;
     };
-  }, [props.href, acrValue, context.pkce, redirectUri]);
+  }, [props.href, acrValue, context.pkce, redirectUri, action, message]);
 
   const handleClick : React.MouseEventHandler = (event) => {
     if (props.href) return;

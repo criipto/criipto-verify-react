@@ -33,6 +33,7 @@ export interface CriiptoVerifyContextInterface {
   domain: string
   redirectUri?: string,
   action: Action,
+  message?: string,
   pkce?: PKCE | PKCEPublicPart,
   store: Storage,
   isLoading: boolean,
