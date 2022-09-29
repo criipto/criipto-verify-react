@@ -114,11 +114,22 @@ function parseAction(input?: string) : Action | undefined {
   return;
 }
 
+function tryBase64Decode(input: string) {
+  try {
+    return atob(input);
+  }
+  catch {
+    return null;
+  }
+}
 function parseMessage(input?: string) : string | undefined {
   if (!input) return;
   const segments = input.split(" ");
   const messageCandidate = segments.find(s => s.startsWith('message:'));
-  return messageCandidate;
+  if (!messageCandidate) return;
+
+  const message = messageCandidate.replace('message:','');
+  return tryBase64Decode(message) ?? message;
 }
 
 const store = sessionStorage;
