@@ -7,6 +7,7 @@ import CriiptoVerifyContext from '../context';
 const QRCode : React.FC<{
   margin?: number,
   className?: string,
+  acrValues?: string[],
   children: (props: {
     qrElement: React.ReactElement
     /**
@@ -31,13 +32,14 @@ const QRCode : React.FC<{
 }> = (props) => {
   const {children, margin, className} = props;
   const elementRef = useRef<HTMLDivElement>(null);
-  const {client, buildOptions, buildAuthorizeUrl, handleResponse, pkce, store} = useContext(CriiptoVerifyContext);
+  const {client, buildOptions, buildAuthorizeUrl, handleResponse, pkce, store, acrValues: configurationAcrValues} = useContext(CriiptoVerifyContext);
   const [requestId, setRequestId] = useState(() => Math.random().toString());
   const [isAcknowledged, setAcknowledged] = useState(false);
   const [isCancelled, setCancelled] = useState(false);
   const [error, setError] = useState<OAuth2Error | Error | null>(null);
   const [criiptoConfiguration, setCriiptoConfiguration] = useState<CriiptoConfiguration | null>(null);
-  const [redirectLink, setRedirectLink] = useState<string | undefined>(undefined);
+
+  const acrValues = props.acrValues ?? configurationAcrValues ?? [];
 
   useEffect(() => {
     let isSubsribed = true;
@@ -52,30 +54,12 @@ const QRCode : React.FC<{
     }
   }, [client]);
 
-  useEffect(() => {
-    if (!criiptoConfiguration) return;
-    let isSubscribed = true;
-    buildAuthorizeUrl().then(url => {
-      if (!isSubscribed) return;
-      const intermediaryUrl = (criiptoConfiguration.client.qr_intermediary_url ?? criiptoConfiguration.qr_intermediary_url).replace('/{id}', '').replace('{id}', '');
-      const authorizeUrl = new URL(url);
-      const authorizeParams = new URLSearchParams(authorizeUrl.search);
-      authorizeParams.set('domain', authorizeUrl.hostname);
-      authorizeUrl.hostname = new URL(intermediaryUrl).hostname;
-      authorizeUrl.pathname = new URL(intermediaryUrl).pathname + '/authorize';
-
-      authorizeUrl.search = authorizeParams.toString();
-      setRedirectLink(authorizeUrl.toString());
-    });
-    return () => {
-      isSubscribed = false;
-    };
-  }, [buildAuthorizeUrl, criiptoConfiguration]);
-
   const redirect = useCallback(async () => {
     if (!criiptoConfiguration) return;
     const intermediaryUrl = (criiptoConfiguration.client.qr_intermediary_url ?? criiptoConfiguration.qr_intermediary_url).replace('/{id}', '').replace('{id}', '');
-    const authorizeUrl = new URL(await buildAuthorizeUrl());
+    const authorizeUrl = new URL(await buildAuthorizeUrl({
+      acrValues
+    }));
     const authorizeParams = new URLSearchParams(authorizeUrl.search);
     authorizeParams.set('domain', authorizeUrl.hostname);
     authorizeUrl.hostname = new URL(intermediaryUrl).hostname;
@@ -92,16 +76,16 @@ const QRCode : React.FC<{
     }
 
     window.location.href = authorizeUrl.toString();
-  }, [buildAuthorizeUrl, criiptoConfiguration])
+  }, [buildAuthorizeUrl, criiptoConfiguration, acrValues])
 
   const authorize = useCallback(() => {
     return client.qr.authorize(
       elementRef.current!,
       {
-        ...buildOptions(),
+        ...buildOptions({acrValues}),
         margin
     });
-  }, [client, buildOptions, margin]);
+  }, [client, buildOptions, margin, acrValues]);
 
   useEffect (() => {
     if (!elementRef.current) return;

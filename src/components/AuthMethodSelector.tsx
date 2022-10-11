@@ -22,25 +22,10 @@ function isSingle(acrValue: string, acrValues: string[]) {
 }
 
 export default function AuthMethodSelector(props: AuthMethodSelectorProps) {
-  const {fetchOpenIDConfiguration, action, uiLocales} = useContext(CriiptoVerifyContext);
+  const {action, uiLocales, acrValues: configurationAcrValues} = useContext(CriiptoVerifyContext);
   const language = props.language || uiLocales as Language || 'en';
-  const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
 
-  useEffect(() => {
-    if (props.acrValues) return;
-
-    let isSubscribed = true;
-    (async () => {
-      const configuration = await fetchOpenIDConfiguration();
-      if (isSubscribed) setConfiguration(configuration);
-    })();
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [props.acrValues]);
-
-  const acrValues = filterAcrValues(props.acrValues ?? configuration?.acr_values_supported ?? []);
+  const acrValues = filterAcrValues(props.acrValues ?? configurationAcrValues ?? []);
   const onlySweden = !!acrValues.length && acrValues.every(s => s.startsWith('urn:grn:authn:se:bankid:'));
   
   if (onlySweden) {

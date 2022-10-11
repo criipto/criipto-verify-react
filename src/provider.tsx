@@ -65,7 +65,7 @@ export const MESSAGE_SUPPORTING_ACR_VALUES = [
   'urn:grn:authn:dk:mitid:low',
   'urn:grn:authn:dk:mitid:substantial',
   'urn:grn:authn:dk:mitid:high'
-]
+];
 
 function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action, message?: string}) {
   const {options, action, message} = params;

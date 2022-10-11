@@ -5,6 +5,35 @@ import QRCode from '../QRCode';
 import CriiptoVerifyProvider from '../../provider';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
+const ALL_ACR_VALUES = [
+  'urn:grn:authn:be:eid:verified',
+  'urn:grn:authn:de:sofort',
+  'urn:grn:authn:dk:mitid:high',
+  'urn:grn:authn:dk:mitid:low',
+  'urn:grn:authn:dk:mitid:substantial',
+  'urn:grn:authn:dk:nemid:moces',
+  'urn:grn:authn:dk:nemid:moces:codefile',
+  'urn:grn:authn:dk:nemid:poces',
+  'urn:grn:authn:fi:all',
+  'urn:grn:authn:fi:bank-id',
+  'urn:grn:authn:fi:mobile-id',
+  'urn:grn:authn:itsme:advanced',
+  'urn:grn:authn:itsme:basic',
+  'urn:grn:authn:nl:digid:basic',
+  'urn:grn:authn:nl:digid:high',
+  'urn:grn:authn:nl:digid:middle',
+  'urn:grn:authn:nl:digid:substantial',
+  'urn:grn:authn:no:bankid',
+  'urn:grn:authn:no:bankid:central',
+  'urn:grn:authn:no:bankid:mobile',
+  'urn:grn:authn:no:bankid:substantial',
+  'urn:grn:authn:no:vipps',
+  'urn:grn:authn:se:bankid:another-device',
+  'urn:grn:authn:se:bankid:another-device:qr',
+  'urn:grn:authn:se:bankid:same-device'
+];
+
+
 export default {
   title: 'Components/QRCode',
   argTypes: {
@@ -36,7 +65,12 @@ export default {
       control: 'select',
       defaultValue: 'token',
       options: ['token', 'code']
-    }
+    },
+    acrValues: {
+      options: ALL_ACR_VALUES,
+      control: { type: 'multi-select' },
+      defaultValue: undefined
+    },
   }
 } as ComponentMeta<typeof QRCode>;
 
@@ -53,7 +87,7 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
       redirectUri={window.location.href}
     >
       <StoryResponseRenderer>
-        <QRCode margin={args.margin}>
+        <QRCode margin={args.margin} acrValues={args.acrValues}>
           {({qrElement, isAcknowledged, isCancelled, isEnabled, retry, error, redirect}) => (
             <div style={{width: '400px'}}>
               {isEnabled === false ? (
