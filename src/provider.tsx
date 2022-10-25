@@ -137,15 +137,13 @@ function parseMessage(input?: string) : string | undefined {
   return tryBase64Decode(message) ?? message;
 }
 
-const store = sessionStorage;
-
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
   const redirectUri = props.redirectUri || (window.location.origin + window.location.pathname);
 
   const client = useMemo(() => new CriiptoAuth({
     domain: props.domain,
     clientID: props.clientID,
-    store,
+    store: sessionStorage,
     redirectUri: props.redirectUri,
     protocol: props.protocol
   }), [props.domain, props.clientID, props.redirectUri, props.protocol]);
@@ -182,12 +180,12 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const refreshPKCE = () => {
     if (props.pkce) return;
     if (responseType !== 'token' || completionStrategy !== 'client') {
-      clearPKCEState(store);
+      clearPKCEState(sessionStorage);
       setPKCE(undefined);
       return;
     }
 
-    clearPKCEState(store);
+    clearPKCEState(sessionStorage);
 
     (async () => {
       const pkce = await generatePKCE();
@@ -306,7 +304,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       action,
       message,
       pkce,
-      store,
+      store: sessionStorage,
       isLoading,
       acrValues: configuration ? filterAcrValues(configuration.acr_values_supported) : undefined,
       client,
