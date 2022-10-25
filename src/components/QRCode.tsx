@@ -61,7 +61,7 @@ const QRCode : React.FC<{
       acrValues
     }));
     const authorizeParams = new URLSearchParams(authorizeUrl.search);
-    authorizeParams.set('domain', authorizeUrl.hostname);
+    authorizeParams.set('domain', authorizeUrl.host);
     authorizeUrl.host = new URL(intermediaryUrl).host;
     authorizeUrl.pathname = new URL(intermediaryUrl).pathname + '/authorize';
     authorizeUrl.search = authorizeParams.toString();
