@@ -69,7 +69,7 @@ const initialContext = {
   domain: '',
   action: 'login' as Action,
   pkce: undefined,
-  store: sessionStorage,
+  store: null as any as Storage,
   isLoading: false,
   client: null as any as CriiptoAuth
 };
