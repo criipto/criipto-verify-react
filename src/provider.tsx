@@ -13,6 +13,11 @@ const SESSION_KEY = `@criipto-verify-react/session`;
 export interface CriiptoVerifyProviderOptions {
   domain: string
   clientID: string
+  /**
+   * @deprecated Development use only
+   */
+  protocol?: "https" | "http"
+
   redirectUri?: string
   children: React.ReactNode
   pkce?: PKCEPublicPart
@@ -141,8 +146,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     domain: props.domain,
     clientID: props.clientID,
     store,
-    redirectUri: props.redirectUri
-  }), [props.domain, props.clientID, props.redirectUri]);
+    redirectUri: props.redirectUri,
+    protocol: props.protocol
+  }), [props.domain, props.clientID, props.redirectUri, props.protocol]);
 
   const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
   useEffect(() => {
