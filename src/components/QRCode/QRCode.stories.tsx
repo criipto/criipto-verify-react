@@ -71,6 +71,11 @@ export default {
       control: { type: 'multi-select' },
       defaultValue: undefined
     },
+    state: {
+      name: 'State',
+      control: 'text',
+      defaultValue: undefined
+    },
   }
 } as ComponentMeta<typeof QRCode>;
 
@@ -82,6 +87,7 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
       uiLocales={(args as any).language}
       action={(args as any).action}
       message={(args as any).message}
+      state={(args as any).state}
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={window.location.href}

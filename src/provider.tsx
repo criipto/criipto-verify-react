@@ -231,9 +231,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       if (!_redirectUri) throw new Error('redirectUri must be configured globally or per authentication component');
 
       await client.processResponse(response, {code_verifier: params.pkce.code_verifier, redirect_uri: _redirectUri}).then(response => {
-        if (response?.code) setResult({code: response.code});
+        if (response?.code) setResult({code: response.code, state: response.state});
         else if (response?.id_token) {
-          setResult({id_token: response.id_token});
+          setResult({id_token: response.id_token, state: response.state});
           sessionStore?.setItem(SESSION_KEY, response.id_token);
         }
         else setResult(null);
@@ -241,12 +241,12 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
         setResult(err);
       });
     } else {
-      if (response?.code) setResult({code: response.code});
+      if (response?.code) setResult({code: response.code, state: response.state});
       else if (response?.id_token) {
-        setResult({id_token: response.id_token});
+        setResult({id_token: response.id_token, state: response.state});
         sessionStore?.setItem(SESSION_KEY, response.id_token);
       }
-      else if (response?.error) setResult(new OAuth2Error(response.error, response.error_description));
+      else if (response?.error) setResult(new OAuth2Error(response.error, response.error_description, response.state));
       else setResult(null);
     }
 

@@ -68,7 +68,7 @@
   },
   "homepage": "https://github.com/criipto/criipto-verify-react#readme",
   "dependencies": {
-    "@criipto/auth-js": "^3.5.0",
+    "@criipto/auth-js": "^3.5.1",
     "jwt-decode": "^3.1.2"
   }
 }
