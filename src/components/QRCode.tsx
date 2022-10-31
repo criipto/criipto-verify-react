@@ -1,6 +1,6 @@
 import { OAuth2Error, QrNotEnabledError, savePKCEState, UserCancelledError } from '@criipto/auth-js';
 import CriiptoConfiguration from '@criipto/auth-js/dist/CriiptoConfiguration';
-import React, { useContext, useRef, useEffect , useState, useCallback } from 'react';
+import React, { useContext, useRef, useEffect, useLayoutEffect, useState, useCallback } from 'react';
 import CriiptoVerifyContext from '../context';
 
 // Inlined types less readable (for library developers) but improves intellisense for consumers
@@ -38,6 +38,7 @@ const QRCode : React.FC<{
   const [isCancelled, setCancelled] = useState(false);
   const [error, setError] = useState<OAuth2Error | Error | null>(null);
   const [criiptoConfiguration, setCriiptoConfiguration] = useState<CriiptoConfiguration | null>(null);
+  const isEnabled = criiptoConfiguration?.client.qr_enabled;
 
   const acrValues = props.acrValues ?? configurationAcrValues ?? [];
 
@@ -88,9 +89,10 @@ const QRCode : React.FC<{
     });
   }, [client, buildOptions, margin, acrValues]);
 
-  useEffect (() => {
+  useLayoutEffect (() => {
     if (!elementRef.current) return;
     if (error) return;
+    if (!isEnabled) return;
 
     const promise = authorize();
 
@@ -118,7 +120,7 @@ const QRCode : React.FC<{
     return () => {
       promise.cancel();
     };
-  }, [authorize, pkce, handleResponse, requestId, error]);
+  }, [authorize, pkce, handleResponse, requestId, error, isEnabled]);
 
   const handleRetry = () => {
     setAcknowledged(false);
