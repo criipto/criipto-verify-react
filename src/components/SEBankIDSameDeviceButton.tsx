@@ -66,7 +66,8 @@ export default function SEBankIDSameDeviceButton(props: Props) {
 
     await handleResponse(params, {
       pkce: required.pkce,
-      redirectUri
+      redirectUri,
+      source: 'SEBankIDSameDeviceButton'
     });
   }, [completionStrategy, pkce]);
 

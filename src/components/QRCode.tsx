@@ -103,7 +103,8 @@ const QRCode : React.FC<{
     promise.then(response => {
       if (promise.cancelled) return;
       handleResponse(response, {
-        pkce: pkce && "code_verifier" in pkce ? pkce : undefined
+        pkce: pkce && "code_verifier" in pkce ? pkce : undefined,
+        source: 'QRCode'
       });
     }).catch(err => {
       if (err instanceof UserCancelledError) {
@@ -114,7 +115,7 @@ const QRCode : React.FC<{
       if (promise.cancelled) return;
 
       setError(err);
-      handleResponse(err, {});
+      handleResponse(err, {source: 'QRCode'});
     });
 
     return () => {

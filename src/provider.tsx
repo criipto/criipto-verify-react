@@ -1,7 +1,7 @@
 import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
-import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions} from './context';
+import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions, ResultSource} from './context';
 import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
@@ -223,7 +223,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     return await client.buildAuthorizeUrl(client.buildAuthorizeParams(buildOptions(options)));
   }, [client, buildOptions]);
 
-  const handleResponse = useCallback(async (response : AuthorizeResponse | (Error | OAuth2Error), params: {pkce?: PKCE, redirectUri?: string}) => {
+  const handleResponse = useCallback(async (response : AuthorizeResponse | (Error | OAuth2Error), params: {pkce?: PKCE, redirectUri?: string, source?: ResultSource}) => {
     if (response instanceof Error) {
       setResult(response);
     } else if (params.pkce && responseType === 'token') {
@@ -231,9 +231,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       if (!_redirectUri) throw new Error('redirectUri must be configured globally or per authentication component');
 
       await client.processResponse(response, {code_verifier: params.pkce.code_verifier, redirect_uri: _redirectUri}).then(response => {
-        if (response?.code) setResult({code: response.code, state: response.state});
+        if (response?.code) setResult({code: response.code, state: response.state, source: params.source});
         else if (response?.id_token) {
-          setResult({id_token: response.id_token, state: response.state});
+          setResult({id_token: response.id_token, state: response.state, source: params.source});
           sessionStore?.setItem(SESSION_KEY, response.id_token);
         }
         else setResult(null);
@@ -241,9 +241,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
         setResult(err);
       });
     } else {
-      if (response?.code) setResult({code: response.code, state: response.state});
+      if (response?.code) setResult({code: response.code, state: response.state, source: params.source});
       else if (response?.id_token) {
-        setResult({id_token: response.id_token, state: response.state});
+        setResult({id_token: response.id_token, state: response.state, source: params.source});
         sessionStore?.setItem(SESSION_KEY, response.id_token);
       }
       else if (response?.error) setResult(new OAuth2Error(response.error, response.error_description, response.state));
@@ -342,7 +342,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     const params = parseAuthorizeResponseFromLocation(window.location);
     if (params.code && responseType === 'code') {
       setIsLoading(false);
-      setResult({code: params.code});
+      setResult({code: params.code, source: 'redirect'});
       refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
       return;
     }
@@ -350,8 +350,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     client.redirect.match().then(response => {
       if (!isSubscribed) return;
       setIsLoading(false);
-      if (response?.code) setResult({code: response.code});
-      else if (response?.id_token) setResult({id_token: response.id_token});
+      if (response?.code) setResult({code: response.code, source: 'redirect'});
+      else if (response?.id_token) setResult({id_token: response.id_token, source: 'redirect'});
       else setResult(null);
       refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
     }).catch((err: OAuth2Error) => {

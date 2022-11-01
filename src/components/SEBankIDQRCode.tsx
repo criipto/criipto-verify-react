@@ -98,7 +98,11 @@ export default function SEBankIDQrCode(props: Props) {
       return;
     }
     setError(new Error(error));
-    handleResponse({error}, {pkce: pkce && "code_verifier" in pkce ? pkce : undefined, redirectUri});
+    handleResponse({error}, {
+      pkce: pkce && "code_verifier" in pkce ? pkce : undefined,
+      redirectUri,
+      source: 'SEBankIDQrCode'
+    });
   }, [pkce, redirectUri]);
 
   const handleComplete = useCallback(async (completeUrl: string) => {
@@ -121,7 +125,8 @@ export default function SEBankIDQrCode(props: Props) {
 
     await handleResponse(params, {
       pkce: required.pkce && "code_verifier" in required.pkce ? required.pkce : undefined,
-      redirectUri
+      redirectUri,
+      source: 'SEBankIDQrCode'
     });
   }, [completionStrategy, pkce]);
 

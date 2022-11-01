@@ -2,7 +2,8 @@ import CriiptoAuth, {OpenIDConfiguration, AuthorizeUrlParamsOptional, PKCE, Auth
 import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
 import { createContext } from 'react';
 
-export type Result = {id_token: string, state?: string} | {code: string, state?: string} | OAuth2Error | Error;
+export type ResultSource = 'QRCode' | 'SEBankIDQrCode' | 'SEBankIDSameDeviceButton' | 'redirect';
+export type Result = {id_token: string, state?: string, source?: ResultSource} | {code: string, state?: string, source?: ResultSource} | OAuth2Error | Error;
 export const actions = ['confirm', 'accept', 'approve', 'sign', 'login'] as const;
 export type Action = typeof actions[number];
 export type Claims = {
@@ -25,7 +26,7 @@ export interface CriiptoVerifyContextInterface {
   buildAuthorizeUrl: (options?: AuthorizeUrlParamsOptional) => Promise<string>,
   generatePKCE: () => Promise<PKCE | undefined>,
   buildOptions: (options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) => AuthorizeUrlParamsOptional
-  handleResponse: (response: AuthorizeResponse, params: {pkce?: PKCE, redirectUri?: string}) => Promise<void>,
+  handleResponse: (response: AuthorizeResponse, params: {pkce?: PKCE, redirectUri?: string, source?: ResultSource}) => Promise<void>,
   responseType: 'token' | 'code'
   completionStrategy: 'client' | 'openidprovider',
   result: Result | null
