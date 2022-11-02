@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { AuthorizeResponse, OAuth2Error } from '@criipto/auth-js';
+import { AuthorizeResponse, OAuth2Error, PKCE } from '@criipto/auth-js';
 import QRCode from 'qrcode';
 import { assertUnreachableLanguage, Language } from '../utils';
 
@@ -55,18 +55,22 @@ function searchParamsToPOJO(input: URLSearchParams) {
 export default function SEBankIDQrCode(props: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const {buildAuthorizeUrl, completionStrategy, pkce, handleResponse, redirectUri: defaultRedirectURi, uiLocales} = useContext(CriiptoVerifyContext);
+  const {buildAuthorizeUrl, completionStrategy, handleResponse, generatePKCE, redirectUri: defaultRedirectURi, uiLocales} = useContext(CriiptoVerifyContext);
   const language = (props.language ?? uiLocales ?? 'en') as Language;
   const redirectUri = props.redirectUri || defaultRedirectURi;
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [pollUrl, setPollUrl] = useState<string | null>(null);
   const [error, setError] = useState<OAuth2Error | Error | null>(null);
+  const [pkce, setPKCE] = useState<PKCE | undefined>(undefined);
   const [isCompleting, setCompleting] = useState(false);
 
   const refresh = useCallback(async () => {
     setError(null);
     setQrCode(null);
     setPollUrl(null);
+    setPKCE(undefined);
+
+    const pkce = await generatePKCE();
 
     buildAuthorizeUrl({
       acrValues: 'urn:grn:authn:se:bankid:another-device:qr',
@@ -77,11 +81,13 @@ export default function SEBankIDQrCode(props: Props) {
       return fetch(url).then(response => response.json() as Promise<QrResponse>);
     })
     .then(response => {
+      setPKCE(pkce);
       setQrCode(response.initialQrCode);
       setPollUrl(response.pollUrl);
     })
     .catch(console.error);
-  }, [buildAuthorizeUrl, redirectUri, pkce]);
+  }, [buildAuthorizeUrl, redirectUri]);
+
   useEffect(() => {
     refresh();
   }, [refresh]);
@@ -99,7 +105,7 @@ export default function SEBankIDQrCode(props: Props) {
     }
     setError(new Error(error));
     handleResponse({error}, {
-      pkce: pkce && "code_verifier" in pkce ? pkce : undefined,
+      pkce,
       redirectUri,
       source: 'SEBankIDQrCode'
     });
@@ -124,7 +130,7 @@ export default function SEBankIDQrCode(props: Props) {
     const params = searchParamsToPOJO(url.searchParams) as AuthorizeResponse;
 
     await handleResponse(params, {
-      pkce: required.pkce && "code_verifier" in required.pkce ? required.pkce : undefined,
+      pkce: required.pkce,
       redirectUri,
       source: 'SEBankIDQrCode'
     });
