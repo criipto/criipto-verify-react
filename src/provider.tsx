@@ -2,7 +2,7 @@ import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions, ResultSource} from './context';
-import { AuthorizeResponse, PopupAuthorizeParams, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
+import { AuthorizeResponse, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
 import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues, VERSION } from './utils';
@@ -22,6 +22,7 @@ export interface CriiptoVerifyProviderOptions {
   children: React.ReactNode
   pkce?: PKCEPublicPart
   state?: string
+  nonce?: string
   prompt?: Prompt
   scope?: string
   uiLocales?: string
@@ -199,6 +200,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       responseType: 'code' as ResponseType,
       ...options || {},
       state: props.state ?? options?.state,
+      nonce: props.nonce ?? options?.nonce,
       prompt: props.prompt ?? options?.prompt,
       scope: props.scope ?? options?.scope,
       uiLocales: uiLocales ?? options?.uiLocales,
@@ -211,6 +213,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   }, [
     pkce,
     props.state,
+    props.nonce,
     props.prompt,
     props.scope,
     uiLocales,

@@ -76,6 +76,11 @@ export default {
       control: 'text',
       defaultValue: undefined
     },
+    nonce: {
+      name: 'Nonce',
+      control: 'text',
+      defaultValue: undefined
+    },
   }
 } as ComponentMeta<typeof QRCode>;
 
@@ -88,6 +93,7 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
       action={(args as any).action}
       message={(args as any).message}
       state={(args as any).state}
+      nonce={(args as any).nonce}
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={window.location.href}
