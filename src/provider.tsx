@@ -55,7 +55,12 @@ export interface CriiptoVerifyProviderOptions {
    * by interpreting URL parameters and responses with `useCriiptoVerify()` via the default value 'client'.
    * If you wish to only render a UI and redirect to the Criipto IDP for server side code exchange, you can choose 'openidprovider'.
    */
-  completionStrategy?: 'client' | 'openidprovider'
+  completionStrategy?: 'client' | 'openidprovider',
+
+  /**
+   * @deprecated Criipto internal use
+   */
+  criiptoSdk?: null | string
 }
 
 export const ACTION_SUPPORTING_ACR_VALUES = [
@@ -206,8 +211,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       uiLocales: uiLocales ?? options?.uiLocales,
       pkce: options?.pkce ?? pkce,
       loginHint: buildLoginHint({options, action, message}),
-      extraUrlParams: (window as any)?.__DISABLE_CRIIPTO_SDK ? {
-        criipto_sdk: null
+      extraUrlParams: props.criiptoSdk !== undefined ? {
+        criipto_sdk: props.criiptoSdk
       } : {
         criipto_sdk: `@criipto/verify-react@${VERSION}`
       }
@@ -221,7 +226,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     uiLocales,
     action,
     message,
-    redirectUri
+    redirectUri,
+    props.criiptoSdk
   ]);
 
   const buildAuthorizeUrl = useCallback(async (options?: AuthorizeUrlParamsOptional) => {
