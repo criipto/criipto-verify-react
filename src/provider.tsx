@@ -206,7 +206,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       uiLocales: uiLocales ?? options?.uiLocales,
       pkce: options?.pkce ?? pkce,
       loginHint: buildLoginHint({options, action, message}),
-      extraUrlParams: {
+      extraUrlParams: (window as any)?.__DISABLE_CRIIPTO_SDK ? {
+        criipto_sdk: null
+      } : {
         criipto_sdk: `@criipto/verify-react@${VERSION}`
       }
     }
