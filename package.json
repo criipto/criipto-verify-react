@@ -1,7 +1,7 @@
 {
   "name": "@criipto/verify-react",
   "private": false,
-  "version": "0.20.1",
+  "version": "0.20.2",
   "description": "Verify SDK for React Single Page Applications",
   "main": "dist/criipto-verify-react.cjs.js",
   "types": "dist/index.d.ts",
