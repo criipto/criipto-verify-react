@@ -161,8 +161,8 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 		if (suffix === 'same-device') {
 			if (language === 'en') subtitle = 'On this device';
 			if (language === 'da') subtitle = 'På denne enhed';
-			if (language === 'sv') subtitle = 'På denna enheten';
-			if (language === 'nb') subtitle = 'På denne enheten';
+			if (language === 'sv') subtitle = 'På denna enhet';
+			if (language === 'nb') subtitle = 'På denne enhet';
 		}
 		if (suffix === 'another-device') {
 			if (language === 'en') subtitle = 'With your SSN';
