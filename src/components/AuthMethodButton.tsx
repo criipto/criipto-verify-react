@@ -151,7 +151,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
         className={className}
         logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
       >
-        {contents}
+        <span>{contents}</span>
       </SEBankIDSameDeviceButton>
     );
   }
@@ -159,7 +159,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const inner = (
     <React.Fragment>
       <AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />
-      {contents}
+      <span>{contents}</span>
     </React.Fragment>
   );
 
