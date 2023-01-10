@@ -19,6 +19,13 @@
   background: #604FED;
 }
 
+@media (max-width: 320px) {
+  .criipto-eid-btn {
+    padding-right: 6px;
+    padding-left: 6px;
+  }
+}
+
 .criipto-eid-btn:hover, .criipto-eid-btn:active {
   color: #FFF;
 }
@@ -30,6 +37,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .criipto-eid-btn .criipto-eid-logo img {
