@@ -81,6 +81,11 @@ export default {
       control: 'text',
       defaultValue: undefined
     },
+    loginHint: {
+      name: 'Login hint',
+      control: 'text',
+      defaultValue: undefined
+    },
   }
 } as ComponentMeta<typeof QRCode>;
 
@@ -97,6 +102,7 @@ const Template: ComponentStory<typeof QRCode> = (args, {globals}) => {
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={window.location.href}
+      loginHint={(args as any).loginHint}
     >
       <StoryResponseRenderer>
         <QRCode margin={args.margin} acrValues={args.acrValues}>

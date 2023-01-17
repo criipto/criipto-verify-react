@@ -78,10 +78,10 @@ export const MESSAGE_SUPPORTING_ACR_VALUES = [
   'urn:grn:authn:dk:mitid:high'
 ];
 
-function buildLoginHint(params: {options?: AuthorizeUrlParamsOptional, action?: Action, message?: string}) {
+function buildLoginHint(loginHint: string | undefined | null, params: {options?: AuthorizeUrlParamsOptional, action?: Action, message?: string}) {
   const {options, action, message} = params;
   const acrValues = options?.acrValues ? Array.isArray(options?.acrValues) ? options?.acrValues : [options?.acrValues] : [];
-  let hints = options?.loginHint ? options?.loginHint.split(' ') : [];
+  let hints = (loginHint ? loginHint.split(' ') : []).concat(options?.loginHint ? options?.loginHint.split(' ') : []);
   if (action) {
     hints = hints.filter(h => !h.startsWith('action:'));
     if (acrValues.length === 1) {
@@ -145,7 +145,6 @@ function parseMessage(input?: string) : string | undefined {
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
   const redirectUri = props.redirectUri || (window.location.origin + window.location.pathname);
-
   const client = useMemo(() => new CriiptoAuth({
     domain: props.domain,
     clientID: props.clientID,
@@ -210,7 +209,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       scope: props.scope ?? options?.scope,
       uiLocales: uiLocales ?? options?.uiLocales,
       pkce: options?.pkce ?? pkce,
-      loginHint: buildLoginHint({options, action, message}),
+      loginHint: buildLoginHint(props.loginHint, {options, action, message}),
       extraUrlParams: props.criiptoSdk !== undefined ? {
         criipto_sdk: props.criiptoSdk
       } : {
@@ -227,7 +226,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     action,
     message,
     redirectUri,
-    props.criiptoSdk
+    props.criiptoSdk,
+    props.loginHint
   ]);
 
   const buildAuthorizeUrl = useCallback(async (options?: AuthorizeUrlParamsOptional) => {
