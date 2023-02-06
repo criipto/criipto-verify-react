@@ -46,6 +46,7 @@ Use the `useCriiptoVerify` hook + the `AuthMethodSelector` component in your Rea
 // src/App.js
 import React from 'react';
 import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
+import '@criipto/verify-react/dist/criipto-verify-react.css';
 
 export default function App() {
   const {result} = useCriiptoVerify();
@@ -94,7 +95,7 @@ ReactDOM.render(
 );
 ```
 
-When a sessionStore is configured the library will store the id_token your chosen storage (sessionStorage or localStorage) and invalidate the token once it expires.
+When a `sessionStore` is configured the library will store the id_token in your chosen storage (sessionStorage or localStorage) and invalidate the token once it expires.
 
 The library will also attempt to retrieve a user token on page load via SSO (if your criipto domain has SSO enabled).
 
@@ -128,6 +129,18 @@ export default function App() {
     </React.Fragment>
   }
 }
+```
+
+### Logging Out
+
+`@criipto/verify-react` offers the logout method you can use to clear session storage and log out of any existing SSO session. 
+
+```jsx
+const {logout} = useCriiptoVerify();
+...
+<button onClick={()=>logout(window.location.href)}>
+  Log Out
+</button>
 ```
 
 ## XHR/fetch caveats
