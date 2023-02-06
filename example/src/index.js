@@ -8,10 +8,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <CriiptoVerifyProvider
-      domain="natalia-test.criipto.id"
-      clientID="urn:my:application:identifier:9676"
+      domain="samples.criipto.id"
+      clientID="urn:criipto:samples:criipto-verify-react"
       redirectUri="http://localhost:3000"
-      response="token"
       sessionStore={window.localStorage}
     >
       <App />

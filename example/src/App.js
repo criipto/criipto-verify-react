@@ -9,7 +9,7 @@ import './App.css';
 import '@criipto/verify-react/dist/criipto-verify-react.css';
 
 function App() {
-  const { claims, isLoading } = useCriiptoVerify();
+  const { claims, isLoading, logout } = useCriiptoVerify();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
 
@@ -17,21 +17,12 @@ function App() {
     if (claims) {
       setCurrentUser(claims);
       setIsLoggedIn(true);
-      localStorage.setItem('user', JSON.stringify(claims));
     }
   }, [claims]);
 
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-      setIsLoggedIn(true);
-    }
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem('user');
     setIsLoggedIn(false);
+    logout('http://localhost:3000');
   };
 
   return (
