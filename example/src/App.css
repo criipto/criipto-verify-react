@@ -1,0 +1,90 @@
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  text-align: center;
+}
+
+.App-header,
+.App-footer {
+  min-height: 10vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #6f7d98;
+  color: white;
+}
+
+.App-header p {
+  margin: 10px;
+}
+
+.logout-btn {
+  background-color: #eb827a;
+  color: #fff;
+  font-weight: bold;
+  padding: 8px 10px;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  margin-right: 10px;
+  margin-left: auto;
+}
+
+.main {
+  flex: 1;
+  min-height: 80vh;
+  font-size: calc(10px + 2vmin);
+  background-color: #e6f2ff;
+  color: rgb(15, 27, 73);
+}
+
+.login,
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.user-dashboard {
+  background-color: #e6f2ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+.dashboard-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.dashboard-list li {
+  width: 200px;
+  padding: 10px;
+  margin: 10px;
+  background-color: #f7f7f7;
+  border: 1px solid rgb(15, 27, 73);
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 2px 2px 10px rgba(15, 27, 73, 0.2);
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+.dashboard-list li:hover {
+  box-shadow: 2px 2px 20px rgba(15, 27, 73, 0.4);
+}
+.dashboard-list li span {
+  display: block;
+  margin-bottom: 10px;
+}
