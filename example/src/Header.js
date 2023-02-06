@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
 
-function Header({ handleLogout, isLoggedIn }) {
+function Header({ handleLogout, user }) {
   return (
     <header className="App-header">
       <p>Example Pension App</p>
-      {isLoggedIn && (
+      {user && (
         <button className="logout-btn" onClick={handleLogout}>
           Log Out
         </button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
 import Header from './Header';
 import Login from './Login';
@@ -10,27 +10,17 @@ import '@criipto/verify-react/dist/criipto-verify-react.css';
 
 function App() {
   const { claims, isLoading, logout } = useCriiptoVerify();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState({});
-
-  useEffect(() => {
-    if (claims) {
-      setCurrentUser(claims);
-      setIsLoggedIn(true);
-    }
-  }, [claims]);
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
     logout('http://localhost:3000');
   };
 
   return (
     <React.Fragment>
-      <Header handleLogout={handleLogout} isLoggedIn={isLoggedIn} />
+      <Header handleLogout={handleLogout} user={claims} />
       {isLoading && <Loading />}
-      {isLoggedIn ? (
-        <Dashboard user={currentUser} />
+      {claims ? (
+        <Dashboard user={claims} />
       ) : (
         <Login>
           <AuthMethodSelector />
