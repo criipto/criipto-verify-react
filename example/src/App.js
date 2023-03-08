@@ -9,7 +9,7 @@ import './App.css';
 import '@criipto/verify-react/dist/criipto-verify-react.css';
 
 function App() {
-  const { claims, isLoading, logout } = useCriiptoVerify();
+  const { claims, isLoading, logout, error } = useCriiptoVerify();
 
   const handleLogout = () => {
     logout('http://localhost:3000');
@@ -19,6 +19,11 @@ function App() {
     <React.Fragment>
       <Header handleLogout={handleLogout} user={claims} />
       {isLoading && <Loading />}
+      {error ? (
+        <p>
+          An error occurred: {error.error} ({error.error_description})
+        </p>
+      ) : null}
       {claims ? (
         <Dashboard user={claims} />
       ) : (
