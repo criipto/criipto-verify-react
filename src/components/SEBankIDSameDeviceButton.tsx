@@ -1,7 +1,7 @@
 import { PKCE, AuthorizeResponse } from '@criipto/auth-js';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import CriiptoVerifyContext from '../context';
-import { getMobileOS } from '../device';
+import { getUserAgent } from '../device';
 
 import Desktop from './SEBankIDSameDeviceButton/Desktop';
 import Android from './SEBankIDSameDeviceButton/Android';
@@ -17,7 +17,8 @@ interface Props {
   redirectUri?: string
 }
 
-const mobileOS = getMobileOS();
+const userAgent = getUserAgent();
+const mobileOS = userAgent.os.name === 'iOS' ? 'iOS' : userAgent.os.name === 'Android' ? 'android' : null;
 
 function searchParamsToPOJO(input: URLSearchParams) {
   return Array.from(input.keys()).reduce((memo : {[key: string]: string}, key) => {
@@ -87,8 +88,12 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     .then(links => {
       setPKCE(pkce || undefined);
       setLinks(links);
-      const redirect = mobileOS === 'ios' ? encodeURIComponent(window.location.href) : 'null';
-      const newHref = `${mobileOS ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl}&redirect=${redirect}`;
+      const redirect = mobileOS === 'iOS' ? encodeURIComponent(window.location.href) : 'null';
+      const useUniveralLink =
+        mobileOS === 'iOS' ? userAgent.browser.name?.includes('Safari') :
+        mobileOS === 'android' ? userAgent.browser.name === 'Chrome' :
+        false;
+      const newHref = `${useUniveralLink ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl}&redirect=${redirect}`;
 
       handleLog(window.location.href);
       handleLog(newHref);
@@ -161,7 +166,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
             >
               {element}
             </Android>
-          ) : mobileOS === 'ios' ? (
+          ) : mobileOS === 'iOS' ? (
             <IOS
               links={links}
               onError={handleError}

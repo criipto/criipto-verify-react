@@ -1,11 +1,15 @@
 import {OpenIDConfiguration} from '@criipto/auth-js';
 import React, { useContext, useEffect, useState } from 'react';
 import CriiptoVerifyContext from '../context';
+import { getUserAgent } from '../device';
 import { filterAcrValues, Language, acrValueToProviderPrefix } from '../utils';
 import AuthMethodButton, {AuthMethodButtonProps} from './AuthMethodButton';
 
 import './AuthMethodSelector/AuthMethodSelector.css';
 import SEBankIDQrCode from './SEBankIDQRCode';
+
+const userAgent = getUserAgent();
+const mobileOS = userAgent.os.name === 'iOS' ? 'iOS' : userAgent.os.name === 'Android' ? 'android' : null;
 
 interface AuthMethodSelectorProps {
   acrValues?: string[],
@@ -74,7 +78,7 @@ export function Sweden(props: SwedenProps) {
           standalone={isSingle(acrValue, acrValues)}
         />
       ))}
-      {hasQR ? (
+      {(hasQR && !mobileOS) ? (
         <SEBankIDQrCode language={language} redirectUri={props.redirectUri} />
       ) : null}
     </div>
