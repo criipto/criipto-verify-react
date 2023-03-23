@@ -1,3 +1,5 @@
+import UAParser from 'ua-parser-js';
+
 function testUA(pattern: RegExp) {
   return pattern.test(navigator.userAgent);
 };
@@ -18,4 +20,8 @@ export function getMobileOS() : MobileOS | null {
   if (isAndroid()) return 'android';
 
   return null;
+}
+
+export function getUserAgent() {
+  return UAParser(navigator.userAgent);
 }
