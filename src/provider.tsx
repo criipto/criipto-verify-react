@@ -143,13 +143,16 @@ function parseMessage(input?: string) : string | undefined {
   return tryBase64Decode(message) ?? message;
 }
 
+function defaultRedirectUri(input?: string) : string {
+  return input || (window.location.origin + window.location.pathname);
+}
+
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
-  const redirectUri = props.redirectUri || (window.location.origin + window.location.pathname);
   const client = useMemo(() => new CriiptoAuth({
     domain: props.domain,
     clientID: props.clientID,
     store: sessionStorage,
-    redirectUri: props.redirectUri,
+    redirectUri: defaultRedirectUri(props.redirectUri),
     protocol: props.protocol
   }), [props.domain, props.clientID, props.redirectUri, props.protocol]);
 
@@ -200,7 +203,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 
   const buildOptions = useCallback((options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) : AuthorizeUrlParamsOptional => {
     return {
-      redirectUri,
+      redirectUri: defaultRedirectUri(props.redirectUri),
       responseType: 'code' as ResponseType,
       ...options || {},
       state: props.state ?? options?.state,
@@ -225,7 +228,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     uiLocales,
     action,
     message,
-    redirectUri,
+    props.redirectUri,
     props.criiptoSdk,
     props.loginHint
   ]);
@@ -238,7 +241,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     if (response instanceof Error) {
       setResult(response);
     } else if (params.pkce && responseType === 'token') {
-      let _redirectUri = params.redirectUri || redirectUri;
+      let _redirectUri = params.redirectUri || defaultRedirectUri(props.redirectUri);
       if (!_redirectUri) throw new Error('redirectUri must be configured globally or per authentication component');
 
       await client.processResponse(response, {code_verifier: params.pkce.code_verifier, redirect_uri: _redirectUri}).then(response => {
@@ -262,10 +265,10 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     }
 
     refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
-  }, [refreshPKCE, responseType, setResult, client, sessionStore]);
+  }, [refreshPKCE, responseType, setResult, client, sessionStore, props.redirectUri]);
 
   const checkSession = useCallback(async () => {
-    return client.checkSession({redirectUri}).then(response => {
+    return client.checkSession({redirectUri: defaultRedirectUri(props.redirectUri)}).then(response => {
       if (response?.code) setResult({code: response.code});
       else if (response?.id_token) {
         setResult({id_token: response.id_token});
@@ -273,14 +276,14 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       }
       else setResult(null);
     });
-  }, [sessionStore, client, redirectUri]);
+  }, [sessionStore, client, props.redirectUri]);
 
   const logout = useCallback(async (params?: {redirectUri?: string}) => {
     sessionStore?.removeItem(SESSION_KEY);
     await client.logout({
-      redirectUri: params?.redirectUri ?? redirectUri
+      redirectUri: params?.redirectUri ?? defaultRedirectUri(props.redirectUri)
     });
-  }, [sessionStore, client]);
+  }, [sessionStore, client, props.redirectUri]);
 
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
@@ -311,7 +314,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       result,
       claims,
       domain: client.domain,
-      redirectUri,
+      redirectUri: defaultRedirectUri(props.redirectUri),
       action,
       message,
       pkce,
@@ -323,7 +326,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     }
   }, [
     client,
-    redirectUri,
+    props.redirectUri,
     responseType,
     completionStrategy,
     result,
@@ -433,7 +436,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     return () => {
       isSubscribed = false
     };
-  }, [sessionStore, client, redirectUri]);
+  }, [sessionStore, client]);
 
   return (
     <CriiptoVerifyContext.Provider value={context}>
