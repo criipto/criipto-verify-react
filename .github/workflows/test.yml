@@ -10,10 +10,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Setup kernel for build, increase watchers
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-      - name: Use Node.js 16.15.1
+      - name: Use Node.js 18.15.0
         uses: actions/setup-node@v2
         with:
-          node-version: 16.15.1
+          node-version: 18.15.0
       - name: Install dependencies
         run: npm ci
       - run: npm run test
