@@ -8,3 +8,4 @@ netlify.toml
 coverage/
 jest.config.js
 jest.setup.js
+example/
