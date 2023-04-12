@@ -1,6 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
+import '../index.css';
 import CriiptoVerifyProvider from '../provider';
 import StoryResponseRenderer from './StoryResponseRenderer';
 import useCriiptoVerify from '../use-criipto-verify';

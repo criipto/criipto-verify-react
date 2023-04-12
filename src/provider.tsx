@@ -4,7 +4,6 @@ import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, O
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions, ResultSource} from './context';
 import { AuthorizeResponse, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
-import '@criipto/auth-js/dist/index.css';
 import { filterAcrValues, VERSION } from './utils';
 import jwtDecode from 'jwt-decode';
 

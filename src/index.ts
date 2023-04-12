@@ -9,3 +9,5 @@ export {type Result, type Action, actions} from './context';
 export {type Language, filterAcrValues} from './utils';
 export {OAuth2Error} from '@criipto/auth-js';
 export {CriiptoVerifyProvider, AuthMethodSelector, AuthMethodSelectorSweden, AuthMethodButton, useCriiptoVerify, QRCode, SEBankIDQRCode};
+
+import './index.css';
