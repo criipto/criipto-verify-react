@@ -8,15 +8,12 @@ import { savePKCEState } from '@criipto/auth-js';
 import AuthMethodButtonLogo, {AuthMethodButtonLogoProps} from './AuthMethodButton/Logo';
 import { AnchorButton, Button } from './Button';
 import { acrValueToTitle, Language, stringifyAction } from '../utils';
-import { MESSAGE_SUPPORTING_ACR_VALUES } from '../provider';
 
 export type PopupParams = {
   acrValue: string,
   onHide: () => void
 };
 export type PopupOption = boolean | ((options: PopupParams) => boolean | React.ReactElement)
-
-const mobileOS = getMobileOS();
 
 export interface AuthMethodButtonProps {
   acrValue: string,
@@ -51,6 +48,8 @@ export interface AuthMethodButtonProps {
    * Will ammend the login_hint parameter with `message:{base64(message)}` which will set a login/aprove message where available (Danish MitID).
    */
   message?: string
+
+  userAgent?: string
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
@@ -72,6 +71,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     let isSubscribed = true;
     let loginHint : string | undefined = undefined;
 
+    const mobileOS = getMobileOS(navigator.userAgent);
     if (acrValue.startsWith('urn:grn:authn:dk:mitid')) {
       if (mobileOS) {
         loginHint = `appswitch:${mobileOS} target:web`; 
@@ -149,6 +149,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
         redirectUri={props.redirectUri}
         href={href}
         className={className}
+        userAgent={props.userAgent}
         logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
       >
         <span>{contents}</span>

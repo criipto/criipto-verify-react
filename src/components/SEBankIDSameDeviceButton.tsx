@@ -15,10 +15,8 @@ interface Props {
   logo: React.ReactNode
   href?: string
   redirectUri?: string
+  userAgent?: string
 }
-
-const userAgent = getUserAgent();
-const mobileOS = userAgent.os.name === 'iOS' ? 'iOS' : userAgent.os.name === 'Android' ? 'android' : null;
 
 function searchParamsToPOJO(input: URLSearchParams) {
   return Array.from(input.keys()).reduce((memo : {[key: string]: string}, key) => {
@@ -28,6 +26,9 @@ function searchParamsToPOJO(input: URLSearchParams) {
 }
 
 export default function SEBankIDSameDeviceButton(props: Props) {
+  const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
+  const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
+
   const [href, setHref] = useState(props.href);
   const [links, setLinks] = useState<Links | null>(autoHydratedState?.links ?? null);
   const [pkce, setPKCE] = useState<PKCE | undefined>(autoHydratedState?.pkce ?? undefined);

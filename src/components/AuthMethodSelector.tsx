@@ -8,15 +8,13 @@ import AuthMethodButton, {AuthMethodButtonProps} from './AuthMethodButton';
 import './AuthMethodSelector/AuthMethodSelector.css';
 import SEBankIDQrCode from './SEBankIDQRCode';
 
-const userAgent = getUserAgent();
-const mobileOS = userAgent.os.name === 'iOS' ? 'iOS' : userAgent.os.name === 'Android' ? 'android' : null;
-
 interface AuthMethodSelectorProps {
   acrValues?: string[],
   language?: Language,
   onSelect?: (acrValue: string) => void,
   redirectUri?: string,
-  popup?: AuthMethodButtonProps["popup"]
+  popup?: AuthMethodButtonProps["popup"],
+  userAgent?: string
 }
 
 function isSingle(acrValue: string, acrValues: string[]) {
@@ -48,6 +46,7 @@ export default function AuthMethodSelector(props: AuthMethodSelectorProps) {
           language={language}
           action={action}
           standalone={isSingle(acrValue, acrValues)}
+          userAgent={props.userAgent}
         />
       ))}
     </div>
@@ -57,12 +56,16 @@ export default function AuthMethodSelector(props: AuthMethodSelectorProps) {
 type SwedenProps = Omit<AuthMethodSelectorProps, 'acrValues'> & {
   acrValues: string[]
 }
+
 export function Sweden(props: SwedenProps) {
   const {acrValues} = props;
   const {action, uiLocales} = useContext(CriiptoVerifyContext);
   const language = props.language || uiLocales as Language || 'en';
   const hasQR = acrValues.includes('urn:grn:authn:se:bankid:another-device:qr');
   const filteredAcrValues = acrValues.filter(s => s !== 'urn:grn:authn:se:bankid:another-device:qr');
+
+  const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
+  const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
 
   return (
     <div className="criipto-eid-selector">
@@ -76,6 +79,7 @@ export function Sweden(props: SwedenProps) {
           language={language}
           action={action}
           standalone={isSingle(acrValue, acrValues)}
+          userAgent={props.userAgent}
         />
       ))}
       {(hasQR && !mobileOS) ? (
