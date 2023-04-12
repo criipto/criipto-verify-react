@@ -6,6 +6,7 @@ import { AuthorizeResponse, RedirectAuthorizeParams, ResponseType } from '@criip
 
 import { filterAcrValues, VERSION } from './utils';
 import jwtDecode from 'jwt-decode';
+import { createMemoryStorage } from './memory-storage';
 
 const SESSION_KEY = `@criipto-verify-react/session`;
  
@@ -146,11 +147,19 @@ function defaultRedirectUri(input?: string) : string {
   return input || (window.location.origin + window.location.pathname);
 }
 
+const pkceStore = (() => {
+  if (typeof sessionStorage === 'undefined') {
+    console.warn('Creating memory store for PKCE values as no sessionStorage is available.');
+    return createMemoryStorage();
+  }
+  return sessionStorage;
+})();
+
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
   const client = useMemo(() => new CriiptoAuth({
     domain: props.domain,
     clientID: props.clientID,
-    store: sessionStorage,
+    store: pkceStore,
     redirectUri: defaultRedirectUri(props.redirectUri),
     protocol: props.protocol
   }), [props.domain, props.clientID, props.redirectUri, props.protocol]);
@@ -187,12 +196,12 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const refreshPKCE = () => {
     if (props.pkce) return;
     if (responseType !== 'token' || completionStrategy !== 'client') {
-      clearPKCEState(sessionStorage);
+      clearPKCEState(pkceStore);
       setPKCE(undefined);
       return;
     }
 
-    clearPKCEState(sessionStorage);
+    clearPKCEState(pkceStore);
 
     (async () => {
       const pkce = await generatePKCE();
@@ -317,7 +326,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       action,
       message,
       pkce,
-      store: sessionStorage,
+      store: pkceStore,
       isLoading,
       acrValues: configuration ? filterAcrValues(configuration.acr_values_supported) : undefined,
       client,

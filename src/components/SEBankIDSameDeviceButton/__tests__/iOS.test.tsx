@@ -1,10 +1,10 @@
 import renderer from 'react-test-renderer';
 import SEBankIDSameDeviceIOS from '../iOS';
-import { Links } from '../shared';
+import { Links, clearState } from '../shared';
 
 describe('SEBankID/SameDevice/iOS', function () {
   beforeEach(() => {
-    sessionStorage.clear();
+    clearState();
   });
 
   it('calls complete on refresh', function () {
