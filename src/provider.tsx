@@ -144,7 +144,12 @@ function parseMessage(input?: string) : string | undefined {
 }
 
 function defaultRedirectUri(input?: string) : string {
-  return input || (window.location.origin + window.location.pathname);
+  if (input) return input;
+  if (typeof window !== "undefined" && typeof window.location !== "undefined") {
+    return window.location.origin + window.location.pathname;
+  }
+
+  throw new Error('Unable to determine default redirect uri, please provide a redirectUri');
 }
 
 const pkceStore = (() => {
@@ -156,13 +161,15 @@ const pkceStore = (() => {
 })();
 
 const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
-  const client = useMemo(() => new CriiptoAuth({
-    domain: props.domain,
-    clientID: props.clientID,
-    store: pkceStore,
-    redirectUri: defaultRedirectUri(props.redirectUri),
-    protocol: props.protocol
-  }), [props.domain, props.clientID, props.redirectUri, props.protocol]);
+  const client = useMemo(() => 
+    new CriiptoAuth({
+      domain: props.domain,
+      clientID: props.clientID,
+      store: pkceStore,
+      redirectUri: defaultRedirectUri(props.redirectUri),
+      protocol: props.protocol
+    }), [props.domain, props.clientID, props.redirectUri, props.protocol]
+  );
 
   const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
   useEffect(() => {
