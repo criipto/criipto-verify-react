@@ -164,3 +164,13 @@ OnSelect.args = {
   acrValues: ALL_ACR_VALUES,
   onSelect: console.log.bind(console)
 };
+
+
+export const MitIDNorwayMessage = Template.bind({});
+MitIDNorwayMessage.storyName = "MitID + Norway with message"
+MitIDNorwayMessage.args = {
+  redirectUri: window.location.href,
+  acrValues: ["urn:grn:authn:dk:mitid:substantial", "urn:grn:authn:no:bankid:substantial"],
+  onSelect: console.log.bind(console),
+  loginHint: `message:${btoa('asda43123123')}`
+};

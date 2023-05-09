@@ -78,10 +78,10 @@ export const MESSAGE_SUPPORTING_ACR_VALUES = [
   'urn:grn:authn:dk:mitid:high'
 ];
 
-function buildLoginHint(loginHint: string | undefined | null, params: {options?: AuthorizeUrlParamsOptional, action?: Action, message?: string}) {
+export function buildLoginHint(loginHint: string | undefined | null, params: {options?: AuthorizeUrlParamsOptional, action?: Action, message?: string}) {
   const {options, action, message} = params;
   const acrValues = options?.acrValues ? Array.isArray(options?.acrValues) ? options?.acrValues : [options?.acrValues] : [];
-  let hints = (loginHint ? loginHint.split(' ') : []).concat(options?.loginHint ? options?.loginHint.split(' ') : []);
+  let hints = (loginHint ? loginHint.split(' ') : []).concat(options?.loginHint ? options?.loginHint.split(' ') : []).filter(hint => !hint.startsWith('message:') && !hint.startsWith('action:'));
   if (action) {
     hints = hints.filter(h => !h.startsWith('action:'));
     if (acrValues.length === 1) {
