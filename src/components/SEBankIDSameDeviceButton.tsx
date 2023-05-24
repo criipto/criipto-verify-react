@@ -3,9 +3,9 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import CriiptoVerifyContext from '../context';
 import { getUserAgent } from '../device';
 
-import Desktop from './SEBankIDSameDeviceButton/Desktop';
-import Android from './SEBankIDSameDeviceButton/Android';
-import IOS from './SEBankIDSameDeviceButton/iOS';
+import PollStrategy from './SEBankIDSameDeviceButton/Poll';
+import ForegroundStrategy from './SEBankIDSameDeviceButton/Foreground';
+import ReloadStrategy from './SEBankIDSameDeviceButton/Reload';
 
 import {autoHydratedState, Links} from './SEBankIDSameDeviceButton/shared';
 
@@ -28,6 +28,12 @@ function searchParamsToPOJO(input: URLSearchParams) {
 export default function SEBankIDSameDeviceButton(props: Props) {
   const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
   const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
+  const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
+
+  const strategy =
+    mobileOS ?
+      iOSSafari ? 'Reload' : 'Foreground'
+      : 'Poll';
 
   const [href, setHref] = useState(props.href);
   const [links, setLinks] = useState<Links | null>(autoHydratedState?.links ?? null);
@@ -89,11 +95,11 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     .then(links => {
       setPKCE(pkce || undefined);
       setLinks(links);
-      const redirect = mobileOS === 'iOS' ? encodeURIComponent(window.location.href) : 'null';
-      const useUniveralLink =
-        mobileOS === 'iOS' ? userAgent?.browser.name?.includes('Safari') :
-        mobileOS === 'android' ? userAgent?.browser.name === 'Chrome' :
-        false;
+
+      const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
+      const androidChrome = mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
+      const redirect = iOSSafari ? encodeURIComponent(window.location.href) : 'null';
+      const useUniveralLink = iOSSafari || androidChrome;
       const newHref = `${useUniveralLink ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl}&redirect=${redirect}`;
 
       handleLog(window.location.href);
@@ -147,8 +153,8 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     <React.Fragment>
       {links ? (
         <React.Fragment>
-          {mobileOS === null ? (
-            <Desktop
+          {strategy === "Poll" ? (
+            <PollStrategy
               links={links}
               onError={handleError}
               onComplete={handleComplete}
@@ -156,9 +162,9 @@ export default function SEBankIDSameDeviceButton(props: Props) {
               onLog={handleLog}
             >
               {element}
-            </Desktop>
-          ) : mobileOS === 'android' ? (
-            <Android
+            </PollStrategy>
+          ) : strategy === 'Foreground' ? (
+            <ForegroundStrategy
               links={links}
               onError={handleError}
               onComplete={handleComplete}
@@ -166,9 +172,9 @@ export default function SEBankIDSameDeviceButton(props: Props) {
               onLog={handleLog}
             >
               {element}
-            </Android>
-          ) : mobileOS === 'iOS' ? (
-            <IOS
+            </ForegroundStrategy>
+          ) : strategy === 'Reload' ? (
+            <ReloadStrategy
               links={links}
               onError={handleError}
               onComplete={handleComplete}
@@ -178,7 +184,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
               pkce={pkce}
             >
               {element}
-            </IOS>
+            </ReloadStrategy>
           ) : element}
         </React.Fragment>
       ) : element}

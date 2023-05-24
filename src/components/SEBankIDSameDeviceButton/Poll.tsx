@@ -14,7 +14,7 @@ interface Props {
 /*
  * Desktop: Polling scenario
  */
-export default function SEBankIDSameDeviceDesktop(props: Props) {
+export default function SEBankIDSameDevicePoll(props: Props) {
   const {links, onError, onComplete, onInitiate} = props;
   const [initiated, setInitiated] = useState(false);
   const {domain} = useContext(CriiptoVerifyContext);
