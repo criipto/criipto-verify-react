@@ -96,7 +96,6 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       setPKCE(pkce || undefined);
       setLinks(links);
 
-      const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
       const androidChrome = mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
       const redirect = iOSSafari ? encodeURIComponent(window.location.href) : 'null';
       const useUniveralLink = iOSSafari || androidChrome;
