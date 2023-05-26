@@ -1,8 +1,8 @@
 import renderer from 'react-test-renderer';
-import SEBankIDSameDeviceIOS from '../iOS';
+import ReloadStrategy from '../Reload';
 import { Links, clearState } from '../shared';
 
-describe('SEBankID/SameDevice/iOS', function () {
+describe('SEBankID/SameDevice/ReloadStrategy', function () {
   beforeEach(() => {
     clearState();
   });
@@ -24,7 +24,7 @@ describe('SEBankID/SameDevice/iOS', function () {
     const onComplete = jest.fn();
 
     let component = renderer.create(
-      <SEBankIDSameDeviceIOS
+      <ReloadStrategy
         links={links}
         onError={onError}
         onInitiate={onInitiate}
@@ -34,7 +34,7 @@ describe('SEBankID/SameDevice/iOS', function () {
         pkce={undefined}
       >
           <button>dummy</button>
-      </SEBankIDSameDeviceIOS>
+      </ReloadStrategy>
     );
 
     let tree = component.toJSON();
@@ -47,7 +47,7 @@ describe('SEBankID/SameDevice/iOS', function () {
 
     renderer.act(() => {
       component = renderer.create(
-        <SEBankIDSameDeviceIOS
+        <ReloadStrategy
           links={links}
           onError={onError}
           onInitiate={onInitiate}
@@ -57,7 +57,7 @@ describe('SEBankID/SameDevice/iOS', function () {
           pkce={undefined}
         >
             <button>dummy</button>
-        </SEBankIDSameDeviceIOS>
+        </ReloadStrategy>
       );
     });
 

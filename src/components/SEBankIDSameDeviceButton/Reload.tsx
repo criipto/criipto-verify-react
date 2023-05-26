@@ -14,13 +14,14 @@ interface Props {
 }
 
 /*
- * iOS: Page reload on switch back scenario
+ * iOS Safari: Page reload on switch back scenario
  */
-export default function SEBankIDSameDeviceIOS(props: Props) {
+
+export default function SEBankIDSameDeviceReload(props: Props) {
   const {links, onError, onComplete, onInitiate, onLog, pkce, redirectUri} = props;
 
   const handleInitiate = () => {
-    onLog('iOS', 'handleInitiate');
+    onLog('ReloadStrategy', 'handleInitiate');
 
     saveState({
       links,

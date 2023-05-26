@@ -12,21 +12,21 @@ interface Props {
 }
 
 /*
- * Android: Background/Foreground scenario
+ * Android + iOS Chrome: Background/Foreground scenario
  */
-export default function SEBankIDSameDeviceAndroid(props: Props) {
+export default function SEBankIDSameDeviceForeground(props: Props) {
   const {links, onError, onComplete, onInitiate, onLog} = props;
   const [initiated, setInitiated] = useState(false);
 
   usePageVisibility(async () => {
-    onLog('android', 'onForeground', initiated.toString());
+    onLog('ForegroundStrategy', 'onForeground', initiated.toString());
     if (!initiated) return;
     
     onComplete(links.completeUrl);
   }, [links, initiated]);
 
   const handleInitiate = () => {
-    onLog('android', 'handleInitiate');
+    onLog('ForegroundStrategy', 'handleInitiate');
     onInitiate();
     setInitiated(true);
   };
