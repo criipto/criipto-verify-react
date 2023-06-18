@@ -4,13 +4,14 @@ declare var __VERSION__: string;
 export const VERSION = typeof __VERSION__ === "undefined" ? "N/A": __VERSION__;
 
 export const DKMITID_PREFIX = 'urn:grn:authn:dk:mitid';
+export const DKMITID_BUSINESS = 'urn:grn:authn:dk:mitid:business';
 export const FTN_PREFIX = 'urn:grn:authn:fi';
 
 export function lowestMitIDValue(input: string[]) : string | null {
   let dkmitidMethod : string | null = null;
 
   input.forEach(s => {
-    if (s.startsWith(DKMITID_PREFIX)) {
+    if (s.startsWith(DKMITID_PREFIX) && s !== DKMITID_BUSINESS) {
       if (!dkmitidMethod) {
         dkmitidMethod = s;
       } else {
@@ -106,6 +107,15 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
     return {title: autoTitleCase(value).replace('NL ', '')};
   }
   if (provider === 'dk:mitid') {
+    let suffix = value.replace('dk:mitid:', '');
+    if (suffix === 'business') {
+      if (language === 'en') return {title: 'MitID Business'}
+      if (language === 'da') return {title: 'MitID Erhverv'}
+      if (language === 'sv') return {title: 'MitID Erhverv'}
+      if (language === 'nb') return {title: 'MitID Erhverv'}
+      return {title: 'MitID Erhverv'};
+    }
+
     return {title: 'MitID'};
   }
   if (provider === 'dk:nemid') {
@@ -205,7 +215,10 @@ export function filterAcrValues(input: string[]) {
   let reduced = input.slice();
 
   if (dkmitidMethod) {
-    reduced = input.filter(s => !s.startsWith(DKMITID_PREFIX)).concat([dkmitidMethod]).sort((a, b) => original.indexOf(a) - original.indexOf(b));
+    reduced =
+      input.filter(s => !s.startsWith(DKMITID_PREFIX) || s === DKMITID_BUSINESS)
+      .concat([dkmitidMethod])
+      .sort((a, b) => original.indexOf(a) - original.indexOf(b));
   }
 
   if (input.includes(`${FTN_PREFIX}:all`)) {
