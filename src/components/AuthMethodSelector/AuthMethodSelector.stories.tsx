@@ -11,6 +11,7 @@ const ALL_ACR_VALUES = [
   'urn:grn:authn:dk:mitid:high',
   'urn:grn:authn:dk:mitid:low',
   'urn:grn:authn:dk:mitid:substantial',
+  'urn:grn:authn:dk:mitid:business',
   'urn:grn:authn:dk:nemid:moces',
   'urn:grn:authn:dk:nemid:moces:codefile',
   'urn:grn:authn:dk:nemid:poces',
@@ -120,6 +121,7 @@ OneOfEach.args = {
   acrValues: [
     'urn:grn:authn:dk:nemid:poces',
     'urn:grn:authn:dk:mitid:low',
+    'urn:grn:authn:dk:mitid:business',
     'urn:grn:authn:se:bankid:same-device',
     'urn:grn:authn:no:vipps',
     'urn:grn:authn:no:bankid:substantial',
@@ -146,6 +148,17 @@ SwedenWithAnother.args = {
     'urn:grn:authn:se:bankid:another-device',
     'urn:grn:authn:se:bankid:another-device:qr',
   ]
+};
+
+export const MitID = Template.bind({});
+MitID.storyName = "MitID + Business";
+MitID.args = {
+  redirectUri: window.location.href,
+  acrValues: [
+    'urn:grn:authn:dk:mitid',
+    'urn:grn:authn:dk:mitid:business',
+  ],
+  loginHint: 'aal:low'
 };
 
 export const NoAcrValues = Template.bind({

@@ -107,6 +107,15 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
     return {title: autoTitleCase(value).replace('NL ', '')};
   }
   if (provider === 'dk:mitid') {
+    let suffix = value.replace('dk:mitid:', '');
+    if (suffix === 'business') {
+      if (language === 'en') return {title: 'MitID Business'}
+      if (language === 'da') return {title: 'MitID Erhverv'}
+      if (language === 'sv') return {title: 'MitID Erhverv'}
+      if (language === 'nb') return {title: 'MitID Erhverv'}
+      return {title: 'MitID Erhverv'};
+    }
+
     return {title: 'MitID'};
   }
   if (provider === 'dk:nemid') {
