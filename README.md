@@ -145,7 +145,7 @@ const {logout} = useCriiptoVerify();
 
 ## XHR/fetch caveats
 
-The library may require to do fetch requests against Criipto to fetch application configuration. Make sure that the host that the react app runs on is included in the list of callback URLs for your application.
+The library may require to do fetch requests against Criipto to fetch application configuration. Make sure that the host that the React app runs on is included in the list of callback URLs for your application. Otherwise, you will encounter CORS errors.
 
 ## Criipto
 
