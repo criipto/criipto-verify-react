@@ -46,7 +46,8 @@ const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
 export const SEBankIDSameDeviceButton = Template.bind({});
 SEBankIDSameDeviceButton.args = {
   acrValue: 'urn:grn:authn:se:bankid:same-device',
-  standalone: false
+  standalone: false,
+  tryAutoLaunch: false
 };
 SEBankIDSameDeviceButton.storyName = "se:bankid:same-device";
 

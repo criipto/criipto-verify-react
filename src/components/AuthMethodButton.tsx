@@ -15,8 +15,7 @@ export type PopupParams = {
 };
 export type PopupOption = boolean | ((options: PopupParams) => boolean | React.ReactElement)
 
-export interface AuthMethodButtonProps {
-  acrValue: string,
+interface AuthMethodButtonGenericProps {
   href?: string;
   onClick?: React.MouseEventHandler,
   children?: React.ReactNode,
@@ -50,6 +49,21 @@ export interface AuthMethodButtonProps {
   message?: string
 
   userAgent?: string
+}
+
+interface SwedishBankIDSameDeviceProps {
+  acrValue: "urn:grn:authn:se:bankid:same-device",
+  /** Attempt to auto launch BankID */
+  tryAutoLaunch?: boolean
+}
+
+export type AuthMethodButtonProps = AuthMethodButtonGenericProps & (
+  SwedishBankIDSameDeviceProps |
+  {acrValue: string}
+)
+
+function isSEBankIDSameDevice(v: AuthMethodButtonProps): v is SwedishBankIDSameDeviceProps {
+  return v['acrValue'] === "urn:grn:authn:se:bankid:same-device";
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
@@ -143,7 +157,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     </React.Fragment>
   )
   
-  if (!props.href && acrValue === 'urn:grn:authn:se:bankid:same-device') {
+  if (!props.href && isSEBankIDSameDevice(props)) {
     return (
       <SEBankIDSameDeviceButton
         redirectUri={props.redirectUri}
@@ -151,6 +165,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
         className={className}
         userAgent={props.userAgent}
         logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
+        tryAutoLaunch={props.tryAutoLaunch}
       >
         <span>{contents}</span>
       </SEBankIDSameDeviceButton>

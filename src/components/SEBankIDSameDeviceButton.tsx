@@ -15,7 +15,9 @@ interface Props {
   logo: React.ReactNode
   href?: string
   redirectUri?: string
-  userAgent?: string
+  userAgent?: string,
+  /** Attempt to auto launch BankID */
+  tryAutoLaunch?: boolean
 }
 
 function searchParamsToPOJO(input: URLSearchParams) {
@@ -107,6 +109,13 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     })
     .catch(console.error);
   }, [buildAuthorizeUrl, redirectUri]);
+
+  useEffect(() => {
+    console.log(href, props.tryAutoLaunch);
+    if (initiated) return;
+    if (!props.tryAutoLaunch || !href) return;
+    window.location.href = href;
+  }, [href, props.tryAutoLaunch])
 
   // Generate URL on first button render
   useEffect(() => {
