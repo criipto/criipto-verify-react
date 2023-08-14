@@ -379,10 +379,13 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     client.redirect.match().then(response => {
       if (!isSubscribed) return;
       setIsLoading(false);
-      if (response?.code) setResult({code: response.code, source: 'redirect'});
+      if (response?.code) {
+        setResult({code: response.code, source: 'redirect'});
+      }
       else if (response?.id_token) {
         setResult({id_token: response.id_token, source: 'redirect'});
         sessionStore?.setItem(SESSION_KEY, response.id_token);
+        resetRedirectState(window);
       }
       else setResult(null);
       refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
@@ -461,3 +464,15 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
 }
 
 export default CriiptoVerifyProvider
+
+export function resetRedirectState(window: Window) {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('code');
+  url.searchParams.delete('state');
+
+  window.history.replaceState(
+    {},
+    window.document.title,
+    url.pathname + url.search
+  );
+}

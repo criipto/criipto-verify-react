@@ -35,6 +35,7 @@ const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={window.location.href}
+      prompt="login"
     >
       <StoryResponseRenderer>
         <AuthMethodButton {...args} />

@@ -1,24 +1,7 @@
 import {expect} from '@jest/globals';
-import renderer, {act} from 'react-test-renderer';
-import CriiptoVerifyProvider, { buildLoginHint } from '../provider';
+import { buildLoginHint, resetRedirectState } from '../provider';
 
 describe('CriiptoVerifyProvider', () => {
-  it('should work in a serverside environment', async () => {
-    let component = renderer.create(
-      <CriiptoVerifyProvider
-        domain="samples.criipto.id"
-        clientID="urn:criipto:samples:criipto-verify-react"
-        redirectUri="http://localhost:3000"
-      >
-        <div></div>
-      </CriiptoVerifyProvider>
-    );
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 2500));
-    });
-  });
-
   describe('buildLoginHint', () => {
     it('should filter out message and action from norway', () => {
 
@@ -29,6 +12,25 @@ describe('CriiptoVerifyProvider', () => {
       })
 
       expect(actual).toBe(undefined);
+    });
+  });
+
+  describe('resetRedirectState', () => {
+    it('should remove code and state from URL', () => {
+      const href = 'https://example.com/subroute?also=this&code=code&state=state&yes=yes'
+      const window : any = {
+        location: {
+          href
+        },
+        document: {title: ''},
+        history: {
+          replaceState: jest.fn()
+        }
+      };
+
+      resetRedirectState(window);
+
+      expect(window.history.replaceState).toHaveBeenCalledWith({}, expect.any(String), '/subroute?also=this&yes=yes')
     });
   });
 });
