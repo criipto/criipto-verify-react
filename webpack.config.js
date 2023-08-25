@@ -1,37 +1,22 @@
-const path = require('path');
-const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
+const path = require("path");
+const webpack = require("webpack");
+const nodeExternals = require("webpack-node-externals");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const fs = require('fs');
 
-module.exports = {
-  mode: 'production',
+// Shared config between both cjs and esm builds
+const sharedConfig = {
+  mode: "production",
   devtool: "source-map",
   experiments: {
-    outputModule: true
-  },
-  entry: {
-    'criipto-verify-react.esm': {
-      import: path.resolve(__dirname, 'src/index.ts'),
-      library: {
-        type: 'module'
-      }
-    },
-    'criipto-verify-react.cjs': {
-      import: path.resolve(__dirname, 'src/index.ts'),
-      library: {
-        type: 'commonjs'
-      }
-    }
+    outputModule: true,
   },
   externalsPresets: { node: true },
-  externals: [nodeExternals()],
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'criipto-verify-react.css'
+      filename: "criipto-verify-react.css",
     }),
     new webpack.DefinePlugin({
-      __VERSION__: JSON.stringify(require("./package.json").version)
+      __VERSION__: JSON.stringify(require("./package.json").version),
     }),
   ],
   module: {
@@ -45,34 +30,62 @@ module.exports = {
           {
             loader: "css-loader",
             options: {
-              sourceMap: false
-            }
-          }
+              sourceMap: false,
+            },
+          },
         ],
       },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'ts-loader',
+        loader: "ts-loader",
       },
       {
         test: /\.(png|jpg|gif|svg)$/i,
         use: [
           {
-            loader: 'url-loader',
+            loader: "url-loader",
             options: {
               limit: true,
             },
           },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: [".tsx", ".ts", ".js"],
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js'
-  }
+    path: path.resolve(__dirname, "dist"),
+    filename: "[name].js",
+  },
 };
+
+// Export both cjs and esm builds
+module.exports = [
+  {
+    ...sharedConfig,
+    externals: [nodeExternals({importType: "module"})],
+    entry: {
+      "criipto-verify-react.esm": {
+        import: path.resolve(__dirname, "src/index.ts"),
+        library: {
+          type: "module",
+        },
+      },
+    },
+  },
+  {
+    ...sharedConfig,
+    externals: [nodeExternals({importType: "commonjs"})],
+    entry: {
+      "criipto-verify-react.cjs": {
+        import: path.resolve(__dirname, "src/index.ts"),
+        library: {
+          type: "commonjs",
+        },
+      },
+    },
+  },
+];
