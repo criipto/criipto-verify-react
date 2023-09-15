@@ -143,6 +143,19 @@ const {logout} = useCriiptoVerify();
 </button>
 ```
 
+## useEffect + loginWithRedirect
+
+If you are triggering `loginWithRedirect` inside a `useEffect` hook, you need to allow the SDK time to initialize a few values before you redirect the user:
+
+```jsx
+const {isLoading, isInitializing, loginWithRedirect} = useCriiptoVerify();
+
+useEffect(() => {
+  if (isLoading || isInitializing) return;
+  loginWithRedirect();
+}, [isLoading, isInitializing]);
+```
+
 ## XHR/fetch caveats
 
 The library may require to do fetch requests against Criipto to fetch application configuration. Make sure that the host that the React app runs on is included in the list of callback URLs for your application. Otherwise, you will encounter CORS errors.

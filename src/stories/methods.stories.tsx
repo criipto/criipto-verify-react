@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import '../index.css';
@@ -58,7 +58,14 @@ export default {
 };
 
 function LoginWithRedirectButton(props: any) {
-  const {loginWithRedirect} = useCriiptoVerify();
+  const {loginWithRedirect, isLoading, isInitializing, result} = useCriiptoVerify();
+  useEffect(() => {
+    if (!props.instant) return;
+    if (result) return;
+    if (isLoading) return;
+    if (isInitializing) return;
+    loginWithRedirect();
+  }, [props.instant, result, isLoading, isInitializing]);
 
   return <button onClick={() => loginWithRedirect({acrValues: props.acrValues})}>loginWithRedirect</button>
 }
@@ -71,15 +78,20 @@ const LoginWithRedirectTemplate = (args: any, {globals} : any) => {
       clientID={globals.clientID}
       response={args.response}
       redirectUri={window.location.origin + window.location.pathname + window.location.search}
+      prompt="login"
     >
       <StoryResponseRenderer>
-        <LoginWithRedirectButton acrValues={args.acrValues} />
+        <LoginWithRedirectButton acrValues={args.acrValues} instant={args.instant} />
       </StoryResponseRenderer>
     </CriiptoVerifyProvider>
   );
 };
 
 export const loginWithRedirect = LoginWithRedirectTemplate.bind({});
+export const loginWithInstantRedirect = LoginWithRedirectTemplate.bind({});
+(loginWithInstantRedirect as any).args = {
+  instant: true
+};
 
 function LoginWithPopupButton(props: any) {
   const {loginWithPopup} = useCriiptoVerify();

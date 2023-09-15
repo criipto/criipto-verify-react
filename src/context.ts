@@ -38,6 +38,7 @@ export interface CriiptoVerifyContextInterface {
   pkce?: PKCE | PKCEPublicPart,
   store: Storage,
   isLoading: boolean,
+  isInitializing: boolean,
   acrValues?: string[],
   uiLocales?: string,
   client: CriiptoAuth
@@ -72,6 +73,7 @@ const initialContext = {
   pkce: undefined,
   store: null as any as Storage,
   isLoading: false,
+  isInitializing: true,
   client: null as any as CriiptoAuth
 };
 
