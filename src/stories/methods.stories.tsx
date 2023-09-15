@@ -65,7 +65,13 @@ function LoginWithRedirectButton(props: any) {
 
 const LoginWithRedirectTemplate = (args: any, {globals} : any) => {
   return (
-    <CriiptoVerifyProvider action={(args as any).action} domain={globals.domain} clientID={globals.clientID} response={args.response}>
+    <CriiptoVerifyProvider
+      action={(args as any).action}
+      domain={globals.domain}
+      clientID={globals.clientID}
+      response={args.response}
+      redirectUri={window.location.origin + window.location.pathname + window.location.search}
+    >
       <StoryResponseRenderer>
         <LoginWithRedirectButton acrValues={args.acrValues} />
       </StoryResponseRenderer>
