@@ -1,5 +1,5 @@
 import React, {useMemo, useState, useCallback, useEffect} from 'react';
-import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, savePKCEState, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
+import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions, ResultSource} from './context';
 import { AuthorizeResponse, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
@@ -191,6 +191,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     return jwtDecode<Claims>(result.id_token);
   }, [result]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const [pkce, setPKCE] = useState<PKCE | PKCEPublicPart | undefined>(props.pkce);
   const responseType = props.response || 'token';
   const completionStrategy = props.completionStrategy || 'client';
@@ -200,20 +201,19 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const message = props.message ?? parseMessage(loginHint);
   const sessionStore = props.sessionStore;
 
-  const refreshPKCE = () => {
-    if (props.pkce) return;
+  const refreshPKCE = async () => {
+    if (props.pkce) return props.pkce;
     if (responseType !== 'token' || completionStrategy !== 'client') {
       clearPKCEState(pkceStore);
       setPKCE(undefined);
-      return;
+      return undefined;
     }
 
     clearPKCEState(pkceStore);
 
-    (async () => {
-      const pkce = await generatePKCE();
-      setPKCE(pkce);
-    })();
+    const pkce = await generatePKCE();
+    setPKCE(pkce);
+    return pkce;
   }
 
   const buildOptions = useCallback((options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) : AuthorizeUrlParamsOptional => {
@@ -303,9 +303,10 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const context = useMemo<CriiptoVerifyContextInterface>(() => {
     return {
       loginWithRedirect: async (params) => {
-        await client.redirect.authorize(buildOptions(params));
+        const pkce = await refreshPKCE();
+        await client.redirect.authorize(buildOptions({...params, pkce}));
       },
-      loginWithPopup: (params) => {
+      loginWithPopup: async (params) => {
         return client.popup.authorize(buildOptions(params)).then(response => {
           if (response?.code) setResult({code: response.code});
           else if (response?.id_token) setResult({id_token: response.id_token});
@@ -335,6 +336,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       pkce,
       store: pkceStore,
       isLoading,
+      isInitializing,
       acrValues: configuration ? filterAcrValues(configuration.acr_values_supported) : undefined,
       client,
       uiLocales
@@ -352,6 +354,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     props.state,
     props.prompt,
     isLoading,
+    isInitializing,
     handleResponse,
     logout,
     configuration,
@@ -360,6 +363,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   ]);
 
   useEffect(() => {
+    setIsInitializing(false);
     if (!client.redirect.hasMatch()) {
       refreshPKCE(); // Fresh request, setup PKCE
       return;
@@ -439,6 +443,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
    * Fresh page load SSO check
    */
   useEffect(() => {
+    setIsInitializing(false);
     if (!sessionStore) return;
     if (client.redirect.hasMatch()) return; // Do not issue SSO check if we're just being redirected back to
     if (sessionStore.getItem(SESSION_KEY)) return;
