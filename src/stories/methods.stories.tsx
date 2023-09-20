@@ -53,6 +53,10 @@ export default {
       control: 'select',
       defaultValue: 'token',
       options: ['token', 'code']
+    },
+    state: {
+      name: 'state',
+      control: 'text'
     }
   }
 };
@@ -73,12 +77,13 @@ function LoginWithRedirectButton(props: any) {
 const LoginWithRedirectTemplate = (args: any, {globals} : any) => {
   return (
     <CriiptoVerifyProvider
-      action={(args as any).action}
+      action={args.action}
       domain={globals.domain}
       clientID={globals.clientID}
       response={args.response}
       redirectUri={window.location.origin + window.location.pathname + window.location.search}
       prompt="login"
+      state={args.state}
     >
       <StoryResponseRenderer>
         <LoginWithRedirectButton acrValues={args.acrValues} instant={args.instant} />

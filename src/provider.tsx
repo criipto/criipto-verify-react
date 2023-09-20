@@ -375,7 +375,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     const params = parseAuthorizeResponseFromLocation(window.location);
     if (params.code && responseType === 'code') {
       setIsLoading(false);
-      setResult({code: params.code, source: 'redirect'});
+      setResult({code: params.code, source: 'redirect', state: params.state});
       refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
       return;
     }
@@ -384,10 +384,10 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       if (!isSubscribed) return;
       setIsLoading(false);
       if (response?.code) {
-        setResult({code: response.code, source: 'redirect'});
+        setResult({code: response.code, source: 'redirect', state: response.state});
       }
       else if (response?.id_token) {
-        setResult({id_token: response.id_token, source: 'redirect'});
+        setResult({id_token: response.id_token, source: 'redirect', state: response.state});
         sessionStore?.setItem(SESSION_KEY, response.id_token);
         resetRedirectState(window);
       }

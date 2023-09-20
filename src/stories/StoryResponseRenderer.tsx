@@ -15,15 +15,19 @@ export default function StoryResponseRenderer(props: Props) : JSX.Element {
 
   if (result && "id_token" in result) {
     return (
-      <pre>
-        {JSON.stringify(jwtDecode(result.id_token), null, 2)}
-      </pre>
+      <React.Fragment>
+        {"state" in result ? <pre>state: {result.state}</pre> : null}
+        <pre>
+          {JSON.stringify(jwtDecode(result.id_token), null, 2)}
+        </pre>
+      </React.Fragment>
     );
   }
 
   if (result) {
     return (
       <React.Fragment>
+        {"state" in result ? <pre>state: {result.state}</pre> : null}
         <pre>
           {result instanceof Error ? result.message : JSON.stringify(result, null, 2)}
         </pre>
