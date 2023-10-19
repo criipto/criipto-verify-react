@@ -71,13 +71,6 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     let isSubscribed = true;
     let loginHint : string | undefined = undefined;
 
-    const mobileOS = getMobileOS(navigator.userAgent);
-    if (acrValue.startsWith('urn:grn:authn:dk:mitid')) {
-      if (mobileOS) {
-        loginHint = `appswitch:${mobileOS} target:web`; 
-      }
-    }
-
     buildAuthorizeUrl({
       redirectUri,
       acrValues: acrValue,
