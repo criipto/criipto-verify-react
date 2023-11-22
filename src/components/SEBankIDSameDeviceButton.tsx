@@ -138,7 +138,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   }
 
   const element = (
-    <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href} onClick={handleInitiate}>
+    <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href ?? props.href} onClick={handleInitiate}>
       {initiated ? (
         <div className="criipto-eid-logo">
           <div className="criipto-eid-loader"></div>
