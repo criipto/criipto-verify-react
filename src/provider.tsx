@@ -253,7 +253,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   }, [client, buildOptions]);
 
   const handleResponse = useCallback(async (response : AuthorizeResponse | (Error | OAuth2Error), params: {pkce?: PKCE, redirectUri?: string, source?: ResultSource}) => {
-    if (response instanceof Error) {
+    if (response instanceof OAuth2Error) {
+      setResult(response);
+    } else if (response instanceof Error) {
       setResult(response);
     } else if (params.pkce && responseType === 'token') {
       let _redirectUri = params.redirectUri || defaultRedirectUri(props.redirectUri);

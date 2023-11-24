@@ -104,7 +104,7 @@ export default function SEBankIDQrCode(props: Props) {
       return;
     }
     setError(new Error(error));
-    handleResponse({error}, {
+    handleResponse(new Error(error), {
       pkce,
       redirectUri,
       source: 'SEBankIDQrCode'
@@ -114,22 +114,19 @@ export default function SEBankIDQrCode(props: Props) {
   const handleComplete = useCallback(async (completeUrl: string) => {
     setCompleting(true);
     const required = {pkce};
+    const parsed = await parseCompleteUrl(completeUrl);
 
-    const completeResponse = await fetch(completeUrl);
-    if (completeResponse.status >= 400) {
-      handleError(await completeResponse.text());
-      return;
+    if (parsed instanceof Error) {
+      return handleError(parsed.message);
     }
-    
-    const {location}  : {location: string} = await completeResponse.json();
+
+    const {location, response} = parsed;
+
     if (completionStrategy === 'openidprovider') {
       window.location.href = location;
       return;
     }
-    const url = new URL(location);
-    const params = searchParamsToPOJO(url.searchParams) as AuthorizeResponse;
-
-    await handleResponse(params, {
+    await handleResponse(response, {
       pkce: required.pkce,
       redirectUri,
       source: 'SEBankIDQrCode'
@@ -274,4 +271,26 @@ export function usePoll(pollUrl: string | null, options: UsePollOptions) {
       clearTimeout(timeout);
     }
   }, [pollUrl, onQrCode, onComplete, onError, enabled]);
+}
+
+export async function parseCompleteUrl(completeUrl: string) : Promise<{location: string, response: AuthorizeResponse} | Error> {
+  /**
+     * Handle verify response inconsistencies
+     */
+  if (completeUrl.includes('error=')) {
+    const url = new URL(completeUrl);
+    const completeParams = searchParamsToPOJO(url.searchParams) as AuthorizeResponse;
+
+    return {location: completeUrl, response: completeParams};
+  }
+
+  const completeResponse = await fetch(completeUrl);
+  if (completeResponse.status >= 400) {
+    return new Error(await completeResponse.text());
+  }
+  
+  const {location}  : {location: string} = await completeResponse.json();
+  const url = new URL(location);
+  const params = searchParamsToPOJO(url.searchParams) as AuthorizeResponse;
+  return {location: location, response: params};
 }
