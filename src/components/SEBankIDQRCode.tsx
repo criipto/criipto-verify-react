@@ -76,7 +76,8 @@ export default function SEBankIDQrCode(props: Props) {
       acrValues: 'urn:grn:authn:se:bankid:another-device:qr',
       responseMode: 'json',
       pkce,
-      redirectUri
+      redirectUri,
+      prompt: 'login' // Triggering SSO at this point would be a mistake
     }).then(url => {
       return fetch(url).then(response => response.json() as Promise<QrResponse>);
     })

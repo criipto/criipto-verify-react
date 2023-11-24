@@ -88,7 +88,8 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       loginHint: 'appswitch:browser',
       responseMode: 'json',
       pkce,
-      redirectUri
+      redirectUri,
+      prompt: 'login' // Triggering SSO at this point would be a mistake
     }).then(url => {
       return fetch(url).then(response => response.json() as Promise<Links>);
     })
