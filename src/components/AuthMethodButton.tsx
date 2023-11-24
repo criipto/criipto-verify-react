@@ -7,7 +7,8 @@ import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
 import AuthMethodButtonLogo, {AuthMethodButtonLogoProps} from './AuthMethodButton/Logo';
 import { AnchorButton, Button } from './Button';
-import { acrValueToTitle, Language, stringifyAction } from '../utils';
+import { acrValueToTitle, isSingle, Language, stringifyAction } from '../utils';
+import { AuthButtonGroupContext } from './AuthButtonGroup';
 
 export type PopupParams = {
   acrValue: string,
@@ -31,12 +32,6 @@ export interface AuthMethodButtonProps {
   logo?: AuthMethodButtonLogoProps["logo"],
 
   /**
-   * if the button is rendered alone or as part of a group of other auth method buttons
-   * will have an impact on what default text is rendered inside the button (if none is provided)
-   * i.e. Login with BankID with qrcode vs Login with BankID
-   */
-  standalone?: boolean,
-  /**
    * Impacts the button text rendered if no text is provided via props.children
    */
   language?: Language,
@@ -53,7 +48,9 @@ export interface AuthMethodButtonProps {
 }
 
 export default function AuthMethodButton(props: AuthMethodButtonProps) {
-  const {acrValue, standalone} = props;
+  const {acrValue} = props;
+  const group = useContext(AuthButtonGroupContext);
+  const standalone = !group.multiple || isSingle(props.acrValue, group.acrValues);
   const context = useContext(CriiptoVerifyContext);
   const {buildAuthorizeUrl} = context;
   const language = (props.language ?? context.uiLocales ?? 'en') as Language;

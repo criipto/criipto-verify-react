@@ -7,6 +7,7 @@ import AuthMethodButton, {AuthMethodButtonProps} from './AuthMethodButton';
 
 import './AuthMethodSelector/AuthMethodSelector.css';
 import SEBankIDQrCode from './SEBankIDQRCode';
+import AuthButtonGroup from './AuthButtonGroup';
 
 interface AuthMethodSelectorProps {
   acrValues?: string[],
@@ -15,12 +16,6 @@ interface AuthMethodSelectorProps {
   redirectUri?: string,
   popup?: AuthMethodButtonProps["popup"],
   userAgent?: string
-}
-
-function isSingle(acrValue: string, acrValues: string[]) {
-  const provider = acrValueToProviderPrefix(acrValue);
-  const count = acrValues.reduce((memo, acrValue) => memo + (acrValueToProviderPrefix(acrValue) === provider ? 1 : 0), 0);
-  return count === 1;
 }
 
 export default function AuthMethodSelector(props: AuthMethodSelectorProps) {
@@ -36,19 +31,20 @@ export default function AuthMethodSelector(props: AuthMethodSelectorProps) {
 
   return (
     <div className="criipto-eid-selector">
-      {acrValues.map(acrValue => (
-        <AuthMethodButton
-          acrValue={acrValue}
-          key={acrValue}
-          onClick={props.onSelect ? (() => props.onSelect!(acrValue)) : undefined}
-          redirectUri={props.redirectUri}
-          popup={props.popup}
-          language={language}
-          action={action}
-          standalone={isSingle(acrValue, acrValues)}
-          userAgent={props.userAgent}
-        />
-      ))}
+      <AuthButtonGroup>
+        {acrValues.map(acrValue => (
+          <AuthMethodButton
+            acrValue={acrValue}
+            key={acrValue}
+            onClick={props.onSelect ? (() => props.onSelect!(acrValue)) : undefined}
+            redirectUri={props.redirectUri}
+            popup={props.popup}
+            language={language}
+            action={action}
+            userAgent={props.userAgent}
+          />
+        ))}
+      </AuthButtonGroup>
     </div>
   )
 }
@@ -69,22 +65,23 @@ export function Sweden(props: SwedenProps) {
 
   return (
     <div className="criipto-eid-selector">
-      {filteredAcrValues.map(acrValue => (
-        <AuthMethodButton
-          acrValue={acrValue}
-          key={acrValue}
-          onClick={props.onSelect ? (() => props.onSelect!(acrValue)) : undefined}
-          redirectUri={props.redirectUri}
-          popup={props.popup}
-          language={language}
-          action={action}
-          standalone={isSingle(acrValue, acrValues)}
-          userAgent={props.userAgent}
-        />
-      ))}
-      {(hasQR && !mobileOS) ? (
-        <SEBankIDQrCode language={language} redirectUri={props.redirectUri} />
-      ) : null}
+      <AuthButtonGroup>
+        {filteredAcrValues.map(acrValue => (
+          <AuthMethodButton
+            acrValue={acrValue}
+            key={acrValue}
+            onClick={props.onSelect ? (() => props.onSelect!(acrValue)) : undefined}
+            redirectUri={props.redirectUri}
+            popup={props.popup}
+            language={language}
+            action={action}
+            userAgent={props.userAgent}
+          />
+        ))}
+        {(hasQR && !mobileOS) ? (
+          <SEBankIDQrCode language={language} redirectUri={props.redirectUri} />
+        ) : null}
+      </AuthButtonGroup>
     </div>
   )
 }

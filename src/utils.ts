@@ -228,3 +228,9 @@ export function filterAcrValues(input: string[]) {
   }
   return reduced;
 }
+
+export function isSingle(acrValue: string, acrValues: string[]) {
+  const provider = acrValueToProviderPrefix(acrValue);
+  const count = acrValues.reduce((memo, acrValue) => memo + (acrValueToProviderPrefix(acrValue) === provider ? 1 : 0), 0);
+  return count === 1;
+}
