@@ -234,3 +234,18 @@ export function isSingle(acrValue: string, acrValues: string[]) {
   const count = acrValues.reduce((memo, acrValue) => memo + (acrValueToProviderPrefix(acrValue) === provider ? 1 : 0), 0);
   return count === 1;
 }
+
+export function trySessionStorage() {
+  try {
+    if (typeof sessionStorage === 'undefined') {
+      return null;
+    }
+    return sessionStorage;
+  } catch (err) {
+    /**
+     * Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.
+     * (if storage is disabled in the browser)
+     */
+    return null;
+  }
+}

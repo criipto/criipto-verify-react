@@ -1,5 +1,6 @@
 import { PKCE } from "@criipto/auth-js"
 import { createMemoryStorage } from "../../memory-storage"
+import { trySessionStorage } from "../../utils"
 
 export interface Links {
   cancelUrl: string
@@ -20,8 +21,9 @@ export interface State {
 const STATE_KEY = '@criipto/verify-react:sebankid:state';
 
 const stateStore = (() => {
-  if (typeof sessionStorage === 'undefined') {
-    console.warn('Creating memory store for PKCE values as no sessionStorage is available.');
+  const sessionStorage = trySessionStorage();
+  if (sessionStorage === null) {
+    console.warn('Creating memory store for PKCE values as no sessionStorage is available. Authentication may be broken.');
     return createMemoryStorage();
   }
   return sessionStorage;

@@ -4,7 +4,7 @@ import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, O
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions, ResultSource} from './context';
 import { AuthorizeResponse, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js/dist/types';
 
-import { filterAcrValues, VERSION } from './utils';
+import { filterAcrValues, trySessionStorage, VERSION } from './utils';
 import jwtDecode from 'jwt-decode';
 import { createMemoryStorage } from './memory-storage';
 
@@ -153,8 +153,9 @@ function defaultRedirectUri(input?: string) : string {
 }
 
 const pkceStore = (() => {
-  if (typeof sessionStorage === 'undefined') {
-    console.warn('Creating memory store for PKCE values as no sessionStorage is available.');
+  const sessionStorage = trySessionStorage();
+  if (sessionStorage === null) {
+    console.warn('Creating memory store for PKCE values as no sessionStorage is available. Authentication may be broken.');
     return createMemoryStorage();
   }
   return sessionStorage;
