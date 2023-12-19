@@ -1,4 +1,4 @@
-import React, {useMemo, useState, useCallback, useEffect} from 'react';
+import React, {useMemo, useState, useCallback, useEffect, useRef} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions, ResultSource} from './context';
@@ -382,26 +382,39 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
       return;
     }
+    
+    (async () => {
+      await Promise.resolve(); // wait for the initial cleanup in Strict mode - avoids double mutation
+      if (!isSubscribed) return;
 
-    client.redirect.match().then(response => {
-      if (!isSubscribed) return;
-      setIsLoading(false);
-      if (response?.code) {
-        setResult({code: response.code, source: 'redirect', state: response.state});
+      try {
+        const response = await client.redirect.match();
+        if (!isSubscribed) return;
+
+        if (response?.code) {
+          setResult({code: response.code, source: 'redirect', state: response.state});
+        }
+        else if (response?.id_token) {
+          setResult({id_token: response.id_token, source: 'redirect', state: response.state});
+          sessionStore?.setItem(SESSION_KEY, response.id_token);
+          resetRedirectState(window);
+        }
+        else setResult(null);
+      } catch (err) {
+        if (!isSubscribed) return;
+        if (err instanceof OAuth2Error) {
+          setResult(err);
+        } else if (err instanceof Error) {
+          setResult(err);
+        } else {
+          setResult(new Error(err?.toString() ?? 'Unknown error ocurred'));
+        }
+      } finally {
+        if (!isSubscribed) return;
+        setIsLoading(false);
+        refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
       }
-      else if (response?.id_token) {
-        setResult({id_token: response.id_token, source: 'redirect', state: response.state});
-        sessionStore?.setItem(SESSION_KEY, response.id_token);
-        resetRedirectState(window);
-      }
-      else setResult(null);
-      refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
-    }).catch((err: OAuth2Error) => {
-      if (!isSubscribed) return;
-      setIsLoading(false);
-      setResult(err);
-      refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
-    });
+    })();
 
     return () => {
       isSubscribed = false;

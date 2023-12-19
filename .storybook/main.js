@@ -15,6 +15,6 @@ module.exports = {
     "builder": "@storybook/builder-webpack5"
   },
   reactOptions: {
-    strictMode: false
+    strictMode: true
   }
 }
