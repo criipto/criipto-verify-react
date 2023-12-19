@@ -1,4 +1,4 @@
-import React, {useMemo, useState, useCallback, useEffect, useRef} from 'react';
+import React, {useMemo, useState, useCallback, useEffect} from 'react';
 import CriiptoAuth, {AuthorizeUrlParamsOptional, clearPKCEState, generatePKCE, OAuth2Error, OpenIDConfiguration, PKCE, PKCEPublicPart, Prompt, parseAuthorizeResponseFromLocation} from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {CriiptoVerifyContextInterface, Action, Result, Claims, actions, ResultSource} from './context';
