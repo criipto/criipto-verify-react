@@ -400,7 +400,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
           resetRedirectState(window);
         }
         else setResult(null);
-      } catch (err) {
+      } catch (err: any) {
         if (!isSubscribed) return;
         if (err instanceof OAuth2Error) {
           setResult(err);
