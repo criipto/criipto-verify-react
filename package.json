@@ -72,6 +72,6 @@
   "dependencies": {
     "@criipto/auth-js": "^3.6.8",
     "jwt-decode": "^3.1.2",
-    "ua-parser-js": "^1.0.34"
+    "ua-parser-js": "^1.0.37"
   }
 }

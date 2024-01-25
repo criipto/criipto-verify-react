@@ -106,7 +106,11 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       handleLog(newHref);
       setHref(newHref);
     })
-    .catch(console.error);
+    .catch(err => {
+      console.error(err);
+      setInitiated(false);
+      setError(err?.toString());
+    });
   }, [buildAuthorizeUrl, redirectUri]);
 
   // Generate URL on first button render

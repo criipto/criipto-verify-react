@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 
 import './AuthMethodButton/AuthMethodButton.css';
-import { getMobileOS } from '../device';
 import CriiptoVerifyContext, { Action } from '../context';
 import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
