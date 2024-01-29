@@ -131,12 +131,35 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
       {standalone ? null : lowercaseFirst(acrValueToTitle(language, acrValue).subtitle)}
     </React.Fragment>
   )
+
+  const inner = (
+    <React.Fragment>
+      <AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />
+      <span>{contents}</span>
+    </React.Fragment>
+  );
+
+  const button = href ? (
+    <React.Fragment>
+      <AnchorButton {...props} href={href} className={className} onClick={handleClick}>
+        {inner}
+      </AnchorButton>
+      {backdrop}
+    </React.Fragment>
+  ) : (
+    <React.Fragment>
+      <Button {...props} className={className} onClick={handleClick}>
+        {inner}
+      </Button>
+      {backdrop}
+    </React.Fragment>
+  );
   
   if (!props.href && acrValue === 'urn:grn:authn:se:bankid:same-device') {
     return (
       <SEBankIDSameDeviceButton
         redirectUri={props.redirectUri}
-        href={href}
+        fallback={button}
         className={className}
         userAgent={props.userAgent}
         logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
@@ -146,32 +169,7 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     );
   }
 
-  const inner = (
-    <React.Fragment>
-      <AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />
-      <span>{contents}</span>
-    </React.Fragment>
-  );
-
-  if (href) {
-    return (
-      <React.Fragment>
-        <AnchorButton {...props} href={href} className={className} onClick={handleClick}>
-          {inner}
-        </AnchorButton>
-        {backdrop}
-      </React.Fragment>
-    );
-  }
-
-  return (
-    <React.Fragment>
-      <Button {...props} className={className} onClick={handleClick}>
-        {inner}
-      </Button>
-      {backdrop}
-    </React.Fragment>
-  );
+  return button;
 }
 
 function acrValueToClassName(value: string) {

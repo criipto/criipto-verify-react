@@ -13,7 +13,7 @@ interface Props {
   className: string
   children: React.ReactNode
   logo: React.ReactNode
-  href?: string
+  fallback: JSX.Element
   redirectUri?: string
   userAgent?: string
 }
@@ -35,7 +35,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       iOSSafari ? 'Reload' : 'Foreground'
       : 'Poll';
 
-  const [href, setHref] = useState(props.href);
+  const [href, setHref] = useState<null | string>();
   const [links, setLinks] = useState<Links | null>(autoHydratedState?.links ?? null);
   const [pkce, setPKCE] = useState<PKCE | undefined>(autoHydratedState?.pkce ?? undefined);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +47,6 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   const reset = () => {
     setPKCE(undefined);
     setLinks(null);
-    setHref(props.href);
   };
 
   const handleLog = (...statements: string[]) => {
@@ -142,62 +141,66 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     setError(error);
   }
 
-  const element = (
-    <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href ?? props.href} onClick={handleInitiate}>
-      {initiated ? (
-        <div className="criipto-eid-logo">
-          <div className="criipto-eid-loader"></div>
-        </div>
-      ) : props.logo}
-      {props.children}
-    </a>
-  );
+  if (href) {
+    const element = (
+      <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href} onClick={handleInitiate}>
+        {initiated ? (
+          <div className="criipto-eid-logo">
+            <div className="criipto-eid-loader"></div>
+          </div>
+        ) : props.logo}
+        {props.children}
+      </a>
+    );
 
-  return (
-    <React.Fragment>
-      {links ? (
-        <React.Fragment>
-          {strategy === "Poll" ? (
-            <PollStrategy
-              links={links}
-              onError={handleError}
-              onComplete={handleComplete}
-              onInitiate={handleInitiate}
-              onLog={handleLog}
-            >
-              {element}
-            </PollStrategy>
-          ) : strategy === 'Foreground' ? (
-            <ForegroundStrategy
-              links={links}
-              onError={handleError}
-              onComplete={handleComplete}
-              onInitiate={handleInitiate}
-              onLog={handleLog}
-            >
-              {element}
-            </ForegroundStrategy>
-          ) : strategy === 'Reload' ? (
-            <ReloadStrategy
-              links={links}
-              onError={handleError}
-              onComplete={handleComplete}
-              onInitiate={handleInitiate}
-              onLog={handleLog}
-              redirectUri={redirectUri!}
-              pkce={pkce}
-            >
-              {element}
-            </ReloadStrategy>
-          ) : element}
-        </React.Fragment>
-      ) : element}
-      {error && <p>{error}</p>}
-      {/* {log && (
-        <pre>
-          {JSON.stringify(log, null, 2)}
-        </pre>
-      )} */}
-    </React.Fragment>
-  )
+    return (
+      <React.Fragment>
+        {links ? (
+          <React.Fragment>
+            {strategy === "Poll" ? (
+              <PollStrategy
+                links={links}
+                onError={handleError}
+                onComplete={handleComplete}
+                onInitiate={handleInitiate}
+                onLog={handleLog}
+              >
+                {element}
+              </PollStrategy>
+            ) : strategy === 'Foreground' ? (
+              <ForegroundStrategy
+                links={links}
+                onError={handleError}
+                onComplete={handleComplete}
+                onInitiate={handleInitiate}
+                onLog={handleLog}
+              >
+                {element}
+              </ForegroundStrategy>
+            ) : strategy === 'Reload' ? (
+              <ReloadStrategy
+                links={links}
+                onError={handleError}
+                onComplete={handleComplete}
+                onInitiate={handleInitiate}
+                onLog={handleLog}
+                redirectUri={redirectUri!}
+                pkce={pkce}
+              >
+                {element}
+              </ReloadStrategy>
+            ) : element}
+          </React.Fragment>
+        ) : element}
+        {error && <p>{error}</p>}
+        {/* {log && (
+          <pre>
+            {JSON.stringify(log, null, 2)}
+          </pre>
+        )} */}
+      </React.Fragment>
+    )
+  }
+
+  return props.fallback;
 }
