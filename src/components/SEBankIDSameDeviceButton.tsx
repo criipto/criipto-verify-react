@@ -25,15 +25,24 @@ function searchParamsToPOJO(input: URLSearchParams) {
   }, {});
 }
 
+export function determineStrategy(input: string | undefined) {
+  const userAgent = getUserAgent(input);
+  const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
+  const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
+  const strategy =
+    mobileOS ?
+      iOSSafari ? 'Reload' : 'Foreground'
+      : 'Poll';
+
+  return strategy;
+}
+
 export default function SEBankIDSameDeviceButton(props: Props) {
   const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
   const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
   const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
 
-  const strategy =
-    mobileOS ?
-      iOSSafari ? 'Reload' : 'Foreground'
-      : 'Poll';
+  const strategy = determineStrategy(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
 
   const [href, setHref] = useState<null | string>();
   const [links, setLinks] = useState<Links | null>(autoHydratedState?.links ?? null);
@@ -141,66 +150,62 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     setError(error);
   }
 
-  if (href) {
-    const element = (
-      <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href} onClick={handleInitiate}>
-        {initiated ? (
-          <div className="criipto-eid-logo">
-            <div className="criipto-eid-loader"></div>
-          </div>
-        ) : props.logo}
-        {props.children}
-      </a>
-    );
+  const element = href ? (
+    <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href} onClick={handleInitiate}>
+      {initiated ? (
+        <div className="criipto-eid-logo">
+          <div className="criipto-eid-loader"></div>
+        </div>
+      ) : props.logo}
+      {props.children}
+    </a>
+  ) : props.fallback;
 
-    return (
-      <React.Fragment>
-        {links ? (
-          <React.Fragment>
-            {strategy === "Poll" ? (
-              <PollStrategy
-                links={links}
-                onError={handleError}
-                onComplete={handleComplete}
-                onInitiate={handleInitiate}
-                onLog={handleLog}
-              >
-                {element}
-              </PollStrategy>
-            ) : strategy === 'Foreground' ? (
-              <ForegroundStrategy
-                links={links}
-                onError={handleError}
-                onComplete={handleComplete}
-                onInitiate={handleInitiate}
-                onLog={handleLog}
-              >
-                {element}
-              </ForegroundStrategy>
-            ) : strategy === 'Reload' ? (
-              <ReloadStrategy
-                links={links}
-                onError={handleError}
-                onComplete={handleComplete}
-                onInitiate={handleInitiate}
-                onLog={handleLog}
-                redirectUri={redirectUri!}
-                pkce={pkce}
-              >
-                {element}
-              </ReloadStrategy>
-            ) : element}
-          </React.Fragment>
-        ) : element}
-        {error && <p>{error}</p>}
-        {/* {log && (
-          <pre>
-            {JSON.stringify(log, null, 2)}
-          </pre>
-        )} */}
-      </React.Fragment>
-    )
-  }
-
-  return props.fallback;
+  return (
+    <React.Fragment>
+      {links ? (
+        <React.Fragment>
+          {strategy === "Poll" ? (
+            <PollStrategy
+              links={links}
+              onError={handleError}
+              onComplete={handleComplete}
+              onInitiate={handleInitiate}
+              onLog={handleLog}
+            >
+              {element}
+            </PollStrategy>
+          ) : strategy === 'Foreground' ? (
+            <ForegroundStrategy
+              links={links}
+              onError={handleError}
+              onComplete={handleComplete}
+              onInitiate={handleInitiate}
+              onLog={handleLog}
+            >
+              {element}
+            </ForegroundStrategy>
+          ) : strategy === 'Reload' ? (
+            <ReloadStrategy
+              links={links}
+              onError={handleError}
+              onComplete={handleComplete}
+              onInitiate={handleInitiate}
+              onLog={handleLog}
+              redirectUri={redirectUri!}
+              pkce={pkce}
+            >
+              {element}
+            </ReloadStrategy>
+          ) : element}
+        </React.Fragment>
+      ) : element}
+      {error && <p>{error}</p>}
+      {/* {log && (
+        <pre>
+          {JSON.stringify(log, null, 2)}
+        </pre>
+      )} */}
+    </React.Fragment>
+  )
 }
