@@ -108,7 +108,9 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       const androidChrome = mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
       const redirect = iOSSafari ? encodeURIComponent(window.location.href) : 'null';
       const useUniveralLink = iOSSafari || androidChrome;
-      const newHref = `${useUniveralLink ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl}&redirect=${redirect}`;
+      const newUrl = new URL(useUniveralLink ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl);
+      newUrl.searchParams.set('redirect', redirect);
+      const newHref = newUrl.href;
 
       handleLog(window.location.href);
       handleLog(newHref);
