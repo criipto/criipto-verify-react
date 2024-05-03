@@ -37,6 +37,15 @@ export function determineStrategy(input: string | undefined) {
   return strategy;
 }
 
+async function fetchComplete(completeUrl: string) {
+  const completeResponse = await fetch(completeUrl);
+  if (completeResponse.status >= 400) {
+    return new Error(await completeResponse.text());
+  }
+  
+  const {location}  : {location: string} = await completeResponse.json();
+  return {location};
+}
 export default function SEBankIDSameDeviceButton(props: Props) {
   const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
   const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
@@ -50,7 +59,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<(string | string[])[]>([]);
   const [initiated, setInitiated] = useState(autoHydratedState ? true : false);
-  const {buildAuthorizeUrl, completionStrategy, generatePKCE, handleResponse, redirectUri: defaultRedirectURi} = useContext(CriiptoVerifyContext);
+  const {buildAuthorizeUrl, completionStrategy, generatePKCE, handleResponse, redirectUri: defaultRedirectURi, domain} = useContext(CriiptoVerifyContext);
   const redirectUri = props.redirectUri || defaultRedirectURi;
 
   const reset = () => {
@@ -66,13 +75,14 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     const required = {pkce};
     reset();
 
-    const completeResponse = await fetch(completeUrl);
-    if (completeResponse.status >= 400) {
-      setError(await completeResponse.text());
+    const result = completeUrl.startsWith(`https://${domain}`) || completeUrl.startsWith(`http://${domain}`) ? await fetchComplete(completeUrl) : {
+      location: completeUrl
+    }
+    if (result instanceof Error) {
+      setError(result.message);
       return;
     }
-    
-    const {location}  : {location: string} = await completeResponse.json();
+    const {location} = result;
     if (completionStrategy === 'openidprovider') {
       window.location.href = location;
       return;
@@ -85,7 +95,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       redirectUri,
       source: 'SEBankIDSameDeviceButton'
     });
-  }, [completionStrategy, pkce]);
+  }, [completionStrategy, pkce, domain]);
 
   const refresh = useCallback(async () => {
     handleLog('SEBankID: Refresh authorize url');
