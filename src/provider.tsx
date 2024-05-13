@@ -75,7 +75,10 @@ export const ACTION_SUPPORTING_ACR_VALUES = [
 export const MESSAGE_SUPPORTING_ACR_VALUES = [
   'urn:grn:authn:dk:mitid:low',
   'urn:grn:authn:dk:mitid:substantial',
-  'urn:grn:authn:dk:mitid:high'
+  'urn:grn:authn:dk:mitid:high',
+  'urn:grn:authn:se:bankid:same-device',
+  'urn:grn:authn:se:bankid:another-device',
+  'urn:grn:authn:se:bankid:another-device:qr'
 ];
 
 export function buildLoginHint(loginHint: string | undefined | null, params: {options?: AuthorizeUrlParamsOptional, action?: Action, message?: string}) {

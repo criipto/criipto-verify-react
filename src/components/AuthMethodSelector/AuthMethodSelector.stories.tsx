@@ -51,7 +51,7 @@ export default {
       options: ['confirm', 'accept', 'approve', 'sign', 'login']
     },
     message: {
-      name: 'Message (Danish MitID)',
+      name: 'Message (Danish MitID + Swedish BankID)',
       control: 'text',
       defaultValue: undefined
     },
