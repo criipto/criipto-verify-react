@@ -22,7 +22,23 @@ export default {
       control: 'select',
       defaultValue: 'token',
       options: ['token', 'code']
-    }
+    },
+    action: {
+      name: 'Action',
+      control: 'select',
+      defaultValue: undefined,
+      options: ['confirm', 'accept', 'approve', 'sign', 'login']
+    },
+    message: {
+      name: 'Message (Danish MitID + Swedish BankID)',
+      control: 'text',
+      defaultValue: undefined
+    },
+    loginHint: {
+      name: 'Login hint',
+      control: 'text',
+      defaultValue: undefined
+    },
   }
 } as ComponentMeta<typeof AuthMethodButton>;
 
@@ -35,6 +51,9 @@ const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
       domain={globals.domain}
       clientID={globals.clientID}
       redirectUri={window.location.href}
+      action={(args as any).action}
+      message={(args as any).message}
+      loginHint={(args as any).loginHint}
       prompt="login"
     >
       <StoryResponseRenderer>
