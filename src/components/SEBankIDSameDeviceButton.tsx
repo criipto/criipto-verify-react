@@ -176,9 +176,19 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     setError(null);
   }
 
-  const handleError = (error: string) => {
+  const handleError = async (error: string) => {
     setInitiated(false);
     setError(error);
+
+    if (error === 'access_denied' || error === '"access_denied"') {
+      await handleResponse({
+        error: 'access_denied'
+      }, {
+        pkce,
+        redirectUri,
+        source: 'SEBankIDSameDeviceButton'
+      });
+    }
   }
 
   const element = href ? (
