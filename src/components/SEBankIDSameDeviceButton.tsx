@@ -37,10 +37,20 @@ export function determineStrategy(input: string | undefined) {
   return strategy;
 }
 
+export class NotDoneError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotDoneError";
+  }
+}
+
 async function fetchComplete(completeUrl: string) {
   const completeResponse = await fetch(completeUrl);
   if (completeResponse.status >= 400) {
-    return new Error(await completeResponse.text());
+    const errorMessage = await completeResponse.text();
+    const notDone = errorMessage.includes("Native-app driven authentication is not done");
+    if (notDone) return new NotDoneError(errorMessage);
+    return new Error(errorMessage);
   }
   
   const {location}  : {location: string} = await completeResponse.json();
@@ -78,6 +88,16 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     const result = completeUrl.startsWith(`https://${domain}`) || completeUrl.startsWith(`http://${domain}`) ? await fetchComplete(completeUrl) : {
       location: completeUrl
     }
+    if (result instanceof NotDoneError && strategy === 'Reload') {
+      await handleResponse({
+        error: 'access_denied'
+      }, {
+        pkce: required.pkce,
+        redirectUri,
+        source: 'SEBankIDSameDeviceButton'
+      });
+      return;
+    }
     if (result instanceof Error) {
       setError(result.message);
       return;
@@ -95,7 +115,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       redirectUri,
       source: 'SEBankIDSameDeviceButton'
     });
-  }, [completionStrategy, pkce, domain]);
+  }, [completionStrategy, pkce, domain, strategy]);
 
   const refresh = useCallback(async () => {
     handleLog('SEBankID: Refresh authorize url');
@@ -127,7 +147,6 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       setHref(newHref);
     })
     .catch(err => {
-      console.error(err);
       setInitiated(false);
       setError(err?.toString());
     });
