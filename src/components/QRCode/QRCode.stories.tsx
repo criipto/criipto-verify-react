@@ -28,7 +28,6 @@ const ALL_ACR_VALUES = [
   'urn:grn:authn:no:bankid:mobile',
   'urn:grn:authn:no:bankid:substantial',
   'urn:grn:authn:no:vipps',
-  'urn:grn:authn:se:bankid:another-device',
   'urn:grn:authn:se:bankid:another-device:qr',
   'urn:grn:authn:se:bankid:same-device'
 ];

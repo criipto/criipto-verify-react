@@ -181,10 +181,10 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 			if (language === 'nb') subtitle = 'Med personnummeret ditt';
 		}
 		if (suffix === 'another-device:qr') {
-			if (language === 'en') subtitle = 'With QR Code';
-			if (language === 'da') subtitle = 'Med QR-kode';
-			if (language === 'sv') subtitle = 'Med QR-kod';
-			if (language === 'nb') subtitle = 'Med QR-kode';
+			if (language === 'en') subtitle = 'On another device';
+			if (language === 'da') subtitle = 'På anden enhed';
+			if (language === 'sv') subtitle = 'På annan enhet';
+			if (language === 'nb') subtitle = 'På annan enhet';
 		}
 
     return {title: 'BankID', subtitle};
