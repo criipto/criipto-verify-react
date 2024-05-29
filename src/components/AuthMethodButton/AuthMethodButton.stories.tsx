@@ -44,6 +44,10 @@ export default {
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
+  const loginHint =
+    (args as any).loginHint && btoa(atob((args as any).loginHint)) === (args as any).loginHint ? atob((args as any).loginHint) :
+    (args as any).loginHint;
+
   return (
     <CriiptoVerifyProvider
       completionStrategy={(args as any).completionStrategy}
@@ -53,7 +57,7 @@ const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
       redirectUri={window.location.href}
       action={(args as any).action}
       message={(args as any).message}
-      loginHint={(args as any).loginHint}
+      loginHint={loginHint}
       prompt="login"
     >
       <StoryResponseRenderer>
