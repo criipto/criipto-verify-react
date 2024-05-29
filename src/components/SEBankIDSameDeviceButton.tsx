@@ -29,12 +29,13 @@ export function determineStrategy(input: string | undefined, loginHint?: string)
   const userAgent = getUserAgent(input);
   const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
   const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
+  const iOSWebKit = mobileOS === 'iOS' && userAgent?.browser.name?.includes('WebKit') ? true : false;
   const strategy =
     mobileOS ?
-      iOSSafari ? 'Reload' : 'Foreground'
+      (iOSSafari || iOSWebKit) ? 'Reload' : 'Foreground'
       : 'Poll';
 
-  if (mobileOS && iOSSafari && loginHint?.includes('appswitch:resumeUrl:disable')) {
+  if (mobileOS && (iOSSafari || iOSWebKit) && loginHint?.includes('appswitch:resumeUrl:disable')) {
     return 'Foreground';
   }
 
@@ -65,6 +66,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
   const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
   const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
+  const iOSWebKit = mobileOS === 'iOS' && userAgent?.browser.name?.includes('WebKit') ? true : false;
 
   const strategy = determineStrategy(
     typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent,
@@ -145,7 +147,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
 
       const androidChrome = mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
       const redirect = (iOSSafari && strategy === 'Reload') ? window.location.href : 'null';
-      const useUniveralLink = iOSSafari || androidChrome;
+      const useUniveralLink = iOSSafari || iOSWebKit || androidChrome;
       const newUrl = new URL(useUniveralLink ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl);
       newUrl.searchParams.set('redirect', redirect);
       const newHref = newUrl.href;
