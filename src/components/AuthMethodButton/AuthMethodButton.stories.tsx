@@ -57,7 +57,7 @@ function tryBase64Decode(input?: string) {
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
-  const loginHint = tryBase64Decode((args as any).loginHint) ?? (args as any).loginHint);
+  const loginHint = tryBase64Decode((args as any).loginHint) ?? (args as any).loginHint;
 
   return (
     <CriiptoVerifyProvider
