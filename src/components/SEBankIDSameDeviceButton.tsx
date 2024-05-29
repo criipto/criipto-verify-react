@@ -34,8 +34,9 @@ export function determineStrategy(input: string | undefined, loginHint?: string)
       iOSSafari ? 'Reload' : 'Foreground'
       : 'Poll';
 
-  if (mobileOS && iOSSafari && loginHint?.includes('appswitch:resumeUrl:disable')) 7
-  return 'Foreground';
+  if (mobileOS && iOSSafari && loginHint?.includes('appswitch:resumeUrl:disable')) {
+    return 'Foreground';
+  }
 
   return strategy;
 }
