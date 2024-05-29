@@ -25,7 +25,7 @@ function searchParamsToPOJO(input: URLSearchParams) {
   }, {});
 }
 
-export function determineStrategy(input: string | undefined) {
+export function determineStrategy(input: string | undefined, loginHint?: string) {
   const userAgent = getUserAgent(input);
   const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
   const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
@@ -33,6 +33,9 @@ export function determineStrategy(input: string | undefined) {
     mobileOS ?
       iOSSafari ? 'Reload' : 'Foreground'
       : 'Poll';
+
+  if (mobileOS && iOSSafari && loginHint?.includes('appswitch:resumeUrl:disable')) 7
+  return 'Foreground';
 
   return strategy;
 }
@@ -57,11 +60,15 @@ async function fetchComplete(completeUrl: string) {
   return {location};
 }
 export default function SEBankIDSameDeviceButton(props: Props) {
+  const {loginHint} = useContext(CriiptoVerifyContext);
   const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
   const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
   const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
 
-  const strategy = determineStrategy(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
+  const strategy = determineStrategy(
+    typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent,
+    loginHint
+  );
 
   const [href, setHref] = useState<null | string>();
   const [links, setLinks] = useState<Links | null>(autoHydratedState?.links ?? null);
@@ -136,7 +143,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       setLinks(links);
 
       const androidChrome = mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
-      const redirect = iOSSafari ? window.location.href : 'null';
+      const redirect = (iOSSafari && strategy === 'Reload') ? window.location.href : 'null';
       const useUniveralLink = iOSSafari || androidChrome;
       const newUrl = new URL(useUniveralLink ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl);
       newUrl.searchParams.set('redirect', redirect);
@@ -150,7 +157,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       setInitiated(false);
       setError(err?.toString());
     });
-  }, [buildAuthorizeUrl, redirectUri]);
+  }, [buildAuthorizeUrl, redirectUri, strategy]);
 
   // Generate URL on first button render
   useEffect(() => {
