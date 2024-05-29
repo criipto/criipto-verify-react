@@ -42,8 +42,23 @@ export default {
   }
 } as ComponentMeta<typeof AuthMethodButton>;
 
+function tryBase64Decode(input?: string) {
+  if (!input) return null;
+
+  try {
+    const decoded = atob(input);
+    if (btoa(decoded) === input) return decoded;
+    return null;
+  } catch (err) {
+    return null;
+  }
+}
+
+
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
+  const loginHint = tryBase64Decode((args as any).loginHint) ?? (args as any).loginHint;
+
   return (
     <CriiptoVerifyProvider
       completionStrategy={(args as any).completionStrategy}
@@ -53,7 +68,7 @@ const Template: ComponentStory<typeof AuthMethodButton> = (args, {globals}) => {
       redirectUri={window.location.href}
       action={(args as any).action}
       message={(args as any).message}
-      loginHint={(args as any).loginHint}
+      loginHint={loginHint}
       prompt="login"
     >
       <StoryResponseRenderer>

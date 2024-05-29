@@ -343,7 +343,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
       isInitializing,
       acrValues: configuration ? filterAcrValues(configuration.acr_values_supported) : undefined,
       client,
-      uiLocales
+      uiLocales,
+      loginHint
     }
   }, [
     client,
@@ -363,7 +364,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     logout,
     configuration,
     uiLocales,
-    checkSession
+    checkSession,
+    loginHint
   ]);
 
   useEffect(() => {

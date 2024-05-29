@@ -42,6 +42,7 @@ export interface CriiptoVerifyContextInterface {
   acrValues?: string[],
   uiLocales?: string,
   client: CriiptoAuth
+  loginHint?: string
 }
 
 /**
@@ -74,7 +75,8 @@ const initialContext = {
   store: null as any as Storage,
   isLoading: false,
   isInitializing: true,
-  client: null as any as CriiptoAuth
+  client: null as any as CriiptoAuth,
+  loginHint: undefined
 };
 
 const CriiptoVerifyContext = createContext<CriiptoVerifyContextInterface>(initialContext);
