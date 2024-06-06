@@ -57,16 +57,18 @@ export default function App() {
         {JSON.stringify(result.id_token, null, 2)}
       </pre>
     )
-  } else {
+  }
+
+  return (
     <React.Fragment>
       {result?.error ? (
         <p>
-          An error occured: {result.error} ({result.error_description}). Please try again:
+          An error occurred: {result.error} ({result.error_description}). Please try again.
         </p>
       ) : null}
       <AuthMethodSelector />
     </React.Fragment>
-  }
+  );
 }
 ```
 
@@ -112,13 +114,16 @@ export default function App() {
   if (isLoading) {
     return <div>Loading</div>
   }
-  else if (claims) {
+
+  if (claims) {
     return (
       <pre>
         {JSON.stringify(claims, null, 2)}
       </pre>
     )
-  } else {
+  }
+
+  return (
     <React.Fragment>
       {error ? (
         <p>
@@ -127,13 +132,13 @@ export default function App() {
       ) : null}
       <AuthMethodSelector />
     </React.Fragment>
-  }
+  );
 }
 ```
 
 ### Logging Out
 
-`@criipto/verify-react` offers the logout method you can use to clear session storage and log out of any existing SSO session. 
+`@criipto/verify-react` offers the logout method you can use to clear session storage and log out of any existing SSO session.
 
 ```jsx
 const {logout} = useCriiptoVerify();
