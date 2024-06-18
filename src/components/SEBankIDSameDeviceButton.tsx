@@ -25,21 +25,33 @@ function searchParamsToPOJO(input: URLSearchParams) {
   }, {});
 }
 
-export function determineStrategy(input: string | undefined, loginHint?: string) {
+type Resume = 'Foreground' | 'Reload' | 'Poll'
+type LinkType = 'universal' | 'scheme';
+export function determineStrategy(input: string | undefined, loginHint?: string) : {
+  resume: Resume
+  linkType: LinkType,
+  redirect: boolean
+} {
   const userAgent = getUserAgent(input);
-  const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
+  const mobileOS = 
+    userAgent?.os.name === 'iOS' ? 'iOS' :
+    userAgent?.os.name === 'Android' ? 'android' :
+    userAgent?.browser.name === 'Samsung Internet' ? 'android' :
+    null;
   const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
-  const iOSWebKit = mobileOS === 'iOS' && userAgent?.browser.name?.includes('WebKit') ? true : false;
-  const strategy =
+  const androidChrome = mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
+  const redirect = iOSSafari && !loginHint?.includes('appswitch:resumeUrl:disable');
+
+  const resume : Resume =
     mobileOS ?
-      (iOSSafari || iOSWebKit) ? 'Reload' : 'Foreground'
+      (iOSSafari && redirect) ? 'Reload' : 'Foreground'
       : 'Poll';
 
-  if (mobileOS && (iOSSafari || iOSWebKit) && loginHint?.includes('appswitch:resumeUrl:disable')) {
-    return 'Foreground';
-  }
+  const linkType = 
+    (mobileOS === 'iOS' || androidChrome) ? 'universal' :
+    'scheme'
 
-  return strategy;
+  return {resume, linkType, redirect};
 }
 
 export class NotDoneError extends Error {
@@ -98,7 +110,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     const result = completeUrl.startsWith(`https://${domain}`) || completeUrl.startsWith(`http://${domain}`) ? await fetchComplete(completeUrl) : {
       location: completeUrl
     }
-    if (result instanceof NotDoneError && strategy === 'Reload') {
+    if (result instanceof NotDoneError && strategy.resume === 'Reload') {
       await handleResponse({
         error: 'access_denied'
       }, {
@@ -145,10 +157,8 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       setPKCE(pkce || undefined);
       setLinks(links);
 
-      const androidChrome = mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
-      const redirect = (iOSSafari && strategy === 'Reload') ? window.location.href : 'null';
-      const useUniveralLink = iOSSafari || iOSWebKit || androidChrome;
-      const newUrl = new URL(useUniveralLink ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl);
+      const redirect = strategy.redirect ? window.location.href : 'null';
+      const newUrl = new URL(strategy.linkType === 'universal' ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl);
       newUrl.searchParams.set('redirect', redirect);
       const newHref = newUrl.href;
 
@@ -216,7 +226,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     <React.Fragment>
       {links ? (
         <React.Fragment>
-          {strategy === "Poll" ? (
+          {strategy.resume === "Poll" ? (
             <PollStrategy
               links={links}
               onError={handleError}
@@ -226,7 +236,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
             >
               {element}
             </PollStrategy>
-          ) : strategy === 'Foreground' ? (
+          ) : strategy.resume === 'Foreground' ? (
             <ForegroundStrategy
               links={links}
               onError={handleError}
@@ -236,7 +246,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
             >
               {element}
             </ForegroundStrategy>
-          ) : strategy === 'Reload' ? (
+          ) : strategy.resume === 'Reload' ? (
             <ReloadStrategy
               links={links}
               onError={handleError}
