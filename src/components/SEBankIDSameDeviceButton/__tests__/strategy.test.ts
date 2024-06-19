@@ -134,7 +134,6 @@ describe('SEBankID/strategy', function () {
     });
   });
 
-  // Cannot be distinguished from iOS Safari
   it('uses reload strategy for iOS Edge', function () {
     const userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/125.0.2535.96 Version/17.0 Mobile/15E148 Safari/604.1';
 
