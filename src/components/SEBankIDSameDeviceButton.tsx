@@ -1,5 +1,5 @@
 import { PKCE, AuthorizeResponse } from '@criipto/auth-js';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
 import CriiptoVerifyContext from '../context';
 import { getUserAgent } from '../device';
 
@@ -75,15 +75,11 @@ async function fetchComplete(completeUrl: string) {
 }
 export default function SEBankIDSameDeviceButton(props: Props) {
   const {loginHint} = useContext(CriiptoVerifyContext);
-  const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
-  const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
-  const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
-  const iOSWebKit = mobileOS === 'iOS' && userAgent?.browser.name?.includes('WebKit') ? true : false;
-
-  const strategy = determineStrategy(
-    typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent,
+  const rawUserAgent = typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent;
+  const strategy = useMemo(() => determineStrategy(
+    rawUserAgent,
     loginHint
-  );
+  ), [rawUserAgent, loginHint]);
 
   const [href, setHref] = useState<null | string>();
   const [links, setLinks] = useState<Links | null>(autoHydratedState?.links ?? null);
