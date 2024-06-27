@@ -21,7 +21,7 @@ export interface CriiptoVerifyContextInterface {
   loginWithRedirect: (params?: RedirectAuthorizeParams) => Promise<void>,
   loginWithPopup: (params?: PopupAuthorizeParams) => Promise<void>,
   checkSession: () => Promise<void>,
-  logout: (params?: {redirectUri?: string}) => Promise<void>,
+  logout: (params?: {redirectUri?: string, state?: string}) => Promise<void>,
   fetchOpenIDConfiguration: () => Promise<OpenIDConfiguration>,
   buildAuthorizeUrl: (options?: AuthorizeUrlParamsOptional) => Promise<string>,
   generatePKCE: () => Promise<PKCE | undefined>,

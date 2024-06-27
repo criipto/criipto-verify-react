@@ -143,7 +143,7 @@ export default function App() {
 ```jsx
 const {logout} = useCriiptoVerify();
 ...
-<button onClick={()=>logout(window.location.href)}>
+<button onClick={() => logout({redirectUri: window.location.href})}>
   Log Out
 </button>
 ```

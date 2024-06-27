@@ -297,10 +297,11 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     });
   }, [sessionStore, client, props.redirectUri]);
 
-  const logout = useCallback(async (params?: {redirectUri?: string}) => {
+  const logout = useCallback(async (params?: {redirectUri?: string, state?: string}) => {
     sessionStore?.removeItem(SESSION_KEY);
     await client.logout({
-      redirectUri: params?.redirectUri ?? defaultRedirectUri(props.redirectUri)
+      redirectUri: params?.redirectUri ?? defaultRedirectUri(props.redirectUri),
+      state: params?.state
     });
   }, [sessionStore, client, props.redirectUri]);
 
