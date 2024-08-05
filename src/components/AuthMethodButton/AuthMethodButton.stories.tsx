@@ -117,7 +117,7 @@ Popup.storyName = "Popup - Basic backrop";
 
 export const PopupCallback = Template.bind({});
 PopupCallback.args = {
-  acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
+  acrValue: 'urn:grn:authn:dk:mitid:low',
   popup: () => true,
   standalone: false
 };
