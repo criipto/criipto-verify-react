@@ -53,17 +53,16 @@ type SwedenProps = Omit<AuthMethodSelectorProps, 'acrValues'> & {
   acrValues: string[]
 }
 
-const QR_ACR_VALUE = 'urn:grn:authn:se:bankid:another-device:qr';
 export function Sweden(props: SwedenProps) {
   const {acrValues} = props;
   const {action, uiLocales} = useContext(CriiptoVerifyContext);
   const language = props.language || uiLocales as Language || 'en';
-  const hasQR = acrValues.includes(QR_ACR_VALUE);
-  const filteredAcrValues = acrValues.filter(s => s !== QR_ACR_VALUE);
+  const hasQR = acrValues.includes(SEBankIDQrCode.acr_values);
+  const filteredAcrValues = acrValues.filter(s => s !== SEBankIDQrCode.acr_values);
 
   const userAgent = getUserAgent(typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent);
   const mobileOS = userAgent?.os.name === 'iOS' ? 'iOS' : userAgent?.os.name === 'Android' ? 'android' : null;
-  const [showQR, setShowQR] = useState(hasQR && !mobileOS);
+  const showQR = hasQR && !mobileOS;
 
   return (
     <div className="criipto-eid-selector">
@@ -81,14 +80,18 @@ export function Sweden(props: SwedenProps) {
           />
         ))}
         {showQR ? (
-          <SEBankIDQrCode language={language} redirectUri={props.redirectUri} />
+          <SEBankIDQrCode
+            language={language}
+            redirectUri={props.redirectUri}
+            fallback={(
+              <AuthMethodButton 
+                acrValue={SEBankIDQrCode.acr_values} 
+              />
+            )}
+          />
         ) : (hasQR && mobileOS) ? (
           <AuthMethodButton 
-            acrValue={QR_ACR_VALUE} 
-            onClick={(event) => {
-              event.preventDefault();
-              setShowQR(true);
-            }}
+            acrValue={SEBankIDQrCode.acr_values}
           />
         ) : null}
       </AuthButtonGroup>
