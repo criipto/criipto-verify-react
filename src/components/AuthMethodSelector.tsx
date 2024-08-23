@@ -89,6 +89,11 @@ export function Sweden(props: SwedenProps) {
               event.preventDefault();
               setShowQR(true);
             }}
+            redirectUri={props.redirectUri}
+            popup={props.popup}
+            language={language}
+            action={action}
+            userAgent={props.userAgent}
           />
         ) : null}
       </AuthButtonGroup>
