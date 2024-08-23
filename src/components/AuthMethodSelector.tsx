@@ -92,6 +92,11 @@ export function Sweden(props: SwedenProps) {
         ) : (hasQR && mobileOS) ? (
           <AuthMethodButton 
             acrValue={SEBankIDQrCode.acr_values}
+            redirectUri={props.redirectUri}
+            popup={props.popup}
+            language={language}
+            action={action}
+            userAgent={props.userAgent}
           />
         ) : null}
       </AuthButtonGroup>
