@@ -7,6 +7,7 @@ import CriiptoVerifyContext from "../context";
 
 import logo from './SEBankIDQRCode/logo@2x.png';
 import './SEBankIDQRCode/SEBankIDQRCode.css';
+import AuthMethodButton from "./AuthMethodButton";
 
 interface Props {
   redirectUri?: string,
@@ -28,7 +29,10 @@ interface Props {
     isCompleting: boolean
     error: OAuth2Error | Error | null
     retry: () => void
-})  => React.ReactElement
+  }) => React.ReactElement
+
+  /** Render fallback element while loading */
+  fallback?: React.ReactElement
 }
 
 interface QrResponse {
@@ -46,11 +50,6 @@ function searchParamsToPOJO(input: URLSearchParams) {
     return memo;
   }, {});
 }
-
-// const logo = new Image();
-// logo.src = logoSrc;
-
-// const LOGO_RATIO = 0.15;
 
 export default function SEBankIDQrCode(props: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -180,6 +179,10 @@ export default function SEBankIDQrCode(props: Props) {
     </div>
   );
 
+  if (!qrCode && props.fallback) {
+    return props.fallback;
+  }
+
   if (props.children) {
     return props.children({
       qrElement,
@@ -192,6 +195,8 @@ export default function SEBankIDQrCode(props: Props) {
 
   return qrElement;
 }
+
+SEBankIDQrCode.acr_values = 'urn:grn:authn:se:bankid:another-device:qr';
 
 type UseDrawOptions = {
   width?: number,

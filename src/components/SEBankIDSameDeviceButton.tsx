@@ -164,7 +164,6 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     })
     .catch(err => {
       setInitiated(false);
-      setError(err?.toString());
     });
   }, [buildAuthorizeUrl, redirectUri, strategy]);
 
