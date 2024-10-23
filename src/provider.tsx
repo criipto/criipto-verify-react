@@ -61,6 +61,14 @@ export interface CriiptoVerifyProviderOptions {
    * @deprecated Criipto internal use
    */
   criiptoSdk?: null | string
+  /**
+   * @deprecated Criipto internal use
+   */
+  responseType?: ResponseType | 'code id_token'
+  /**
+   * @deprecated Criipto internal use
+   */
+  responseMode?: "query" | "form_post" | "fragment" | "json" | "post_message"
 }
 
 export const ACTION_SUPPORTING_ACR_VALUES = [
@@ -221,7 +229,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
   const buildOptions = useCallback((options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams) : AuthorizeUrlParamsOptional => {
     return {
       redirectUri: defaultRedirectUri(props.redirectUri),
-      responseType: 'code' as ResponseType,
+      responseType: (props.responseType ?? 'code') as ResponseType,
+      responseMode: props.responseMode,
       ...options || {},
       state: props.state ?? options?.state,
       nonce: props.nonce ?? options?.nonce,
@@ -247,7 +256,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Elemen
     message,
     props.redirectUri,
     props.criiptoSdk,
-    props.loginHint
+    props.loginHint,
+    props.responseMode,
+    props.responseType
   ]);
 
   const buildAuthorizeUrl = useCallback(async (options?: AuthorizeUrlParamsOptional) => {

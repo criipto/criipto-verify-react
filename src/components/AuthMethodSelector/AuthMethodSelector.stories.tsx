@@ -76,6 +76,28 @@ export default {
       defaultValue: 'token',
       options: ['token', 'code']
     },
+    response_mode: {
+      name: 'response_mode',
+      control: 'select',
+      defaultValue: undefined,
+      options: [
+        "query",
+        "form_post",
+        "fragment",
+        "json",
+        "post_message"
+      ]
+    },
+    response_type: {
+      name: 'response_type',
+      control: 'select',
+      defaultValue: undefined,
+      options:[
+        'code',
+        'id_token',
+        'code id_token'
+      ]
+    },
     popup: {
       name: 'Popup',
       control: 'boolean',
@@ -96,6 +118,8 @@ const Template: ComponentStory<typeof AuthMethodSelector> = (args, {globals}) =>
       clientID={globals.clientID}
       redirectUri={args.redirectUri}
       uiLocales={args.language}
+      responseMode={(args as any).response_mode}
+      responseType={(args as any).response_type}
     >
       <StoryResponseRenderer>
         <AuthMethodSelector {...args} />
