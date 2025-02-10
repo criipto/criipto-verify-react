@@ -170,7 +170,7 @@ const pkceStore = (() => {
   return sessionStorage;
 })();
 
-const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : JSX.Element => {
+const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : React.ReactElement => {
   const client = useMemo(() => 
     new CriiptoAuth({
       domain: props.domain,

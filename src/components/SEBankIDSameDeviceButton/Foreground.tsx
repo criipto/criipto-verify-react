@@ -32,7 +32,7 @@ export default function SEBankIDSameDeviceForeground(props: Props) {
   };
   
   return React.cloneElement(props.children, {
-    ...props.children.props,
+    ...props.children.props as any,
     onClick: handleInitiate
   });
 }

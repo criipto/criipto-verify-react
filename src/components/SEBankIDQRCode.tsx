@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { AuthorizeResponse, OAuth2Error, PKCE } from '@criipto/auth-js';
 import QRCode from 'qrcode';
 import { assertUnreachableLanguage, Language } from '../utils';
@@ -7,7 +7,6 @@ import CriiptoVerifyContext from "../context";
 
 import logo from './SEBankIDQRCode/logo@2x.png';
 import './SEBankIDQRCode/SEBankIDQRCode.css';
-import AuthMethodButton from "./AuthMethodButton";
 
 interface Props {
   redirectUri?: string,

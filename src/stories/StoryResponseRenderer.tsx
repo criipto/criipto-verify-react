@@ -3,10 +3,10 @@ import React from 'react';
 import useCriiptoVerify from '../use-criipto-verify';
 
 interface Props {
-  children: JSX.Element
+  children: React.ReactElement
 }
 
-export default function StoryResponseRenderer(props: Props) : JSX.Element {
+export default function StoryResponseRenderer(props: Props) : React.ReactElement {
   const {result, isLoading} = useCriiptoVerify();
 
   if (isLoading) {

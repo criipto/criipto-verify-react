@@ -13,7 +13,7 @@ interface Props {
   className: string
   children: React.ReactNode
   logo: React.ReactNode
-  fallback: JSX.Element
+  fallback: React.ReactElement
   redirectUri?: string
   userAgent?: string
 }
