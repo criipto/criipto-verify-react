@@ -35,7 +35,29 @@ export default {
   },
 } as ComponentMeta<typeof SEBankIDQRCode>;
 
-const Template: ComponentStory<typeof SEBankIDQRCode> = (args, { globals }) => {
+const DefaultTemplate: ComponentStory<typeof SEBankIDQRCode> = (args, { globals }) => {
+  return (
+    <CriiptoVerifyProvider
+      completionStrategy={(args as any).completionStrategy}
+      response={(args as any).response}
+      uiLocales={(args as any).language}
+      action={(args as any).action}
+      domain={globals.domain}
+      clientID={globals.clientID}
+      redirectUri={window.location.href}
+    >
+      <StoryResponseRenderer>
+        <div style={{ width: "400px" }}>
+          <SEBankIDQRCode />
+        </div>
+      </StoryResponseRenderer>
+    </CriiptoVerifyProvider>
+  );
+};
+
+export const Default = DefaultTemplate.bind({});
+
+const CustomRendererTemplate: ComponentStory<typeof SEBankIDQRCode> = (args, { globals }) => {
   return (
     <CriiptoVerifyProvider
       completionStrategy={(args as any).completionStrategy}
@@ -68,4 +90,4 @@ const Template: ComponentStory<typeof SEBankIDQRCode> = (args, { globals }) => {
   );
 };
 
-export const Default = Template.bind({});
+export const CustomRenderer = CustomRendererTemplate.bind({});

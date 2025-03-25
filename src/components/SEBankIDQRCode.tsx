@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AuthorizeResponse, OAuth2Error, PKCE } from '@criipto/auth-js';
 import QRCode from 'qrcode';
 import { assertUnreachableLanguage, Language } from '../utils';
@@ -21,11 +21,15 @@ interface Props {
      * Can be rendered instead of `qrElement` if you only wish to render the qr code with no additional content.
      * Combine with `qrMargin`.
      */
-    canvasElement: React.ReactElement,
+    imageElement: React.ReactElement,
     /**
      * Will be true once the user has completed login in the app and the rest of the login flow is being processed
      */
     isCompleting: boolean
+    /**
+     * The user has clicked on the qr image element to trigger fullscreen view per https://developers.bankid.com/getting-started/qr-code#accessibility
+     */
+    fullscreen: boolean
     error: OAuth2Error | Error | null
     retry: () => void
   }) => React.ReactElement
@@ -51,8 +55,7 @@ function searchParamsToPOJO(input: URLSearchParams) {
 }
 
 export default function SEBankIDQrCode(props: Props) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLButtonElement>(null);
   const {buildAuthorizeUrl, completionStrategy, handleResponse, generatePKCE, redirectUri: defaultRedirectURi, uiLocales} = useContext(CriiptoVerifyContext);
   const language = (props.language ?? uiLocales ?? 'en') as Language;
   const redirectUri = props.redirectUri || defaultRedirectURi;
@@ -61,6 +64,7 @@ export default function SEBankIDQrCode(props: Props) {
   const [error, setError] = useState<OAuth2Error | Error | null>(null);
   const [pkce, setPKCE] = useState<PKCE | undefined>(undefined);
   const [isCompleting, setCompleting] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
 
   const refresh = useCallback(async () => {
     setError(null);
@@ -135,10 +139,10 @@ export default function SEBankIDQrCode(props: Props) {
   /**
    * Render QR codes
    */
-  useDraw(qrCode, {
-    canvas: canvasRef.current,
-    width: wrapperRef.current?.offsetWidth,
-    qrMargin: props.qrMargin
+  const qrDataURL = useDraw(qrCode, {
+    width: fullscreen ? (window.innerHeight ?? wrapperRef.current?.offsetWidth) : wrapperRef.current?.offsetWidth,
+    // 2 is half of the default 4, less margin is required in fullscreen
+    qrMargin: props.qrMargin ?? (fullscreen ? 2 : undefined)
   });
 
   /**
@@ -151,12 +155,6 @@ export default function SEBankIDQrCode(props: Props) {
     onError: handleError
   });
 
-  const canvasElement = (
-    <div ref={wrapperRef}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
-
   const completingHelpText = 
     language === 'en' ? 'Completing your login.' : 
     language == 'da' ? 'Fuldfører dit login.' :
@@ -168,13 +166,26 @@ export default function SEBankIDQrCode(props: Props) {
     language == 'sv' ? 'Öppna BankID-appen på din mobila enhet och skanna QR-koden.' :
     language == 'nb' ? 'Åpne BankID-appen på mobilenheten din og skann QR-koden.' : assertUnreachableLanguage(language);
 
+  const fullscreenHelpText = 
+    language === 'en' ? 'This is a BankID QR Code. You can click it to view it in full screen' : 
+    language == 'da' ? 'Dette er en BankID QR-kode. Du kan klikke på den for at se den i fuld skærm' :
+    language == 'sv' ? 'Detta är en QR-kod från BankID. Du kan klicka på den för att visa den i fullskärm.' :
+    language == 'nb' ? 'Dette er en BankID QR-kode. Du kan klikke på den for å se den i fullskjerm' : assertUnreachableLanguage(language);
+
+  const imageElement = (
+    <button aria-label={fullscreenHelpText} ref={wrapperRef} className="criipto-se-bankid-qr-canvas" onClick={() => setFullscreen(val => !val)}>
+      {qrDataURL ? (<img src={qrDataURL} />) : null}
+    </button>
+  );
+
   const qrElement = (
     <div className="criipto-se-bankid-qr">
       <aside className="criipto-se-bankid-qr--help-text">
         {isCompleting ? completingHelpText : initialHelpText}
         <img src={logo} />
       </aside>
-      {canvasElement}
+      
+      {imageElement}
     </div>
   );
 
@@ -185,11 +196,20 @@ export default function SEBankIDQrCode(props: Props) {
   if (props.children) {
     return props.children({
       qrElement,
-      canvasElement,
+      imageElement,
       error,
       isCompleting,
       retry: () => handleRetry(),
+      fullscreen
     });
+  }
+
+  if (fullscreen) {
+    return (
+      <dialog className="criipto-se-bankid-qr-fullscreen" open>
+        {imageElement}
+      </dialog>
+    )
   }
 
   return qrElement;
@@ -199,22 +219,19 @@ SEBankIDQrCode.acr_values = 'urn:grn:authn:se:bankid:another-device:qr';
 
 type UseDrawOptions = {
   width?: number,
-  canvas: HTMLCanvasElement | null,
   qrMargin?: number
 }
 export function useDraw(qrCode: string | null, options: UseDrawOptions) {
-  const {width, canvas, qrMargin} = options;
+  const {width, qrMargin} = options;
+  const [dataURL, setDataURL] = useState<string | null>(null);
 
   useEffect(() => {
     if (!qrCode) return;
-    if (!canvas) return;
 
     let isSubscribed = true;
     (async () => {
-      canvas.width = width ?? 300;
-      canvas.height = width ?? 300;
 
-      const qrImage = await QRCode.toCanvas(qrCode, {
+      const qrImage = await QRCode.toDataURL(qrCode, {
         errorCorrectionLevel: 'low',
         scale: 10,
         width,
@@ -222,14 +239,15 @@ export function useDraw(qrCode: string | null, options: UseDrawOptions) {
       });
 
       if (!isSubscribed) return;
-      const context = canvas.getContext('2d')!;
-      context.drawImage(qrImage, 0, 0);
+      setDataURL(qrImage);
     })();
     
     return () => {
       isSubscribed = false;
     }
-  }, [qrCode, qrMargin, canvas, width]);
+  }, [qrCode, qrMargin, width]);
+
+  return dataURL;
 }
 
 type UsePollOptions = {
