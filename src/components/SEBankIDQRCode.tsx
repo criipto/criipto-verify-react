@@ -141,6 +141,7 @@ export default function SEBankIDQrCode(props: Props) {
    */
   const qrDataURL = useDraw(qrCode, {
     width: fullscreen ? (window.innerHeight ?? wrapperRef.current?.offsetWidth) : wrapperRef.current?.offsetWidth,
+    // 2 is half of the default 4, less margin is required in fullscreen
     qrMargin: props.qrMargin ?? (fullscreen ? 2 : undefined)
   });
 
@@ -166,10 +167,10 @@ export default function SEBankIDQrCode(props: Props) {
     language == 'nb' ? 'Åpne BankID-appen på mobilenheten din og skann QR-koden.' : assertUnreachableLanguage(language);
 
   const fullscreenHelpText = 
-    language === 'en' ? 'This is a BankID QR Code, you can click it to view it in full screen' : 
-    language == 'da' ? 'Dette er en BankID QR-kode, du kan klikke på den for at se den i fuld skærm' :
+    language === 'en' ? 'This is a BankID QR Code. You can click it to view it in full screen' : 
+    language == 'da' ? 'Dette er en BankID QR-kode. Du kan klikke på den for at se den i fuld skærm' :
     language == 'sv' ? 'Detta är en QR-kod från BankID. Du kan klicka på den för att visa den i fullskärm.' :
-    language == 'nb' ? 'Dette er en BankID QR-kode, du kan klikke på den for å se den i fullskjerm' : assertUnreachableLanguage(language);
+    language == 'nb' ? 'Dette er en BankID QR-kode. Du kan klikke på den for å se den i fullskjerm' : assertUnreachableLanguage(language);
 
   const imageElement = (
     <button aria-label={fullscreenHelpText} ref={wrapperRef} className="criipto-se-bankid-qr-canvas" onClick={() => setFullscreen(val => !val)}>
