@@ -24,19 +24,22 @@ describe('SEBankID/SameDevice/ReloadStrategy', function () {
     const onLog = jest.fn();
     const onComplete = jest.fn();
 
-    let component = renderer.create(
-      <ReloadStrategy
-        links={links}
-        onError={onError}
-        onInitiate={onInitiate}
-        onLog={onLog}
-        onComplete={onComplete}
-        redirectUri={redirectUri}
-        pkce={undefined}
-      >
-          <button>dummy</button>
-      </ReloadStrategy>
-    );
+    let component! : renderer.ReactTestRenderer;
+    renderer.act(() => {
+      component = renderer.create(
+        <ReloadStrategy
+          links={links}
+          onError={onError}
+          onInitiate={onInitiate}
+          onLog={onLog}
+          onComplete={onComplete}
+          redirectUri={redirectUri}
+          pkce={undefined}
+        >
+            <button>dummy</button>
+        </ReloadStrategy>
+      );
+    });
 
     let tree = component.toJSON();
 
