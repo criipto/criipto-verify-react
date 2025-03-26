@@ -86,6 +86,10 @@ export function Sweden(props: SwedenProps) {
             fallback={(
               <AuthMethodButton 
                 acrValue={SEBankIDQrCode.acr_values} 
+                popup={props.popup}
+                language={language}
+                action={action}
+                userAgent={props.userAgent}
               />
             )}
           />
