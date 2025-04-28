@@ -31,6 +31,9 @@ const ALL_ACR_VALUES = [
   "urn:grn:authn:no:vipps",
   "urn:grn:authn:se:bankid:another-device:qr",
   "urn:grn:authn:se:bankid:same-device",
+  "urn:grn:authn:se:frejaid",
+  "urn:grn:authn:uk:oneid",
+  "urn:grn:authn:de:personalausweis"
 ];
 
 export default {
