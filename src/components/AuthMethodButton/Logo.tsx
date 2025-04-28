@@ -9,6 +9,9 @@ import nobankid from './logos/nobankid@2x.png';
 import novipps from './logos/novipps@2x.png';
 import sebankid from './logos/sebankid@2x.png';
 import sofort from './logos/sofort@2x.png';
+import sefrejaid from './logos/sefrejaid@2x.png';
+import depersonalausweis from './logos/depersonalausweis@2x.png';
+import ukoneid from './logos/ukoneid@2x.png';
 
 export interface AuthMethodButtonLogoProps {
   acrValue: string
@@ -57,5 +60,14 @@ function acrValueToLogo(value : string) {
   }
   if (value.startsWith('urn:grn:authn:no:vipps')) {
     return novipps;
+  }
+  if (value.startsWith('urn:grn:authn:se:frejaid')) {
+    return sefrejaid;
+  }
+  if (value.startsWith('urn:grn:authn:uk:oneid')) {
+    return ukoneid;
+  }
+  if (value.startsWith('urn:grn:authn:de:personalausweis')) {
+    return depersonalausweis;
   }
 }

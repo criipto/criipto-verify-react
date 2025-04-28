@@ -122,6 +122,27 @@
   background: #111111;
 }
 
+.criipto-eid-btn.criipto-eid-btn--se-frejaid {
+  background: #3E3A93;
+}
+.criipto-eid-btn.criipto-eid-btn--se-frejaid:hover {
+  background: #322E76;
+}
+
+.criipto-eid-btn.criipto-eid-btn--uk-oneid {
+  background: #012041;
+}
+.criipto-eid-btn.criipto-eid-btn--uk-oneid:hover {
+  background: #011A34;
+}
+
+.criipto-eid-btn.criipto-eid-btn--de-personalausweis {
+  background: #3375B1;
+}
+.criipto-eid-btn.criipto-eid-btn--de-personalausweis:hover {
+  background: #295E8E;
+}
+
 .criipto-eid-btn.criipto-eid-btn--disabled, .criipto-eid-btn.criipto-eid-btn--disabled:hover {
   background: #D0D3EB;
 }

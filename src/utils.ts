@@ -205,6 +205,15 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
   if (provider === 'no:vipps') {
     return {title: autoTitleCase(value).replace('NO ', '')};
   }
+  if (provider === 'se:frejaid') {
+    return {title: 'FrejaID'}
+  }
+  if (provider === 'uk:oneid') {
+    return {title: 'OneID'}
+  }
+  if (provider === 'de:personalausweis') {
+    return {title: 'Personalausweis'}
+  }
 
   return {title: autoTitleCase(value)};
 }
