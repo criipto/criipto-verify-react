@@ -2,7 +2,7 @@ import CriiptoAuth, {OpenIDConfiguration, AuthorizeUrlParamsOptional, PKCE, Auth
 import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
 import { createContext } from 'react';
 
-export type ResultSource = 'QRCode' | 'SEBankIDQrCode' | 'SEBankIDSameDeviceButton' | 'redirect';
+export type ResultSource = 'QRCode' | 'SEBankIDQrCode' | 'SEBankIDSameDeviceButton' | 'redirect' | 'popup';
 export type Result = {id_token: string, state?: string, source?: ResultSource} | {code: string, state?: string, source?: ResultSource} | OAuth2Error | Error;
 export const actions = ['confirm', 'accept', 'approve', 'sign', 'login'] as const;
 export type Action = typeof actions[number];

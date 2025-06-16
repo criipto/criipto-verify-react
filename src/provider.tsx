@@ -324,8 +324,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions) : React.Reac
       },
       loginWithPopup: async (params) => {
         return client.popup.authorize(buildOptions(params)).then(response => {
-          if (response?.code) setResult({code: response.code});
-          else if (response?.id_token) setResult({id_token: response.id_token});
+          if (response?.code) setResult({code: response.code, state: response.state, source: 'popup'});
+          else if (response?.id_token) setResult({id_token: response.id_token, state: response.state, source: 'popup'});
           else setResult(null);
         }).catch((err: OAuth2Error) => {
           setResult(err);
