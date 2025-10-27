@@ -6,7 +6,7 @@ import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
 import AuthMethodButtonLogo, {AuthMethodButtonLogoProps} from './AuthMethodButton/Logo';
 import { AnchorButton, Button } from './Button';
-import { acrValueToTitle, isSingle, Language, stringifyAction } from '../utils';
+import { acrValueToTitle, isAmbiguous, isSingle, Language, stringifyAction } from '../utils';
 import { AuthButtonGroupContext } from './AuthButtonGroup';
 
 export type PopupParams = {
@@ -125,10 +125,11 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     if (props.onClick) props.onClick(event);
   }
 
+  const { title, subtitle } = acrValueToTitle(language, acrValue, {disambiguate: isAmbiguous(acrValue, group.acrValues)})
   const contents = props.children ?? (
     <React.Fragment>
-      {stringifyAction(language, action) ? `${stringifyAction(language, action)} ` : ''}{acrValueToTitle(language, acrValue).title}&nbsp;
-      {standalone ? null : lowercaseFirst(acrValueToTitle(language, acrValue).subtitle)}
+      {stringifyAction(language, action) ? `${stringifyAction(language, action)} ` : ''}{title}&nbsp;
+      {standalone ? null : lowercaseFirst(subtitle)}
     </React.Fragment>
   )
 

@@ -96,7 +96,7 @@ export function acrValueToProviderPrefix(value: string) {
   }
 }
 
-export function acrValueToTitle(language: Language, value: string) : {title: string, subtitle?: string} {
+export function acrValueToTitle(language: Language, value: string, { disambiguate }: { disambiguate: boolean }) : {title: string, subtitle?: string} {
 	value = value.replace('urn:grn:authn:', '');
   const provider = acrValueToProviderPrefix(value);
 
@@ -167,6 +167,7 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
   if (provider === 'se:bankid') {
 		let subtitle : string | undefined = undefined;
 		let suffix = value.replace('se:bankid:', '');
+    let title = "BankID"
 
 		if (suffix === 'same-device') {
 			if (language === 'en') subtitle = 'On this device';
@@ -186,21 +187,34 @@ export function acrValueToTitle(language: Language, value: string) : {title: str
 			if (language === 'sv') subtitle = 'På annan enhet';
 			if (language === 'nb') subtitle = 'På annan enhet';
 		}
+    if (disambiguate) {
+      if (language === 'en') title = `Swedish ${title}`;
+      if (language === 'da') title = `Svensk ${title}`;
+      if (language === 'sv') title = `Svenskt ${title}`;
+      if (language === 'nb') title = `Svensk ${title}`;
+    }
 
-    return {title: 'BankID', subtitle};
+    return {title, subtitle};
   }
   if (provider === 'de:sofort') {
     return {title: autoTitleCase(value).replace('DE ', '')};
   }
   if (provider === 'no:bankid') {
     let subtitle : string | undefined = undefined;
+    let title = 'BankID'
     if (value.endsWith(':substantial')) {
       if (language === 'en') subtitle = 'Biometrics';
 			if (language === 'da') subtitle = 'Biometri ';
 			if (language === 'sv') subtitle = 'Biometri';
 			if (language === 'nb') subtitle = 'Biometri';
     }
-    return {title: subtitle ? 'BankID' : autoTitleCase(value).replace('NO ', ''), subtitle};
+    if (disambiguate) {
+      if (language === 'en') title = `Norwegian ${title}`;
+      if (language === 'da') title = `Norsk ${title}`;
+      if (language === 'sv') title = `Norska ${title}`;
+      if (language === 'nb') title = `Norsk ${title}`;
+    }
+    return {title, subtitle};
   }
   if (provider === 'no:vipps') {
     return {title: autoTitleCase(value).replace('NO ', '')};
@@ -242,6 +256,23 @@ export function isSingle(acrValue: string, acrValues: string[]) {
   const provider = acrValueToProviderPrefix(acrValue);
   const count = acrValues.reduce((memo, acrValue) => memo + (acrValueToProviderPrefix(acrValue) === provider ? 1 : 0), 0);
   return count === 1;
+}
+
+const ambigousProviders = ["se:bankid", "no:bankid"]
+/**
+ * A provider is considered ambiguous iff:
+ * 1. It is in the list of ambiguous providers
+ * 2. There is another ambiguous provider in the arc values list
+ */
+export function isAmbiguous(acrValue: string, acrValues: string[]) {
+  const provider = acrValueToProviderPrefix(acrValue);
+  const isProviderAmbiguous = ambigousProviders.includes(provider)
+  const otherAmbiguousProvider = acrValues.find(otherAcrValue => {
+    const otherProvider = acrValueToProviderPrefix(otherAcrValue);
+    return provider != otherProvider && ambigousProviders.includes(otherProvider)
+  }) != null
+
+  return isProviderAmbiguous && otherAmbiguousProvider
 }
 
 export function trySessionStorage() {

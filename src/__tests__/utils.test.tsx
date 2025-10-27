@@ -1,5 +1,5 @@
 import {expect} from '@jest/globals';
-import { filterAcrValues } from "../utils";
+import { filterAcrValues, isAmbiguous } from "../utils";
 
 describe('utils', () => {
   describe('filterAcrValues', () => {
@@ -64,4 +64,41 @@ describe('utils', () => {
       });
     });
   });
+
+  describe('isAmbiguous', () => {
+    [
+      {
+        input: {
+          acrValue: 'urn:grn:authn:se:bankid',
+          acrValues: ['urn:grn:authn:se:bankid']
+        },
+        expected: false
+      },
+      {
+        input: {
+          acrValue: 'urn:grn:authn:se:bankid',
+          acrValues: ['urn:grn:authn:se:bankid', 'urn:grn:authn:dk:mitid:substantial']
+        },
+        expected: false
+      },
+      {
+        input: {
+          acrValue: 'urn:grn:authn:se:bankid:same-device',
+          acrValues: ['urn:grn:authn:se:bankid:same-device', 'urn:grn:authn:se:bankid:another-device:qr']
+        },
+        expected: false
+      },
+      {
+        input: {
+          acrValue: 'urn:grn:authn:se:bankid',
+          acrValues: ['urn:grn:authn:se:bankid', 'urn:grn:authn:no:bankid']
+        },
+        expected: true
+      }
+    ].forEach(({input, expected}) => {
+      const actual = isAmbiguous(input.acrValue, input.acrValues);
+
+      expect(actual).toStrictEqual(expected);
+    })
+  })
 });
