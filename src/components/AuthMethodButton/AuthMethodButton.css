@@ -15,8 +15,8 @@
   font-weight: 500;
   font-size: 14px;
 
-  color: #FFF;
-  background: #604FED;
+  color: #fff;
+  background: #604fed;
 }
 
 @media (max-width: 320px) {
@@ -26,8 +26,9 @@
   }
 }
 
-.criipto-eid-btn:hover, .criipto-eid-btn:active {
-  color: #FFF;
+.criipto-eid-btn:hover,
+.criipto-eid-btn:active {
+  color: #fff;
 }
 
 .criipto-eid-btn .criipto-eid-logo {
@@ -46,52 +47,52 @@
 }
 
 .criipto-eid-btn.criipto-eid-btn--dk-mitid {
-  background: #0060E6;
+  background: #0060e6;
 }
 .criipto-eid-btn.criipto-eid-btn--dk-mitid:hover {
-  background: #0051C3;
+  background: #0051c3;
 }
 
 .criipto-eid-btn.criipto-eid-btn--dk-nemid {
-  background: #0B6062;
+  background: #0b6062;
 }
 .criipto-eid-btn.criipto-eid-btn--dk-nemid:hover {
-  background: #094E50;
+  background: #094e50;
 }
 
 .criipto-eid-btn.criipto-eid-btn--se-bankid {
   background: #235971;
 }
 .criipto-eid-btn.criipto-eid-btn--se-bankid:hover {
-  background: #1C485B;
+  background: #1c485b;
 }
 
 .criipto-eid-btn.criipto-eid-btn--no-bankid {
-  background: #39134C;
+  background: #39134c;
 }
 .criipto-eid-btn.criipto-eid-btn--no-bankid:hover {
-  background: #2A0E38;
+  background: #2a0e38;
 }
 
 .criipto-eid-btn.criipto-eid-btn--no-vipps {
-  background: #FF5B24;
+  background: #ff5b24;
 }
 .criipto-eid-btn.criipto-eid-btn--no-vipps:hover {
-  background: #E85321;
+  background: #e85321;
 }
 
 .criipto-eid-btn.criipto-eid-btn--de-sofort {
-  background: #EF809F;
+  background: #ef809f;
 }
 .criipto-eid-btn.criipto-eid-btn--de-sofort:hover {
-  background: #DE7794;
+  background: #de7794;
 }
 
 .criipto-eid-btn.criipto-eid-btn--de-yes {
-  background: #4B47FA;
+  background: #4b47fa;
 }
 .criipto-eid-btn.criipto-eid-btn--de-yes:hover {
-  background: #4340E0;
+  background: #4340e0;
 }
 
 .criipto-eid-btn.criipto-eid-btn--nl-digid {
@@ -102,17 +103,17 @@
 }
 
 .criipto-eid-btn.criipto-eid-btn--be-eid {
-  background: #87CEA3;
+  background: #87cea3;
 }
 .criipto-eid-btn.criipto-eid-btn--be-eid:hover {
-  background: #78B891;
+  background: #78b891;
 }
 
 .criipto-eid-btn.criipto-eid-btn--itsme {
-  background: #FD4825;
+  background: #fd4825;
 }
 .criipto-eid-btn.criipto-eid-btn--itsme:hover {
-  background: #E44020;
+  background: #e44020;
 }
 
 .criipto-eid-btn.criipto-eid-btn--fi {
@@ -123,28 +124,29 @@
 }
 
 .criipto-eid-btn.criipto-eid-btn--se-frejaid {
-  background: #3E3A93;
+  background: #3e3a93;
 }
 .criipto-eid-btn.criipto-eid-btn--se-frejaid:hover {
-  background: #322E76;
+  background: #322e76;
 }
 
 .criipto-eid-btn.criipto-eid-btn--uk-oneid {
   background: #012041;
 }
 .criipto-eid-btn.criipto-eid-btn--uk-oneid:hover {
-  background: #011A34;
+  background: #011a34;
 }
 
 .criipto-eid-btn.criipto-eid-btn--de-personalausweis {
-  background: #3375B1;
+  background: #3375b1;
 }
 .criipto-eid-btn.criipto-eid-btn--de-personalausweis:hover {
-  background: #295E8E;
+  background: #295e8e;
 }
 
-.criipto-eid-btn.criipto-eid-btn--disabled, .criipto-eid-btn.criipto-eid-btn--disabled:hover {
-  background: #D0D3EB;
+.criipto-eid-btn.criipto-eid-btn--disabled,
+.criipto-eid-btn.criipto-eid-btn--disabled:hover {
+  background: #d0d3eb;
 }
 
 .criipto-eid-btn .criipto-eid-loader::before {
@@ -166,7 +168,8 @@
   animation: dotFlashingSecond 1.5s infinite linear;
 }
 
-.criipto-eid-btn .criipto-eid-loader::before, .criipto-eid-btn .criipto-eid-loader::after {
+.criipto-eid-btn .criipto-eid-loader::before,
+.criipto-eid-btn .criipto-eid-loader::after {
   content: '';
   display: inline-block;
   position: absolute;
@@ -188,13 +191,15 @@
   33% {
     background-color: rgba(255, 255, 255, 1);
   }
-  66%, 100% {
+  66%,
+  100% {
     background-color: rgba(255, 255, 255, 0.2);
   }
 }
 
 @keyframes dotFlashingSecond {
-  0%, 33% {
+  0%,
+  33% {
     background-color: rgba(255, 255, 255, 0.2);
   }
   66% {
@@ -206,7 +211,8 @@
 }
 
 @keyframes dotFlashingLast {
-  0%, 66% {
+  0%,
+  66% {
     background-color: rgba(255, 255, 255, 0.2);
   }
   100% {

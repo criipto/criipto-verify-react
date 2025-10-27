@@ -1,9 +1,7 @@
 import React from 'react';
 import './App.css';
 
-function Dashboard({
-  user: { name, birthdate, country, cprNumberIdentifier, iat },
-}) {
+function Dashboard({ user: { name, birthdate, country, cprNumberIdentifier, iat } }) {
   return (
     <div className="user-dashboard main">
       <h2>Welcome to your savings dashboard, {name}</h2>

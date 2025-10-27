@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
 
-import CriiptoVerifyProvider from "../provider";
-import AuthMethodSelector from "../components/AuthMethodSelector";
-import useCriiptoVerify from "../use-criipto-verify";
+import CriiptoVerifyProvider from '../provider';
+import AuthMethodSelector from '../components/AuthMethodSelector';
+import useCriiptoVerify from '../use-criipto-verify';
 
 export default {
-  title: "Session",
+  title: 'Session',
   argTypes: {
     storage: {
-      name: "Storage",
-      control: "select",
-      options: ["sessionStorage", "localStorage"],
-      defaultValue: "sessionStorage",
+      name: 'Storage',
+      control: 'select',
+      options: ['sessionStorage', 'localStorage'],
+      defaultValue: 'sessionStorage',
     },
   },
 };
@@ -47,11 +47,7 @@ const SessionTemplate = (args: any, { globals }: any) => {
       domain={globals.domain}
       clientID={globals.clientID}
       response="token"
-      sessionStore={
-        args.storage === "localStorage"
-          ? window.localStorage
-          : window.sessionStorage
-      }
+      sessionStore={args.storage === 'localStorage' ? window.localStorage : window.sessionStorage}
     >
       <Session />
     </CriiptoVerifyProvider>
@@ -60,9 +56,9 @@ const SessionTemplate = (args: any, { globals }: any) => {
 
 export const SessionStorage = SessionTemplate.bind({});
 SessionStorage.args = {
-  storage: "sessionStorage",
+  storage: 'sessionStorage',
 };
 export const LocalStorage = SessionTemplate.bind({});
 LocalStorage.args = {
-  storage: "localStorage",
+  storage: 'localStorage',
 };

@@ -1,4 +1,4 @@
-import type { Preview } from "@storybook/react";
+import type { Preview } from '@storybook/react';
 
 const preview: Preview = {
   parameters: {
@@ -13,14 +13,14 @@ const preview: Preview = {
     domain: {
       name: 'Domain',
       description: 'Criipto Verify domain',
-      defaultValue: 'samples.criipto.io'
+      defaultValue: 'samples.criipto.io',
     },
     clientID: {
       name: 'Client ID',
       description: 'Criipto Verify Client ID',
-      defaultValue: 'urn:criipto:samples:criipto-verify-react'
-    }
-  }
+      defaultValue: 'urn:criipto:samples:criipto-verify-react',
+    },
+  },
 };
 
 export default preview;

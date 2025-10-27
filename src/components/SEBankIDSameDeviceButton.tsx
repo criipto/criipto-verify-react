@@ -1,5 +1,5 @@
 import { PKCE, AuthorizeResponse } from '@criipto/auth-js';
-import React, {useCallback, useContext, useEffect, useMemo, useState} from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import CriiptoVerifyContext from '../context';
 import { getUserAgent } from '../device';
 
@@ -7,57 +7,60 @@ import PollStrategy from './SEBankIDSameDeviceButton/Poll';
 import ForegroundStrategy from './SEBankIDSameDeviceButton/Foreground';
 import ReloadStrategy from './SEBankIDSameDeviceButton/Reload';
 
-import {autoHydratedState, Links} from './SEBankIDSameDeviceButton/shared';
+import { autoHydratedState, Links } from './SEBankIDSameDeviceButton/shared';
 
 interface Props {
-  className: string
-  children: React.ReactNode
-  logo: React.ReactNode
-  fallback: React.ReactElement
-  redirectUri?: string
-  userAgent?: string
+  className: string;
+  children: React.ReactNode;
+  logo: React.ReactNode;
+  fallback: React.ReactElement;
+  redirectUri?: string;
+  userAgent?: string;
 }
 
 function searchParamsToPOJO(input: URLSearchParams) {
-  return Array.from(input.keys()).reduce((memo : {[key: string]: string}, key) => {
+  return Array.from(input.keys()).reduce((memo: { [key: string]: string }, key) => {
     memo[key] = input.get(key)!;
     return memo;
   }, {});
 }
 
-type Resume = 'Foreground' | 'Reload' | 'Poll'
+type Resume = 'Foreground' | 'Reload' | 'Poll';
 type LinkType = 'universal' | 'scheme';
-export function determineStrategy(input: string | undefined, loginHint?: string) : {
-  resume: Resume
-  linkType: LinkType,
-  redirect: boolean
+export function determineStrategy(
+  input: string | undefined,
+  loginHint?: string,
+): {
+  resume: Resume;
+  linkType: LinkType;
+  redirect: boolean;
 } {
   const userAgent = getUserAgent(input);
-  const mobileOS = 
-    userAgent?.os.name === 'iOS' ? 'iOS' :
-    userAgent?.os.name === 'Android' ? 'android' :
-    userAgent?.browser.name === 'Samsung Internet' ? 'android' :
-    null;
-  const iOSSafari = mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
-  const androidChrome = mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
+  const mobileOS =
+    userAgent?.os.name === 'iOS'
+      ? 'iOS'
+      : userAgent?.os.name === 'Android'
+        ? 'android'
+        : userAgent?.browser.name === 'Samsung Internet'
+          ? 'android'
+          : null;
+  const iOSSafari =
+    mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
+  const androidChrome =
+    mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
   const redirect = iOSSafari && !loginHint?.includes('appswitch:resumeUrl:disable');
 
-  const resume : Resume =
-    mobileOS ?
-      (iOSSafari && redirect) ? 'Reload' : 'Foreground'
-      : 'Poll';
+  const resume: Resume = mobileOS ? (iOSSafari && redirect ? 'Reload' : 'Foreground') : 'Poll';
 
-  const linkType = 
-    (mobileOS === 'iOS' || androidChrome) ? 'universal' :
-    'scheme'
+  const linkType = mobileOS === 'iOS' || androidChrome ? 'universal' : 'scheme';
 
-  return {resume, linkType, redirect};
+  return { resume, linkType, redirect };
 }
 
 export class NotDoneError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "NotDoneError";
+    this.name = 'NotDoneError';
   }
 }
 
@@ -65,21 +68,21 @@ async function fetchComplete(completeUrl: string) {
   const completeResponse = await fetch(completeUrl);
   if (completeResponse.status >= 400) {
     const errorMessage = await completeResponse.text();
-    const notDone = errorMessage.includes("Native-app driven authentication is not done");
+    const notDone = errorMessage.includes('Native-app driven authentication is not done');
     if (notDone) return new NotDoneError(errorMessage);
     return new Error(errorMessage);
   }
-  
-  const {location}  : {location: string} = await completeResponse.json();
-  return {location};
+
+  const { location }: { location: string } = await completeResponse.json();
+  return { location };
 }
 export default function SEBankIDSameDeviceButton(props: Props) {
-  const {loginHint} = useContext(CriiptoVerifyContext);
+  const { loginHint } = useContext(CriiptoVerifyContext);
   const rawUserAgent = typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent;
-  const strategy = useMemo(() => determineStrategy(
-    rawUserAgent,
-    loginHint
-  ), [rawUserAgent, loginHint]);
+  const strategy = useMemo(
+    () => determineStrategy(rawUserAgent, loginHint),
+    [rawUserAgent, loginHint],
+  );
 
   const [href, setHref] = useState<null | string>();
   const [links, setLinks] = useState<Links | null>(autoHydratedState?.links ?? null);
@@ -87,7 +90,14 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   const [error, setError] = useState<string | null>(null);
   const [log, setLog] = useState<(string | string[])[]>([]);
   const [initiated, setInitiated] = useState(autoHydratedState ? true : false);
-  const {buildAuthorizeUrl, completionStrategy, generatePKCE, handleResponse, redirectUri: defaultRedirectURi, domain} = useContext(CriiptoVerifyContext);
+  const {
+    buildAuthorizeUrl,
+    completionStrategy,
+    generatePKCE,
+    handleResponse,
+    redirectUri: defaultRedirectURi,
+    domain,
+  } = useContext(CriiptoVerifyContext);
   const redirectUri = props.redirectUri || defaultRedirectURi;
 
   const reset = () => {
@@ -96,44 +106,53 @@ export default function SEBankIDSameDeviceButton(props: Props) {
   };
 
   const handleLog = (...statements: string[]) => {
-    setLog(logs => logs.concat([statements]));
-  }
+    setLog((logs) => logs.concat([statements]));
+  };
 
-  const handleComplete = useCallback(async (completeUrl: string) => {
-    const required = {pkce};
-    reset();
+  const handleComplete = useCallback(
+    async (completeUrl: string) => {
+      const required = { pkce };
+      reset();
 
-    const result = completeUrl.startsWith(`https://${domain}`) || completeUrl.startsWith(`http://${domain}`) ? await fetchComplete(completeUrl) : {
-      location: completeUrl
-    }
-    if (result instanceof NotDoneError && strategy.resume === 'Reload') {
-      await handleResponse({
-        error: 'access_denied'
-      }, {
+      const result =
+        completeUrl.startsWith(`https://${domain}`) || completeUrl.startsWith(`http://${domain}`)
+          ? await fetchComplete(completeUrl)
+          : {
+              location: completeUrl,
+            };
+      if (result instanceof NotDoneError && strategy.resume === 'Reload') {
+        await handleResponse(
+          {
+            error: 'access_denied',
+          },
+          {
+            pkce: required.pkce,
+            redirectUri,
+            source: 'SEBankIDSameDeviceButton',
+          },
+        );
+        return;
+      }
+      if (result instanceof Error) {
+        setError(result.message);
+        return;
+      }
+      const { location } = result;
+      if (completionStrategy === 'openidprovider') {
+        window.location.href = location;
+        return;
+      }
+      const url = new URL(location);
+      const params = searchParamsToPOJO(url.searchParams) as AuthorizeResponse;
+
+      await handleResponse(params, {
         pkce: required.pkce,
         redirectUri,
-        source: 'SEBankIDSameDeviceButton'
+        source: 'SEBankIDSameDeviceButton',
       });
-      return;
-    }
-    if (result instanceof Error) {
-      setError(result.message);
-      return;
-    }
-    const {location} = result;
-    if (completionStrategy === 'openidprovider') {
-      window.location.href = location;
-      return;
-    }
-    const url = new URL(location);
-    const params = searchParamsToPOJO(url.searchParams) as AuthorizeResponse;
-
-    await handleResponse(params, {
-      pkce: required.pkce,
-      redirectUri,
-      source: 'SEBankIDSameDeviceButton'
-    });
-  }, [completionStrategy, pkce, domain, strategy]);
+    },
+    [completionStrategy, pkce, domain, strategy],
+  );
 
   const refresh = useCallback(async () => {
     handleLog('SEBankID: Refresh authorize url');
@@ -145,26 +164,31 @@ export default function SEBankIDSameDeviceButton(props: Props) {
       responseMode: 'json',
       pkce,
       redirectUri,
-      prompt: 'login' // Triggering SSO at this point would be a mistake
-    }).then(url => {
-      return fetch(url).then(response => response.json() as Promise<Links>);
+      prompt: 'login', // Triggering SSO at this point would be a mistake
     })
-    .then(links => {
-      setPKCE(pkce || undefined);
-      setLinks(links);
+      .then((url) => {
+        return fetch(url).then((response) => response.json() as Promise<Links>);
+      })
+      .then((links) => {
+        setPKCE(pkce || undefined);
+        setLinks(links);
 
-      const redirect = strategy.redirect ? window.location.href : 'null';
-      const newUrl = new URL(strategy.linkType === 'universal' ? links.launchLinks.universalLink : links.launchLinks.customFileHandlerUrl);
-      newUrl.searchParams.set('redirect', redirect);
-      const newHref = newUrl.href;
+        const redirect = strategy.redirect ? window.location.href : 'null';
+        const newUrl = new URL(
+          strategy.linkType === 'universal'
+            ? links.launchLinks.universalLink
+            : links.launchLinks.customFileHandlerUrl,
+        );
+        newUrl.searchParams.set('redirect', redirect);
+        const newHref = newUrl.href;
 
-      handleLog(window.location.href);
-      handleLog(newHref);
-      setHref(newHref);
-    })
-    .catch(err => {
-      setInitiated(false);
-    });
+        handleLog(window.location.href);
+        handleLog(newHref);
+        setHref(newHref);
+      })
+      .catch((err) => {
+        setInitiated(false);
+      });
   }, [buildAuthorizeUrl, redirectUri, strategy]);
 
   // Generate URL on first button render
@@ -189,39 +213,50 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     handleLog('Initiated');
     setInitiated(true);
     setError(null);
-  }
+  };
 
   const handleError = async (error: string) => {
     setInitiated(false);
     setError(error);
 
     if (error === 'access_denied' || error === '"access_denied"') {
-      await handleResponse({
-        error: 'access_denied'
-      }, {
-        pkce,
-        redirectUri,
-        source: 'SEBankIDSameDeviceButton'
-      });
+      await handleResponse(
+        {
+          error: 'access_denied',
+        },
+        {
+          pkce,
+          redirectUri,
+          source: 'SEBankIDSameDeviceButton',
+        },
+      );
     }
-  }
+  };
 
   const element = href ? (
-    <a className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`} href={href} onClick={handleInitiate}>
+    <a
+      className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`}
+      href={href}
+      onClick={handleInitiate}
+    >
       {initiated ? (
         <div className="criipto-eid-logo">
           <div className="criipto-eid-loader"></div>
         </div>
-      ) : props.logo}
+      ) : (
+        props.logo
+      )}
       {props.children}
     </a>
-  ) : props.fallback;
+  ) : (
+    props.fallback
+  );
 
   return (
     <React.Fragment>
       {links ? (
         <React.Fragment>
-          {strategy.resume === "Poll" ? (
+          {strategy.resume === 'Poll' ? (
             <PollStrategy
               links={links}
               onError={handleError}
@@ -253,9 +288,13 @@ export default function SEBankIDSameDeviceButton(props: Props) {
             >
               {element}
             </ReloadStrategy>
-          ) : element}
+          ) : (
+            element
+          )}
         </React.Fragment>
-      ) : element}
+      ) : (
+        element
+      )}
       {error && <p>{error}</p>}
       {/* {log && (
         <pre>
@@ -263,5 +302,5 @@ export default function SEBankIDSameDeviceButton(props: Props) {
         </pre>
       )} */}
     </React.Fragment>
-  )
+  );
 }

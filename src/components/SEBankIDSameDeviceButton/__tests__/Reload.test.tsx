@@ -9,14 +9,14 @@ describe('SEBankID/SameDevice/ReloadStrategy', function () {
   });
 
   it('calls complete on refresh', function () {
-    const links : Links = {
+    const links: Links = {
       launchLinks: {
         universalLink: Math.random().toString(),
-        customFileHandlerUrl: Math.random().toString()
+        customFileHandlerUrl: Math.random().toString(),
       },
       cancelUrl: Math.random().toString(),
       completeUrl: Math.random().toString(),
-      pollUrl: Math.random().toString()
+      pollUrl: Math.random().toString(),
     };
     const redirectUri = Math.random().toString();
     const onError = jest.fn();
@@ -24,7 +24,7 @@ describe('SEBankID/SameDevice/ReloadStrategy', function () {
     const onLog = jest.fn();
     const onComplete = jest.fn();
 
-    let component! : renderer.ReactTestRenderer;
+    let component!: renderer.ReactTestRenderer;
     renderer.act(() => {
       component = renderer.create(
         <ReloadStrategy
@@ -36,8 +36,8 @@ describe('SEBankID/SameDevice/ReloadStrategy', function () {
           redirectUri={redirectUri}
           pkce={undefined}
         >
-            <button>dummy</button>
-        </ReloadStrategy>
+          <button>dummy</button>
+        </ReloadStrategy>,
       );
     });
 
@@ -60,8 +60,8 @@ describe('SEBankID/SameDevice/ReloadStrategy', function () {
           redirectUri={redirectUri}
           pkce={undefined}
         >
-            <button>dummy</button>
-        </ReloadStrategy>
+          <button>dummy</button>
+        </ReloadStrategy>,
       );
     });
 

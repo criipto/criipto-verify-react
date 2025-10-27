@@ -1,42 +1,42 @@
-import React from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
+import React from 'react';
+import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import AuthMethodButton, { PopupParams } from "../AuthMethodButton";
-import CriiptoVerifyProvider from "../../provider";
-import { acrValueToTitle } from "../../utils";
-import StoryResponseRenderer from "../../stories/StoryResponseRenderer";
+import AuthMethodButton, { PopupParams } from '../AuthMethodButton';
+import CriiptoVerifyProvider from '../../provider';
+import { acrValueToTitle } from '../../utils';
+import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
-import customLogo from "./logos/ftnmobile@2x.png";
+import customLogo from './logos/ftnmobile@2x.png';
 
 export default {
-  title: "Components/AuthMethodButton",
+  title: 'Components/AuthMethodButton',
   argTypes: {
     completionStrategy: {
-      name: "Completion strategy",
-      control: "select",
-      defaultValue: "client",
-      options: ["client", "openidprovider"],
+      name: 'Completion strategy',
+      control: 'select',
+      defaultValue: 'client',
+      options: ['client', 'openidprovider'],
     },
     response: {
-      name: "Response mode",
-      control: "select",
-      defaultValue: "token",
-      options: ["token", "code"],
+      name: 'Response mode',
+      control: 'select',
+      defaultValue: 'token',
+      options: ['token', 'code'],
     },
     action: {
-      name: "Action",
-      control: "select",
+      name: 'Action',
+      control: 'select',
       defaultValue: undefined,
-      options: ["confirm", "accept", "approve", "sign", "login"],
+      options: ['confirm', 'accept', 'approve', 'sign', 'login'],
     },
     message: {
-      name: "Message (Danish MitID + Swedish BankID)",
-      control: "text",
+      name: 'Message (Danish MitID + Swedish BankID)',
+      control: 'text',
       defaultValue: undefined,
     },
     loginHint: {
-      name: "Login hint",
-      control: "text",
+      name: 'Login hint',
+      control: 'text',
       defaultValue: undefined,
     },
   },
@@ -55,12 +55,8 @@ function tryBase64Decode(input?: string) {
 }
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof AuthMethodButton> = (
-  args,
-  { globals },
-) => {
-  const loginHint =
-    tryBase64Decode((args as any).loginHint) ?? (args as any).loginHint;
+const Template: ComponentStory<typeof AuthMethodButton> = (args, { globals }) => {
+  const loginHint = tryBase64Decode((args as any).loginHint) ?? (args as any).loginHint;
 
   return (
     <CriiptoVerifyProvider
@@ -83,48 +79,48 @@ const Template: ComponentStory<typeof AuthMethodButton> = (
 
 export const SEBankIDSameDeviceButton = Template.bind({});
 SEBankIDSameDeviceButton.args = {
-  acrValue: "urn:grn:authn:se:bankid:same-device",
+  acrValue: 'urn:grn:authn:se:bankid:same-device',
   standalone: false,
 };
-SEBankIDSameDeviceButton.storyName = "se:bankid:same-device";
+SEBankIDSameDeviceButton.storyName = 'se:bankid:same-device';
 
 export const DKMitID = Template.bind({});
 DKMitID.args = {
-  acrValue: "urn:grn:authn:dk:mitid:low",
+  acrValue: 'urn:grn:authn:dk:mitid:low',
   standalone: false,
 };
-DKMitID.storyName = "dk:mitid:low";
+DKMitID.storyName = 'dk:mitid:low';
 
 export const Href = Template.bind({});
 Href.args = {
-  acrValue: "urn:grn:authn:se:bankid:another-device:qr",
-  href: "https://localhost:44362/oauth2/authorize?scope=openid&client_id=urn:auth0:th-test&redirect_uri=https://jwt.io/&response_type=id_token&response_mode=fragment&nonce=ecnon&state=etats&acr_values=urn:grn:authn:se:bankid:another-device:qr",
+  acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
+  href: 'https://localhost:44362/oauth2/authorize?scope=openid&client_id=urn:auth0:th-test&redirect_uri=https://jwt.io/&response_type=id_token&response_mode=fragment&nonce=ecnon&state=etats&acr_values=urn:grn:authn:se:bankid:another-device:qr',
   standalone: false,
 };
-Href.storyName = "href";
+Href.storyName = 'href';
 
 export const CustomLogo = Template.bind({});
 CustomLogo.args = {
-  acrValue: "urn:grn:authn:se:bankid:another-device:qr",
+  acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
   logo: <img src={customLogo} alt="" />,
   standalone: false,
 };
 
 export const Popup = Template.bind({});
 Popup.args = {
-  acrValue: "urn:grn:authn:se:bankid:another-device:qr",
+  acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
   popup: true,
   standalone: false,
 };
-Popup.storyName = "Popup - Basic backrop";
+Popup.storyName = 'Popup - Basic backrop';
 
 export const PopupCallback = Template.bind({});
 PopupCallback.args = {
-  acrValue: "urn:grn:authn:dk:mitid:low",
+  acrValue: 'urn:grn:authn:dk:mitid:low',
   popup: () => true,
   standalone: false,
 };
-PopupCallback.storyName = "Popup - Callback";
+PopupCallback.storyName = 'Popup - Callback';
 
 const CustomBackdrop: React.FC<PopupParams> = (props) => {
   return (
@@ -137,8 +133,8 @@ const CustomBackdrop: React.FC<PopupParams> = (props) => {
 
 export const PopupCustom = Template.bind({});
 PopupCustom.args = {
-  acrValue: "urn:grn:authn:se:bankid:another-device:qr",
+  acrValue: 'urn:grn:authn:se:bankid:another-device:qr',
   popup: (props) => <CustomBackdrop {...props} />,
   standalone: false,
 };
-PopupCustom.storyName = "Popup - Custom react backdrop";
+PopupCustom.storyName = 'Popup - Custom react backdrop';

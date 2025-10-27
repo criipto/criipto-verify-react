@@ -34,7 +34,7 @@ ReactDOM.render(
   >
     <App />
   </CriiptoVerifyProvider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 ```
 
@@ -49,14 +49,10 @@ import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
 import '@criipto/verify-react/dist/criipto-verify-react.css';
 
 export default function App() {
-  const {result} = useCriiptoVerify();
+  const { result } = useCriiptoVerify();
 
   if (result?.id_token) {
-    return (
-      <pre>
-        {JSON.stringify(result.id_token, null, 2)}
-      </pre>
-    )
+    return <pre>{JSON.stringify(result.id_token, null, 2)}</pre>;
   }
 
   return (
@@ -93,7 +89,7 @@ ReactDOM.render(
   >
     <App />
   </CriiptoVerifyProvider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
 ```
 
@@ -109,18 +105,14 @@ import React from 'react';
 import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
 
 export default function App() {
-  const {claims, error, isLoading} = useCriiptoVerify();
+  const { claims, error, isLoading } = useCriiptoVerify();
 
   if (isLoading) {
-    return <div>Loading</div>
+    return <div>Loading</div>;
   }
 
   if (claims) {
-    return (
-      <pre>
-        {JSON.stringify(claims, null, 2)}
-      </pre>
-    )
+    return <pre>{JSON.stringify(claims, null, 2)}</pre>;
   }
 
   return (
@@ -153,7 +145,7 @@ const {logout} = useCriiptoVerify();
 If you are triggering `loginWithRedirect` inside a `useEffect` hook, you need to allow the SDK time to initialize a few values before you redirect the user:
 
 ```jsx
-const {isLoading, isInitializing, loginWithRedirect} = useCriiptoVerify();
+const { isLoading, isInitializing, loginWithRedirect } = useCriiptoVerify();
 
 useEffect(() => {
   if (isLoading || isInitializing) return;
