@@ -1,6 +1,5 @@
-
-export function createMemoryStorage() : Storage {
-  let store : {[key: string]: string} = {};
+export function createMemoryStorage(): Storage {
+  let store: { [key: string]: string } = {};
 
   return {
     getItem(key: string) {
@@ -20,6 +19,6 @@ export function createMemoryStorage() : Storage {
     },
     get length() {
       return Object.keys(store).length;
-    }
+    },
   };
 }

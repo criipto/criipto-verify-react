@@ -14,23 +14,31 @@ import depersonalausweis from './logos/depersonalausweis@2x.png';
 import ukoneid from './logos/ukoneid@2x.png';
 
 export interface AuthMethodButtonLogoProps {
-  acrValue: string
+  acrValue: string;
   /**
    * base64 image string, e.x. data:image/png;base64,
    * or a ReactElement
    */
-  logo?: React.ReactElement | string
+  logo?: React.ReactElement | string;
 }
 export default function AuthMethodButtonLogo(props: AuthMethodButtonLogoProps) {
   const logo =
-    typeof props.logo === "string" ? <img src={props.logo} alt="" /> :
-    props.logo ?? (acrValueToLogo(props.acrValue) ? <img src={acrValueToLogo(props.acrValue)} alt="" /> : <span>&nbsp;</span>);
+    typeof props.logo === 'string' ? (
+      <img src={props.logo} alt="" />
+    ) : (
+      (props.logo ??
+      (acrValueToLogo(props.acrValue) ? (
+        <img src={acrValueToLogo(props.acrValue)} alt="" />
+      ) : (
+        <span>&nbsp;</span>
+      )))
+    );
 
-  if (logo) return <div className="criipto-eid-logo">{logo}</div>
+  if (logo) return <div className="criipto-eid-logo">{logo}</div>;
   return null;
 }
 
-function acrValueToLogo(value : string) {
+function acrValueToLogo(value: string) {
   if (value.startsWith('urn:grn:authn:be:eid')) {
     return beeid;
   }

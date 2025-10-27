@@ -1,16 +1,16 @@
 import { PKCE } from '@criipto/auth-js';
 import React, { useEffect, useState } from 'react';
-import {Links, saveState, hydrateState, clearState} from './shared';
+import { Links, saveState, hydrateState, clearState } from './shared';
 
 interface Props {
-  children: React.ReactElement,
-  links: Links,
-  onError: (error: string) => void
-  onComplete: (completeUrl: string) => Promise<void>
-  onInitiate: () => void
-  onLog: (...statements: string[]) => void,
-  pkce: PKCE | undefined,
-  redirectUri: string
+  children: React.ReactElement;
+  links: Links;
+  onError: (error: string) => void;
+  onComplete: (completeUrl: string) => Promise<void>;
+  onInitiate: () => void;
+  onLog: (...statements: string[]) => void;
+  pkce: PKCE | undefined;
+  redirectUri: string;
 }
 
 /*
@@ -18,7 +18,7 @@ interface Props {
  */
 
 export default function SEBankIDSameDeviceReload(props: Props) {
-  const {links, onError, onComplete, onInitiate, onLog, pkce, redirectUri} = props;
+  const { links, onError, onComplete, onInitiate, onLog, pkce, redirectUri } = props;
 
   const handleInitiate = () => {
     onLog('ReloadStrategy', 'handleInitiate');
@@ -26,7 +26,7 @@ export default function SEBankIDSameDeviceReload(props: Props) {
     saveState({
       links,
       redirectUri,
-      pkce
+      pkce,
     });
 
     onInitiate();
@@ -38,9 +38,9 @@ export default function SEBankIDSameDeviceReload(props: Props) {
     clearState();
     onComplete(hydratedState.links.completeUrl);
   }, []);
-  
+
   return React.cloneElement(props.children, {
-    ...props.children.props as any,
-    onClick: handleInitiate
+    ...(props.children.props as any),
+    onClick: handleInitiate,
   });
 }

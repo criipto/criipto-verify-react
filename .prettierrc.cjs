@@ -1,0 +1,6 @@
+module.exports = {
+  plugins: [],
+  singleQuote: true,
+  printWidth: 100,
+  tabWidth: 2,
+};

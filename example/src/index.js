@@ -15,5 +15,5 @@ root.render(
     >
       <App />
     </CriiptoVerifyProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -1,23 +1,22 @@
-import React, {createContext} from "react";
-import AuthMethodButton, { AuthMethodButtonProps } from "./AuthMethodButton";
-import SEBankIDQrCode from "./SEBankIDQRCode";
+import React, { createContext } from 'react';
+import AuthMethodButton, { AuthMethodButtonProps } from './AuthMethodButton';
+import SEBankIDQrCode from './SEBankIDQRCode';
 
 interface AuthButtonGroupContextInterface {
-  multiple: boolean,
-  acrValues: string[]
+  multiple: boolean;
+  acrValues: string[];
 }
-const initialContext : AuthButtonGroupContextInterface = {
+const initialContext: AuthButtonGroupContextInterface = {
   multiple: false,
-  acrValues: []
+  acrValues: [],
 };
-export const AuthButtonGroupContext = createContext<AuthButtonGroupContextInterface>(initialContext);
+export const AuthButtonGroupContext =
+  createContext<AuthButtonGroupContextInterface>(initialContext);
 
-export default function AuthButtonGroup(props: {
-  children: React.ReactNode,
-}) {
-  const acrValues = React.Children.toArray(props.children).flatMap(child => {
+export default function AuthButtonGroup(props: { children: React.ReactNode }) {
+  const acrValues = React.Children.toArray(props.children).flatMap((child) => {
     if (!child || typeof child !== 'object') return [];
-    if ("type" in child) {
+    if ('type' in child) {
       if (child.type === AuthMethodButton) {
         const props = child.props as AuthMethodButtonProps;
         return props.acrValue ? [props.acrValue] : [];
@@ -29,13 +28,13 @@ export default function AuthButtonGroup(props: {
     return [];
   });
 
-  const context : AuthButtonGroupContextInterface = {
+  const context: AuthButtonGroupContextInterface = {
     multiple: acrValues.length > 1,
-    acrValues
+    acrValues,
   };
   return (
     <AuthButtonGroupContext.Provider value={context}>
       {props.children}
     </AuthButtonGroupContext.Provider>
-  )
+  );
 }

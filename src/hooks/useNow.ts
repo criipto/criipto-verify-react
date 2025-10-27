@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export default function useNow(isEnabled: () => boolean, refreshInterval: number = 30000) {
   const [now, setNow] = useState<number | null>(null);

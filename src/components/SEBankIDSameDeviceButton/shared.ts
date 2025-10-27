@@ -1,21 +1,21 @@
-import { PKCE } from "@criipto/auth-js"
-import { createMemoryStorage } from "../../memory-storage"
-import { trySessionStorage } from "../../utils"
+import { PKCE } from '@criipto/auth-js';
+import { createMemoryStorage } from '../../memory-storage';
+import { trySessionStorage } from '../../utils';
 
 export interface Links {
-  cancelUrl: string
-  completeUrl: string
-  pollUrl: string
+  cancelUrl: string;
+  completeUrl: string;
+  pollUrl: string;
   launchLinks: {
-    customFileHandlerUrl: string
-    universalLink: string
-  }
-};
+    customFileHandlerUrl: string;
+    universalLink: string;
+  };
+}
 
 export interface State {
-  pkce: PKCE | undefined
-  redirectUri: string
-  links: Links
+  pkce: PKCE | undefined;
+  redirectUri: string;
+  links: Links;
 }
 
 const STATE_KEY = '@criipto/verify-react:sebankid:state';
@@ -23,13 +23,15 @@ const STATE_KEY = '@criipto/verify-react:sebankid:state';
 const stateStore = (() => {
   const sessionStorage = trySessionStorage();
   if (sessionStorage === null) {
-    console.warn('Creating memory store for PKCE values as no sessionStorage is available. Authentication may be broken.');
+    console.warn(
+      'Creating memory store for PKCE values as no sessionStorage is available. Authentication may be broken.',
+    );
     return createMemoryStorage();
   }
   return sessionStorage;
 })();
 
-export function hydrateState() : State | undefined {
+export function hydrateState(): State | undefined {
   const rawState = stateStore.getItem(STATE_KEY);
   if (rawState) {
     return JSON.parse(rawState) as State;
@@ -44,6 +46,6 @@ export function clearState() {
   stateStore.removeItem(STATE_KEY);
 }
 
-export function saveState(input: State) : void {
+export function saveState(input: State): void {
   stateStore.setItem(STATE_KEY, JSON.stringify(input));
 }

@@ -1,28 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 import CriiptoVerifyContext from '../../context';
-import {Links} from './shared';
+import { Links } from './shared';
 
 interface Props {
-  children: React.ReactElement
-  links: Links
-  onError: (error: string) => void
-  onComplete: (completeUrl: string) => Promise<void>
-  onInitiate: () => void
-  onLog: (...statements: string[]) => void
+  children: React.ReactElement;
+  links: Links;
+  onError: (error: string) => void;
+  onComplete: (completeUrl: string) => Promise<void>;
+  onInitiate: () => void;
+  onLog: (...statements: string[]) => void;
 }
 
 /*
  * Desktop: Polling scenario
  */
 export default function SEBankIDSameDevicePoll(props: Props) {
-  const {links, onError, onComplete, onInitiate} = props;
+  const { links, onError, onComplete, onInitiate } = props;
   const [initiated, setInitiated] = useState(false);
-  const {domain} = useContext(CriiptoVerifyContext);
+  const { domain } = useContext(CriiptoVerifyContext);
 
   useEffect(() => {
     if (!initiated) return;
     let isSubscribed = true;
-    let timeout : string | undefined;
+    let timeout: string | undefined;
     const poll = async () => {
       if (!isSubscribed) return;
       const response = await fetch(links.pollUrl);
@@ -37,7 +37,7 @@ export default function SEBankIDSameDevicePoll(props: Props) {
         return;
       } else {
         if (!isSubscribed) return;
-        const {targetUrl} = await response.json();
+        const { targetUrl } = await response.json();
         await onComplete(targetUrl);
         return;
       }
@@ -54,9 +54,9 @@ export default function SEBankIDSameDevicePoll(props: Props) {
     onInitiate();
     setInitiated(true);
   };
-  
+
   return React.cloneElement(props.children, {
-    ...props.children.props  as any,
-    onClick: handleInitiate
+    ...(props.children.props as any),
+    onClick: handleInitiate,
   });
 }

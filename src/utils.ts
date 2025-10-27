@@ -1,16 +1,16 @@
-import { Action } from "./context";
+import { Action } from './context';
 
 declare var __VERSION__: string;
-export const VERSION = typeof __VERSION__ === "undefined" ? "N/A": __VERSION__;
+export const VERSION = typeof __VERSION__ === 'undefined' ? 'N/A' : __VERSION__;
 
 export const DKMITID_PREFIX = 'urn:grn:authn:dk:mitid';
 export const DKMITID_BUSINESS = 'urn:grn:authn:dk:mitid:business';
 export const FTN_PREFIX = 'urn:grn:authn:fi';
 
-export function lowestMitIDValue(input: string[]) : string | null {
-  let dkmitidMethod : string | null = null;
+export function lowestMitIDValue(input: string[]): string | null {
+  let dkmitidMethod: string | null = null;
 
-  input.forEach(s => {
+  input.forEach((s) => {
     if (s.startsWith(DKMITID_PREFIX) && s !== DKMITID_BUSINESS) {
       if (!dkmitidMethod) {
         dkmitidMethod = s;
@@ -19,8 +19,7 @@ export function lowestMitIDValue(input: string[]) : string | null {
         let oldLevel = dkmitidMethod.replace(DKMITID_PREFIX, '');
         if (newLevel === ':low' && [':substantial', ':high'].includes(oldLevel)) {
           dkmitidMethod = s;
-        }
-        else if (newLevel === ':substantial' && oldLevel === ':high') {
+        } else if (newLevel === ':substantial' && oldLevel === ':high') {
           dkmitidMethod = s;
         }
       }
@@ -31,7 +30,7 @@ export function lowestMitIDValue(input: string[]) : string | null {
 }
 
 function autoTitleCase(input: string) {
-  var segments = input.split(/:|-/).map(segment => {
+  var segments = input.split(/:|-/).map((segment) => {
     segment = segment.replace(/id(\s|$)/, 'ID');
     if (segment.length === 2) return segment.toUpperCase();
     return segment.substr(0, 1).toUpperCase() + segment.substr(1);
@@ -48,34 +47,34 @@ export function assertUnreachableLanguage(x: never): never {
 }
 export type Language = 'en' | 'da' | 'sv' | 'nb';
 
-export function stringifyAction(language: Language, action: Action) : string {
+export function stringifyAction(language: Language, action: Action): string {
   if (action === 'login') {
     if (language === 'da') return 'Login med';
-    else if (language === 'sv') return 'Logga in med'
+    else if (language === 'sv') return 'Logga in med';
     else if (language === 'nb') return 'Logg inn med';
     return 'Login with';
   }
   if (action === 'approve') {
     if (language === 'da') return 'Godkend med';
-    else if (language === 'sv') return 'Godkänn med'
+    else if (language === 'sv') return 'Godkänn med';
     else if (language === 'nb') return 'Godkjenne med';
     return 'Approve with';
   }
   if (action === 'sign') {
     if (language === 'da') return 'Underskriv med';
-    else if (language === 'sv') return 'Signera med'
+    else if (language === 'sv') return 'Signera med';
     else if (language === 'nb') return 'Signer med';
     return 'Sign with';
   }
   if (action === 'confirm') {
     if (language === 'da') return 'Bekræft med';
-    else if (language === 'sv') return 'Bekräfta med'
+    else if (language === 'sv') return 'Bekräfta med';
     else if (language === 'nb') return 'Bekreft med';
     return 'Confirm with';
   }
   if (action === 'accept') {
     if (language === 'da') return 'Accepter med';
-    else if (language === 'sv') return 'Acceptera med'
+    else if (language === 'sv') return 'Acceptera med';
     else if (language === 'nb') return 'Aksepterer med';
     return 'Accept with';
   }
@@ -88,105 +87,108 @@ export function acrValueToProviderPrefix(value: string) {
 
   if (value.startsWith('fi')) {
     return 'fi';
-  }
-  else if (value.startsWith('itsme')) {
+  } else if (value.startsWith('itsme')) {
     return 'itsme';
   } else {
     return value.split(':').slice(0, 2).join(':');
   }
 }
 
-export function acrValueToTitle(language: Language, value: string, { disambiguate }: { disambiguate: boolean }) : {title: string, subtitle?: string} {
-	value = value.replace('urn:grn:authn:', '');
+export function acrValueToTitle(
+  language: Language,
+  value: string,
+  { disambiguate }: { disambiguate: boolean },
+): { title: string; subtitle?: string } {
+  value = value.replace('urn:grn:authn:', '');
   const provider = acrValueToProviderPrefix(value);
 
   if (provider === 'be:eid') {
-    return {title: autoTitleCase(value).replace('BEEID', 'Belgian eID')};
+    return { title: autoTitleCase(value).replace('BEEID', 'Belgian eID') };
   }
   if (provider === 'nl:digid') {
-    return {title: autoTitleCase(value).replace('NL ', '')};
+    return { title: autoTitleCase(value).replace('NL ', '') };
   }
   if (provider === 'dk:mitid') {
     let suffix = value.replace('dk:mitid:', '');
     if (suffix === 'business') {
-      if (language === 'en') return {title: 'MitID Business'}
-      if (language === 'da') return {title: 'MitID Erhverv'}
-      if (language === 'sv') return {title: 'MitID Erhverv'}
-      if (language === 'nb') return {title: 'MitID Erhverv'}
-      return {title: 'MitID Erhverv'};
+      if (language === 'en') return { title: 'MitID Business' };
+      if (language === 'da') return { title: 'MitID Erhverv' };
+      if (language === 'sv') return { title: 'MitID Erhverv' };
+      if (language === 'nb') return { title: 'MitID Erhverv' };
+      return { title: 'MitID Erhverv' };
     }
 
-    return {title: 'MitID'};
+    return { title: 'MitID' };
   }
   if (provider === 'dk:nemid') {
-		let subtitle : string | undefined = undefined;
-		let suffix = value.replace('dk:nemid:', '');
-		
-		if (suffix === 'poces') {
-			if (language === 'en') subtitle = 'Personal';
-			if (language === 'da') subtitle = 'Personlig';
-			if (language === 'sv') subtitle = 'Personlig';
-			if (language === 'nb') subtitle = 'Personlig';
-		}
-		if (suffix === 'moces') {
-			if (language === 'en') subtitle = 'Employee key card';
-			if (language === 'da') subtitle = 'Medarbejder nøglekort';
-			if (language === 'sv') subtitle = 'Anställd nyckelkort';
-			if (language === 'nb') subtitle = 'Ansatt nøkkelkort';
-		}
-		if (suffix === 'moces:codefile') {
-			if (language === 'en') subtitle = 'Employee key file';
-			if (language === 'da') subtitle = 'Medarbejder nøglefil';
-			if (language === 'sv') subtitle = 'Anställd nyckelfil';
-			if (language === 'nb') subtitle = 'Ansatt nøkkelfil';
-		}
+    let subtitle: string | undefined = undefined;
+    let suffix = value.replace('dk:nemid:', '');
+
+    if (suffix === 'poces') {
+      if (language === 'en') subtitle = 'Personal';
+      if (language === 'da') subtitle = 'Personlig';
+      if (language === 'sv') subtitle = 'Personlig';
+      if (language === 'nb') subtitle = 'Personlig';
+    }
+    if (suffix === 'moces') {
+      if (language === 'en') subtitle = 'Employee key card';
+      if (language === 'da') subtitle = 'Medarbejder nøglekort';
+      if (language === 'sv') subtitle = 'Anställd nyckelkort';
+      if (language === 'nb') subtitle = 'Ansatt nøkkelkort';
+    }
+    if (suffix === 'moces:codefile') {
+      if (language === 'en') subtitle = 'Employee key file';
+      if (language === 'da') subtitle = 'Medarbejder nøglefil';
+      if (language === 'sv') subtitle = 'Anställd nyckelfil';
+      if (language === 'nb') subtitle = 'Ansatt nøkkelfil';
+    }
 
     return {
-			title: 'NemID',
-			subtitle
-		}
+      title: 'NemID',
+      subtitle,
+    };
   }
   if (value === 'fi:mobile-id') {
-    if (language === 'en') return {title: 'Finnish Mobile ID'};
-    if (language === 'da') return {title: 'Finsk Mobil ID'};
-    if (language === 'sv') return {title: 'Finskt Mobil ID'};
-    if (language === 'nb') return {title: 'Finsk Mobil ID'};
+    if (language === 'en') return { title: 'Finnish Mobile ID' };
+    if (language === 'da') return { title: 'Finsk Mobil ID' };
+    if (language === 'sv') return { title: 'Finskt Mobil ID' };
+    if (language === 'nb') return { title: 'Finsk Mobil ID' };
   }
   if (value === 'fi:bank-id') {
-    if (language === 'en') return {title: 'Finnish Bank ID'};
-    if (language === 'da') return {title: 'Finsk Bank ID'};
-    if (language === 'sv') return {title: 'Finskt Bank ID'};
-    if (language === 'nb') return {title: 'Finsk Bank ID'};
+    if (language === 'en') return { title: 'Finnish Bank ID' };
+    if (language === 'da') return { title: 'Finsk Bank ID' };
+    if (language === 'sv') return { title: 'Finskt Bank ID' };
+    if (language === 'nb') return { title: 'Finsk Bank ID' };
   }
   if (provider === 'fi') {
-    return {title: autoTitleCase(value).replace('FI', 'FTN')};
+    return { title: autoTitleCase(value).replace('FI', 'FTN') };
   }
   if (provider === 'itsme') {
-    return {title: autoTitleCase(value).replace('me', 'ME')};
+    return { title: autoTitleCase(value).replace('me', 'ME') };
   }
   if (provider === 'se:bankid') {
-		let subtitle : string | undefined = undefined;
-		let suffix = value.replace('se:bankid:', '');
-    let title = "BankID"
+    let subtitle: string | undefined = undefined;
+    let suffix = value.replace('se:bankid:', '');
+    let title = 'BankID';
 
-		if (suffix === 'same-device') {
-			if (language === 'en') subtitle = 'On this device';
-			if (language === 'da') subtitle = 'På denne enhed';
-			if (language === 'sv') subtitle = 'På denna enhet';
-			if (language === 'nb') subtitle = 'På denne enhet';
-		}
-		if (suffix === 'another-device') {
-			if (language === 'en') subtitle = 'With your SSN';
-			if (language === 'da') subtitle = 'Med dit personnummer';
-			if (language === 'sv') subtitle = 'Med ditt personnummer';
-			if (language === 'nb') subtitle = 'Med personnummeret ditt';
-		}
-		if (suffix === 'another-device:qr') {
-			if (language === 'en') subtitle = 'On another device';
-			if (language === 'da') subtitle = 'På anden enhed';
-			if (language === 'sv') subtitle = 'På annan enhet';
-			if (language === 'nb') subtitle = 'På annan enhet';
-		}
+    if (suffix === 'same-device') {
+      if (language === 'en') subtitle = 'On this device';
+      if (language === 'da') subtitle = 'På denne enhed';
+      if (language === 'sv') subtitle = 'På denna enhet';
+      if (language === 'nb') subtitle = 'På denne enhet';
+    }
+    if (suffix === 'another-device') {
+      if (language === 'en') subtitle = 'With your SSN';
+      if (language === 'da') subtitle = 'Med dit personnummer';
+      if (language === 'sv') subtitle = 'Med ditt personnummer';
+      if (language === 'nb') subtitle = 'Med personnummeret ditt';
+    }
+    if (suffix === 'another-device:qr') {
+      if (language === 'en') subtitle = 'On another device';
+      if (language === 'da') subtitle = 'På anden enhed';
+      if (language === 'sv') subtitle = 'På annan enhet';
+      if (language === 'nb') subtitle = 'På annan enhet';
+    }
     if (disambiguate) {
       if (language === 'en') title = `Swedish ${title}`;
       if (language === 'da') title = `Svensk ${title}`;
@@ -194,19 +196,19 @@ export function acrValueToTitle(language: Language, value: string, { disambiguat
       if (language === 'nb') title = `Svensk ${title}`;
     }
 
-    return {title, subtitle};
+    return { title, subtitle };
   }
   if (provider === 'de:sofort') {
-    return {title: autoTitleCase(value).replace('DE ', '')};
+    return { title: autoTitleCase(value).replace('DE ', '') };
   }
   if (provider === 'no:bankid') {
-    let subtitle : string | undefined = undefined;
-    let title = 'BankID'
+    let subtitle: string | undefined = undefined;
+    let title = 'BankID';
     if (value.endsWith(':substantial')) {
       if (language === 'en') subtitle = 'Biometrics';
-			if (language === 'da') subtitle = 'Biometri ';
-			if (language === 'sv') subtitle = 'Biometri';
-			if (language === 'nb') subtitle = 'Biometri';
+      if (language === 'da') subtitle = 'Biometri ';
+      if (language === 'sv') subtitle = 'Biometri';
+      if (language === 'nb') subtitle = 'Biometri';
     }
     if (disambiguate) {
       if (language === 'en') title = `Norwegian ${title}`;
@@ -214,32 +216,32 @@ export function acrValueToTitle(language: Language, value: string, { disambiguat
       if (language === 'sv') title = `Norska ${title}`;
       if (language === 'nb') title = `Norsk ${title}`;
     }
-    return {title, subtitle};
+    return { title, subtitle };
   }
   if (provider === 'no:vipps') {
-    return {title: autoTitleCase(value).replace('NO ', '')};
+    return { title: autoTitleCase(value).replace('NO ', '') };
   }
   if (provider === 'se:frejaid') {
-    return {title: 'FrejaID'}
+    return { title: 'FrejaID' };
   }
   if (provider === 'uk:oneid') {
-    return {title: 'OneID'}
+    return { title: 'OneID' };
   }
   if (provider === 'de:personalausweis') {
-    return {title: 'Personalausweis'}
+    return { title: 'Personalausweis' };
   }
 
-  return {title: autoTitleCase(value)};
+  return { title: autoTitleCase(value) };
 }
 
 export function filterAcrValues(input: string[]) {
   let original = input.slice();
-  let dkmitidMethod : string | null = lowestMitIDValue(input);
+  let dkmitidMethod: string | null = lowestMitIDValue(input);
   let reduced = input.slice();
 
   if (dkmitidMethod) {
-    reduced =
-      input.filter(s => !s.startsWith(DKMITID_PREFIX) || s === DKMITID_BUSINESS)
+    reduced = input
+      .filter((s) => !s.startsWith(DKMITID_PREFIX) || s === DKMITID_BUSINESS)
       .concat([dkmitidMethod])
       .sort((a, b) => original.indexOf(a) - original.indexOf(b));
   }
@@ -247,18 +249,21 @@ export function filterAcrValues(input: string[]) {
   if (input.includes(`${FTN_PREFIX}:all`)) {
     if (!reduced.includes(`${FTN_PREFIX}:bank-id`)) reduced.push(`${FTN_PREFIX}:bank-id`);
     if (!reduced.includes(`${FTN_PREFIX}:mobile-id`)) reduced.push(`${FTN_PREFIX}:mobile-id`);
-    reduced = reduced.filter(s => s !== `${FTN_PREFIX}:all`);
+    reduced = reduced.filter((s) => s !== `${FTN_PREFIX}:all`);
   }
   return reduced;
 }
 
 export function isSingle(acrValue: string, acrValues: string[]) {
   const provider = acrValueToProviderPrefix(acrValue);
-  const count = acrValues.reduce((memo, acrValue) => memo + (acrValueToProviderPrefix(acrValue) === provider ? 1 : 0), 0);
+  const count = acrValues.reduce(
+    (memo, acrValue) => memo + (acrValueToProviderPrefix(acrValue) === provider ? 1 : 0),
+    0,
+  );
   return count === 1;
 }
 
-const ambigousProviders = ["se:bankid", "no:bankid"]
+const ambigousProviders = ['se:bankid', 'no:bankid'];
 /**
  * A provider is considered ambiguous iff:
  * 1. It is in the list of ambiguous providers
@@ -266,13 +271,14 @@ const ambigousProviders = ["se:bankid", "no:bankid"]
  */
 export function isAmbiguous(acrValue: string, acrValues: string[]) {
   const provider = acrValueToProviderPrefix(acrValue);
-  const isProviderAmbiguous = ambigousProviders.includes(provider)
-  const otherAmbiguousProvider = acrValues.find(otherAcrValue => {
-    const otherProvider = acrValueToProviderPrefix(otherAcrValue);
-    return provider != otherProvider && ambigousProviders.includes(otherProvider)
-  }) != null
+  const isProviderAmbiguous = ambigousProviders.includes(provider);
+  const otherAmbiguousProvider =
+    acrValues.find((otherAcrValue) => {
+      const otherProvider = acrValueToProviderPrefix(otherAcrValue);
+      return provider != otherProvider && ambigousProviders.includes(otherProvider);
+    }) != null;
 
-  return isProviderAmbiguous && otherAmbiguousProvider
+  return isProviderAmbiguous && otherAmbiguousProvider;
 }
 
 export function trySessionStorage() {
