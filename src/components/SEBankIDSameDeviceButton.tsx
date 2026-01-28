@@ -160,7 +160,8 @@ export default function SEBankIDSameDeviceButton(props: Props) {
 
     buildAuthorizeUrl({
       acrValues: 'urn:grn:authn:se:bankid:same-device',
-      loginHint: 'appswitch:browser',
+      // When used on a mobile device, we might have already set appswitch login hints
+      loginHint: loginHint?.includes('appswitch:') ? undefined : 'appswitch:browser',
       responseMode: 'json',
       pkce,
       redirectUri,
