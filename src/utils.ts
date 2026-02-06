@@ -102,9 +102,6 @@ export function acrValueToTitle(
   value = value.replace('urn:grn:authn:', '');
   const provider = acrValueToProviderPrefix(value);
 
-  if (provider === 'nl:digid') {
-    return { title: autoTitleCase(value).replace('NL ', '') };
-  }
   if (provider === 'dk:mitid') {
     let suffix = value.replace('dk:mitid:', '');
     if (suffix === 'business') {

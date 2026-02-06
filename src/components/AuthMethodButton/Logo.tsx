@@ -1,5 +1,4 @@
 import React from 'react';
-import digid from './logos/nldigid@2x.png';
 import dkmitid from './logos/dkmitid@2x.png';
 import dknemid from './logos/dknemid@2x.png';
 import ftnmobile from './logos/ftnmobile@2x.png';
@@ -37,9 +36,6 @@ export default function AuthMethodButtonLogo(props: AuthMethodButtonLogoProps) {
 }
 
 function acrValueToLogo(value: string) {
-  if (value.startsWith('urn:grn:authn:nl:digid')) {
-    return digid;
-  }
   if (value.startsWith('urn:grn:authn:dk:mitid')) {
     return dkmitid;
   }
