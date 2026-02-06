@@ -81,20 +81,6 @@
   background: #e85321;
 }
 
-.criipto-eid-btn.criipto-eid-btn--de-sofort {
-  background: #ef809f;
-}
-.criipto-eid-btn.criipto-eid-btn--de-sofort:hover {
-  background: #de7794;
-}
-
-.criipto-eid-btn.criipto-eid-btn--de-yes {
-  background: #4b47fa;
-}
-.criipto-eid-btn.criipto-eid-btn--de-yes:hover {
-  background: #4340e0;
-}
-
 .criipto-eid-btn.criipto-eid-btn--nl-digid {
   background: #333333;
 }

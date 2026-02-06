@@ -198,9 +198,6 @@ export function acrValueToTitle(
 
     return { title, subtitle };
   }
-  if (provider === 'de:sofort') {
-    return { title: autoTitleCase(value).replace('DE ', '') };
-  }
   if (provider === 'no:bankid') {
     let subtitle: string | undefined = undefined;
     let title = 'BankID';

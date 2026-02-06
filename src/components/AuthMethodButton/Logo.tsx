@@ -8,7 +8,6 @@ import itsme from './logos/itsme@2x.png';
 import nobankid from './logos/nobankid@2x.png';
 import novipps from './logos/novipps@2x.png';
 import sebankid from './logos/sebankid@2x.png';
-import sofort from './logos/sofort@2x.png';
 import sefrejaid from './logos/sefrejaid@2x.png';
 import depersonalausweis from './logos/depersonalausweis@2x.png';
 import ukoneid from './logos/ukoneid@2x.png';
@@ -59,9 +58,6 @@ function acrValueToLogo(value: string) {
   }
   if (value.startsWith('urn:grn:authn:se:bankid')) {
     return sebankid;
-  }
-  if (value.startsWith('urn:grn:authn:de:sofort')) {
-    return sofort;
   }
   if (value.startsWith('urn:grn:authn:no:bankid')) {
     return nobankid;
