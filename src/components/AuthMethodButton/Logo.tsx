@@ -1,6 +1,5 @@
 import React from 'react';
 import dkmitid from './logos/dkmitid@2x.png';
-import dknemid from './logos/dknemid@2x.png';
 import ftnmobile from './logos/ftnmobile@2x.png';
 import itsme from './logos/itsme@2x.png';
 import nobankid from './logos/nobankid@2x.png';
@@ -38,9 +37,6 @@ export default function AuthMethodButtonLogo(props: AuthMethodButtonLogoProps) {
 function acrValueToLogo(value: string) {
   if (value.startsWith('urn:grn:authn:dk:mitid')) {
     return dkmitid;
-  }
-  if (value.startsWith('urn:grn:authn:dk:nemid')) {
-    return dknemid;
   }
   if (value.startsWith('urn:grn:authn:fi:mobile')) {
     return ftnmobile;

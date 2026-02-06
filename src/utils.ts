@@ -114,34 +114,6 @@ export function acrValueToTitle(
 
     return { title: 'MitID' };
   }
-  if (provider === 'dk:nemid') {
-    let subtitle: string | undefined = undefined;
-    let suffix = value.replace('dk:nemid:', '');
-
-    if (suffix === 'poces') {
-      if (language === 'en') subtitle = 'Personal';
-      if (language === 'da') subtitle = 'Personlig';
-      if (language === 'sv') subtitle = 'Personlig';
-      if (language === 'nb') subtitle = 'Personlig';
-    }
-    if (suffix === 'moces') {
-      if (language === 'en') subtitle = 'Employee key card';
-      if (language === 'da') subtitle = 'Medarbejder nøglekort';
-      if (language === 'sv') subtitle = 'Anställd nyckelkort';
-      if (language === 'nb') subtitle = 'Ansatt nøkkelkort';
-    }
-    if (suffix === 'moces:codefile') {
-      if (language === 'en') subtitle = 'Employee key file';
-      if (language === 'da') subtitle = 'Medarbejder nøglefil';
-      if (language === 'sv') subtitle = 'Anställd nyckelfil';
-      if (language === 'nb') subtitle = 'Ansatt nøkkelfil';
-    }
-
-    return {
-      title: 'NemID',
-      subtitle,
-    };
-  }
   if (value === 'fi:mobile-id') {
     if (language === 'en') return { title: 'Finnish Mobile ID' };
     if (language === 'da') return { title: 'Finsk Mobil ID' };
