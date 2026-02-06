@@ -102,9 +102,6 @@ export function acrValueToTitle(
   value = value.replace('urn:grn:authn:', '');
   const provider = acrValueToProviderPrefix(value);
 
-  if (provider === 'be:eid') {
-    return { title: autoTitleCase(value).replace('BEEID', 'Belgian eID') };
-  }
   if (provider === 'nl:digid') {
     return { title: autoTitleCase(value).replace('NL ', '') };
   }

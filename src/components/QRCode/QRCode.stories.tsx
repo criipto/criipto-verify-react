@@ -6,7 +6,6 @@ import CriiptoVerifyProvider from '../../provider';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
 const ALL_ACR_VALUES = [
-  'urn:grn:authn:be:eid:verified',
   'urn:grn:authn:dk:mitid:high',
   'urn:grn:authn:dk:mitid:low',
   'urn:grn:authn:dk:mitid:substantial',
