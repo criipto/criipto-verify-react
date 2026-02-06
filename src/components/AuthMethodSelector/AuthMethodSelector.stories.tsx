@@ -6,24 +6,15 @@ import CriiptoVerifyProvider from '../../provider';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
 const ALL_ACR_VALUES = [
-  'urn:grn:authn:be:eid:verified',
-  'urn:grn:authn:de:sofort',
   'urn:grn:authn:dk:mitid:high',
   'urn:grn:authn:dk:mitid:low',
   'urn:grn:authn:dk:mitid:substantial',
   'urn:grn:authn:dk:mitid:business',
-  'urn:grn:authn:dk:nemid:moces',
-  'urn:grn:authn:dk:nemid:moces:codefile',
-  'urn:grn:authn:dk:nemid:poces',
   'urn:grn:authn:fi:all',
   'urn:grn:authn:fi:bank-id',
   'urn:grn:authn:fi:mobile-id',
   'urn:grn:authn:itsme:advanced',
   'urn:grn:authn:itsme:basic',
-  'urn:grn:authn:nl:digid:basic',
-  'urn:grn:authn:nl:digid:high',
-  'urn:grn:authn:nl:digid:middle',
-  'urn:grn:authn:nl:digid:substantial',
   'urn:grn:authn:no:bankid',
   'urn:grn:authn:no:bankid:central',
   'urn:grn:authn:no:bankid:mobile',
@@ -133,7 +124,6 @@ OneOfEach.storyName = 'One of each';
 OneOfEach.args = {
   redirectUri: window.location.href,
   acrValues: [
-    'urn:grn:authn:dk:nemid:poces',
     'urn:grn:authn:dk:mitid:low',
     'urn:grn:authn:dk:mitid:business',
     'urn:grn:authn:se:bankid:same-device',

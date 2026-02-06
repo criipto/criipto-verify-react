@@ -53,13 +53,6 @@
   background: #0051c3;
 }
 
-.criipto-eid-btn.criipto-eid-btn--dk-nemid {
-  background: #0b6062;
-}
-.criipto-eid-btn.criipto-eid-btn--dk-nemid:hover {
-  background: #094e50;
-}
-
 .criipto-eid-btn.criipto-eid-btn--se-bankid {
   background: #235971;
 }
@@ -79,34 +72,6 @@
 }
 .criipto-eid-btn.criipto-eid-btn--no-vipps:hover {
   background: #e85321;
-}
-
-.criipto-eid-btn.criipto-eid-btn--de-sofort {
-  background: #ef809f;
-}
-.criipto-eid-btn.criipto-eid-btn--de-sofort:hover {
-  background: #de7794;
-}
-
-.criipto-eid-btn.criipto-eid-btn--de-yes {
-  background: #4b47fa;
-}
-.criipto-eid-btn.criipto-eid-btn--de-yes:hover {
-  background: #4340e0;
-}
-
-.criipto-eid-btn.criipto-eid-btn--nl-digid {
-  background: #333333;
-}
-.criipto-eid-btn.criipto-eid-btn--nl-digid:hover {
-  background: #111111;
-}
-
-.criipto-eid-btn.criipto-eid-btn--be-eid {
-  background: #87cea3;
-}
-.criipto-eid-btn.criipto-eid-btn--be-eid:hover {
-  background: #78b891;
 }
 
 .criipto-eid-btn.criipto-eid-btn--itsme {
