@@ -109,6 +109,13 @@
   background: #295e8e;
 }
 
+.criipto-eid-btn.criipto-eid-btn--nl-idin {
+  background: #00b0f0;
+}
+.criipto-eid-btn.criipto-eid-btn--nl-idin:hover {
+  background: #008dc0;
+}
+
 .criipto-eid-btn.criipto-eid-btn--disabled,
 .criipto-eid-btn.criipto-eid-btn--disabled:hover {
   background: #d0d3eb;
