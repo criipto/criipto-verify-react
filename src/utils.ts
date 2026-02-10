@@ -102,12 +102,6 @@ export function acrValueToTitle(
   value = value.replace('urn:grn:authn:', '');
   const provider = acrValueToProviderPrefix(value);
 
-  if (provider === 'be:eid') {
-    return { title: autoTitleCase(value).replace('BEEID', 'Belgian eID') };
-  }
-  if (provider === 'nl:digid') {
-    return { title: autoTitleCase(value).replace('NL ', '') };
-  }
   if (provider === 'dk:mitid') {
     let suffix = value.replace('dk:mitid:', '');
     if (suffix === 'business') {
@@ -119,34 +113,6 @@ export function acrValueToTitle(
     }
 
     return { title: 'MitID' };
-  }
-  if (provider === 'dk:nemid') {
-    let subtitle: string | undefined = undefined;
-    let suffix = value.replace('dk:nemid:', '');
-
-    if (suffix === 'poces') {
-      if (language === 'en') subtitle = 'Personal';
-      if (language === 'da') subtitle = 'Personlig';
-      if (language === 'sv') subtitle = 'Personlig';
-      if (language === 'nb') subtitle = 'Personlig';
-    }
-    if (suffix === 'moces') {
-      if (language === 'en') subtitle = 'Employee key card';
-      if (language === 'da') subtitle = 'Medarbejder nøglekort';
-      if (language === 'sv') subtitle = 'Anställd nyckelkort';
-      if (language === 'nb') subtitle = 'Ansatt nøkkelkort';
-    }
-    if (suffix === 'moces:codefile') {
-      if (language === 'en') subtitle = 'Employee key file';
-      if (language === 'da') subtitle = 'Medarbejder nøglefil';
-      if (language === 'sv') subtitle = 'Anställd nyckelfil';
-      if (language === 'nb') subtitle = 'Ansatt nøkkelfil';
-    }
-
-    return {
-      title: 'NemID',
-      subtitle,
-    };
   }
   if (value === 'fi:mobile-id') {
     if (language === 'en') return { title: 'Finnish Mobile ID' };
@@ -197,9 +163,6 @@ export function acrValueToTitle(
     }
 
     return { title, subtitle };
-  }
-  if (provider === 'de:sofort') {
-    return { title: autoTitleCase(value).replace('DE ', '') };
   }
   if (provider === 'no:bankid') {
     let subtitle: string | undefined = undefined;
