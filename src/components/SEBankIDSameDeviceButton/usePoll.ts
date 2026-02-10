@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-interface UsePollProps {
+export interface UsePollProps {
   shouldPoll: boolean;
   pollUrl: string;
   onError: (error: string) => void;
