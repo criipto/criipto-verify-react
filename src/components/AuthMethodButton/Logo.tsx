@@ -8,6 +8,7 @@ import sebankid from './logos/sebankid@2x.png';
 import sefrejaid from './logos/sefrejaid@2x.png';
 import depersonalausweis from './logos/depersonalausweis@2x.png';
 import ukoneid from './logos/ukoneid@2x.png';
+import idin from './logos/idin@2x.png';
 
 export interface AuthMethodButtonLogoProps {
   acrValue: string;
@@ -61,5 +62,8 @@ function acrValueToLogo(value: string) {
   }
   if (value.startsWith('urn:grn:authn:de:personalausweis')) {
     return depersonalausweis;
+  }
+  if (value.startsWith('urn:grn:authn:nl:idin')) {
+    return idin;
   }
 }
