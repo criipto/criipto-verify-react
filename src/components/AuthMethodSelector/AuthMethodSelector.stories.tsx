@@ -25,6 +25,7 @@ const ALL_ACR_VALUES = [
   'urn:grn:authn:se:frejaid',
   'urn:grn:authn:uk:oneid',
   'urn:grn:authn:de:personalausweis',
+  'urn:grn:authn:nl:idin',
 ];
 
 export default {
