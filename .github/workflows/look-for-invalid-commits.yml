@@ -1,0 +1,29 @@
+name: Look for invalid commits
+on: [pull_request]
+
+jobs:
+  look-for-invalid-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Looking for invalid commits
+        run: |
+          # A commit is considered invalid if its subject line starts with any of these terms
+          SEARCH_TERMS=("fixup! " "amend! " "squash! " "wip")
+
+          # Get all commits in this PR
+          COMMITS=$(git log --pretty=format:%s origin/${GITHUB_BASE_REF}..HEAD)
+
+          # Check each commit subject line
+          while read -r COMMIT; do
+            for term in "${SEARCH_TERMS[@]}"; do
+              if [[ $COMMIT == ${term}* ]]; then
+                echo "Detected invalid commit ('$term') in: $COMMIT"
+                exit 1
+              fi
+            done
+          done <<< "$COMMITS"
+
+          echo "OK: No invalid commits found."
