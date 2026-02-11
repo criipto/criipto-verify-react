@@ -3,7 +3,10 @@ import {
   default as AuthMethodSelector,
   Sweden as AuthMethodSelectorSweden,
 } from './components/AuthMethodSelector';
-import { default as AuthMethodButton } from './components/AuthMethodButton';
+import {
+  AuthMethodButtonContainer,
+  AuthMethodButtonComponent,
+} from './components/AuthMethodButton';
 import { default as AuthButtonGroup } from './components/AuthButtonGroup';
 import { default as QRCode } from './components/QRCode';
 import { default as SEBankIDQRCode } from './components/SEBankIDQRCode';
@@ -20,6 +23,11 @@ export {
   QRCode,
   SEBankIDQRCode,
 };
-export { AuthMethodButton, AuthMethodButton as AuthButton, AuthButtonGroup };
+export {
+  AuthMethodButtonContainer as AuthMethodButton,
+  AuthMethodButtonContainer as AuthButton,
+  AuthMethodButtonComponent as AuthButtonComponent,
+  AuthButtonGroup,
+};
 
 import './index.css';
