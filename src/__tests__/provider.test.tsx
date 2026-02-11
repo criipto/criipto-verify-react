@@ -1,4 +1,4 @@
-import { expect } from '@jest/globals';
+import { describe, it, vi, expect } from 'vitest';
 import { buildLoginHint, resetRedirectState } from '../provider';
 
 describe('CriiptoVerifyProvider', () => {
@@ -23,7 +23,7 @@ describe('CriiptoVerifyProvider', () => {
         },
         document: { title: '' },
         history: {
-          replaceState: jest.fn(),
+          replaceState: vi.fn(),
         },
       };
 

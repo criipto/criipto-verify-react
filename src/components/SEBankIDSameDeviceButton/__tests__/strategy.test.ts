@@ -1,4 +1,5 @@
 import { determineStrategy } from '../../SEBankIDSameDeviceButton';
+import { describe, it, test, expect } from 'vitest';
 
 describe('SEBankID/strategy', function () {
   it('uses reload strategy for iOS safari', function () {

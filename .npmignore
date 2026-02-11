@@ -6,6 +6,4 @@ node_modules/
 webpack.config.js
 netlify.toml
 coverage/
-jest.config.js
-jest.setup.js
 example/
