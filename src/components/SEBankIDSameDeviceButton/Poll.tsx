@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import CriiptoVerifyContext from '../../context';
 import { Links } from './shared';
+import { usePoll } from './usePoll';
 
 interface Props {
   children: React.ReactElement;
@@ -19,37 +20,11 @@ export default function SEBankIDSameDevicePoll(props: Props) {
   const [initiated, setInitiated] = useState(false);
   const { domain } = useContext(CriiptoVerifyContext);
 
-  useEffect(() => {
-    if (!initiated) return;
-    let isSubscribed = true;
-    let timeout: string | undefined;
-    const poll = async () => {
-      if (!isSubscribed) return;
-      const response = await fetch(links.pollUrl);
-
-      if (response.status === 202) {
-        setTimeout(poll, 1000);
-        return;
-      } else if (response.status >= 400) {
-        if (!isSubscribed) return;
-        const error = await response.text();
-        onError(error);
-        return;
-      } else {
-        if (!isSubscribed) return;
-        const { targetUrl } = await response.json();
-        await onComplete(targetUrl);
-        return;
-      }
-    };
-
-    setTimeout(poll, 1000);
-    return () => {
-      isSubscribed = false;
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [initiated]);
-
+  usePoll({
+    ...props,
+    shouldPoll: initiated,
+    pollUrl: links.pollUrl,
+  });
   const handleInitiate = () => {
     onInitiate();
     setInitiated(true);
