@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import CriiptoVerifyContext from '../context';
 import { getUserAgent } from '../device';
 import { filterAcrValues, Language, acrValueToProviderPrefix } from '../utils';
-import AuthMethodButton, { AuthMethodButtonProps } from './AuthMethodButton';
+import { AuthMethodButtonContainer, AuthMethodButtonContainerProps } from './AuthMethodButton';
 
 import './AuthMethodSelector/AuthMethodSelector.css';
 import SEBankIDQrCode from './SEBankIDQRCode';
@@ -14,7 +14,7 @@ interface AuthMethodSelectorProps {
   language?: Language;
   onSelect?: (acrValue: string) => void;
   redirectUri?: string;
-  popup?: AuthMethodButtonProps['popup'];
+  popup?: AuthMethodButtonContainerProps['popup'];
   userAgent?: string;
 }
 
@@ -34,7 +34,7 @@ export default function AuthMethodSelector(props: AuthMethodSelectorProps) {
     <div className="criipto-eid-selector">
       <AuthButtonGroup>
         {acrValues.map((acrValue) => (
-          <AuthMethodButton
+          <AuthMethodButtonContainer
             acrValue={acrValue}
             key={acrValue}
             onClick={props.onSelect ? () => props.onSelect!(acrValue) : undefined}
@@ -72,7 +72,7 @@ export function Sweden(props: SwedenProps) {
     <div className="criipto-eid-selector">
       <AuthButtonGroup>
         {filteredAcrValues.map((acrValue) => (
-          <AuthMethodButton
+          <AuthMethodButtonContainer
             acrValue={acrValue}
             key={acrValue}
             onClick={props.onSelect ? () => props.onSelect!(acrValue) : undefined}
@@ -88,7 +88,7 @@ export function Sweden(props: SwedenProps) {
             language={language}
             redirectUri={props.redirectUri}
             fallback={
-              <AuthMethodButton
+              <AuthMethodButtonContainer
                 acrValue={SEBankIDQrCode.acr_values}
                 popup={props.popup}
                 language={language}
@@ -98,7 +98,7 @@ export function Sweden(props: SwedenProps) {
             }
           />
         ) : hasQR && mobileOS ? (
-          <AuthMethodButton
+          <AuthMethodButtonContainer
             acrValue={SEBankIDQrCode.acr_values}
             redirectUri={props.redirectUri}
             popup={props.popup}
