@@ -11,6 +11,7 @@ import { acrValueToTitle } from '../../utils';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
 import customLogo from './logos/ftnmobile@2x.png';
+import AuthButtonGroup from '../AuthButtonGroup';
 
 export default {
   title: 'Components/AuthMethodButton',
@@ -81,46 +82,6 @@ const ContainerTemplate: ComponentStory<typeof AuthMethodButtonContainer> = (arg
   );
 };
 
-const ComponentTemplate: ComponentStory<typeof AuthMethodButtonComponent> = (args, { globals }) => {
-  return (
-    <div style={{ display: 'flex', flexFlow: 'column', gap: '5px' }}>
-      {[
-        'urn:grn:authn:dk:mitid:high',
-        'urn:grn:authn:dk:mitid:low',
-        'urn:grn:authn:dk:mitid:substantial',
-        'urn:grn:authn:dk:mitid:business',
-        'urn:grn:authn:fi:all',
-        'urn:grn:authn:fi:bank-id',
-        'urn:grn:authn:fi:mobile-id',
-        'urn:grn:authn:itsme:advanced',
-        'urn:grn:authn:itsme:basic',
-        'urn:grn:authn:no:bankid',
-        'urn:grn:authn:no:bankid:central',
-        'urn:grn:authn:no:bankid:mobile',
-        'urn:grn:authn:no:bankid:substantial',
-        'urn:grn:authn:no:vipps',
-        'urn:grn:authn:se:bankid:another-device:qr',
-        'urn:grn:authn:se:bankid:same-device',
-        'urn:grn:authn:se:frejaid',
-        'urn:grn:authn:uk:oneid',
-        'urn:grn:authn:de:personalausweis',
-        'urn:grn:authn:nl:idin',
-      ].flatMap((acrValue) =>
-        ['confirm', 'accept', 'approve', 'sign', 'login'].map((action) =>
-          ['en', 'da', 'nb', 'sv'].map((language) => (
-            <AuthMethodButtonComponent
-              {...args}
-              acrValue={acrValue}
-              action={action}
-              language={language}
-            />
-          )),
-        ),
-      )}
-    </div>
-  );
-};
-
 export const SEBankIDSameDeviceButton = ContainerTemplate.bind({});
 SEBankIDSameDeviceButton.args = {
   acrValue: 'urn:grn:authn:se:bankid:same-device',
@@ -183,6 +144,95 @@ PopupCustom.args = {
 };
 PopupCustom.storyName = 'Popup - Custom react backdrop';
 
+const ComponentTemplate: ComponentStory<typeof AuthMethodButtonComponent> = (args, { globals }) => {
+  return (
+    <div style={{ display: 'flex', flexFlow: 'column', gap: '5px' }}>
+      {[
+        'urn:grn:authn:dk:mitid:high',
+        'urn:grn:authn:dk:mitid:low',
+        'urn:grn:authn:dk:mitid:substantial',
+        'urn:grn:authn:dk:mitid:business',
+        'urn:grn:authn:fi:all',
+        'urn:grn:authn:fi:bank-id',
+        'urn:grn:authn:fi:mobile-id',
+        'urn:grn:authn:itsme:advanced',
+        'urn:grn:authn:itsme:basic',
+        'urn:grn:authn:no:bankid',
+        'urn:grn:authn:no:bankid:central',
+        'urn:grn:authn:no:bankid:mobile',
+        'urn:grn:authn:no:bankid:substantial',
+        'urn:grn:authn:no:vipps',
+        'urn:grn:authn:se:bankid:another-device:qr',
+        'urn:grn:authn:se:bankid:same-device',
+        'urn:grn:authn:se:frejaid',
+        'urn:grn:authn:uk:oneid',
+        'urn:grn:authn:de:personalausweis',
+        'urn:grn:authn:nl:idin',
+      ].flatMap((acrValue) =>
+        ['confirm', 'accept', 'approve', 'sign', 'login'].map((action) =>
+          ['en', 'da', 'nb', 'sv'].map((language) => (
+            <AuthMethodButtonComponent
+              {...args}
+              acrValue={acrValue}
+              action={action}
+              language={language}
+            />
+          )),
+        ),
+      )}
+    </div>
+  );
+};
+
 export const Components = ComponentTemplate.bind({});
 Components.args = {};
 Components.storyName = 'As components only';
+
+const GroupedComponentTemplate: ComponentStory<typeof AuthMethodButtonComponent> = (
+  args,
+  { globals },
+) => {
+  return (
+    <div style={{ display: 'flex', flexFlow: 'column', gap: '5px' }}>
+      <AuthButtonGroup>
+        {[
+          'urn:grn:authn:dk:mitid:high',
+          'urn:grn:authn:dk:mitid:low',
+          'urn:grn:authn:dk:mitid:substantial',
+          'urn:grn:authn:dk:mitid:business',
+          'urn:grn:authn:fi:all',
+          'urn:grn:authn:fi:bank-id',
+          'urn:grn:authn:fi:mobile-id',
+          'urn:grn:authn:itsme:advanced',
+          'urn:grn:authn:itsme:basic',
+          'urn:grn:authn:no:bankid',
+          'urn:grn:authn:no:bankid:central',
+          'urn:grn:authn:no:bankid:mobile',
+          'urn:grn:authn:no:bankid:substantial',
+          'urn:grn:authn:no:vipps',
+          'urn:grn:authn:se:bankid:another-device:qr',
+          'urn:grn:authn:se:bankid:same-device',
+          'urn:grn:authn:se:frejaid',
+          'urn:grn:authn:uk:oneid',
+          'urn:grn:authn:de:personalausweis',
+          'urn:grn:authn:nl:idin',
+        ].flatMap((acrValue) =>
+          ['confirm', 'accept', 'approve', 'sign', 'login'].map((action) =>
+            ['en', 'da', 'nb', 'sv'].map((language) => (
+              <AuthMethodButtonComponent
+                {...args}
+                acrValue={acrValue}
+                action={action}
+                language={language}
+              />
+            )),
+          ),
+        )}
+      </AuthButtonGroup>
+    </div>
+  );
+};
+
+export const GroupedComponnet = GroupedComponentTemplate.bind({});
+GroupedComponnet.args = {};
+GroupedComponnet.storyName = 'As components only (grouped)';

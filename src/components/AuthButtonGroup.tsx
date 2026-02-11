@@ -1,5 +1,10 @@
 import React, { createContext } from 'react';
-import { AuthMethodButtonContainer, AuthMethodButtonContainerProps } from './AuthMethodButton';
+import {
+  AuthMethodButtonContainer,
+  AuthMethodButtonContainerProps,
+  AuthMethodButtonComponent,
+  AuthMethodButtonComponentProps,
+} from './AuthMethodButton';
 import SEBankIDQrCode from './SEBankIDQRCode';
 
 interface AuthButtonGroupContextInterface {
@@ -19,6 +24,10 @@ export default function AuthButtonGroup(props: { children: React.ReactNode }) {
     if ('type' in child) {
       if (child.type === AuthMethodButtonContainer) {
         const props = child.props as AuthMethodButtonContainerProps;
+        return props.acrValue ? [props.acrValue] : [];
+      }
+      if (child.type === AuthMethodButtonComponent) {
+        const props = child.props as AuthMethodButtonComponentProps;
         return props.acrValue ? [props.acrValue] : [];
       }
       if (child.type === SEBankIDQrCode) {
