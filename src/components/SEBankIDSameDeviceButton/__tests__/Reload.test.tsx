@@ -2,6 +2,7 @@ import renderer from 'react-test-renderer';
 import ReloadStrategy from '../Reload';
 import { Links, clearState } from '../shared';
 import { determineStrategy } from '../../SEBankIDSameDeviceButton';
+import { describe, beforeEach, it, vi, expect } from 'vitest';
 
 describe('SEBankID/SameDevice/ReloadStrategy', function () {
   beforeEach(() => {
@@ -19,10 +20,10 @@ describe('SEBankID/SameDevice/ReloadStrategy', function () {
       pollUrl: Math.random().toString(),
     };
     const redirectUri = Math.random().toString();
-    const onError = jest.fn();
-    const onInitiate = jest.fn();
-    const onLog = jest.fn();
-    const onComplete = jest.fn();
+    const onError = vi.fn();
+    const onInitiate = vi.fn();
+    const onLog = vi.fn();
+    const onComplete = vi.fn();
 
     let component!: renderer.ReactTestRenderer;
     renderer.act(() => {

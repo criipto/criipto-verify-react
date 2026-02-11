@@ -1,5 +1,6 @@
-import { expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { filterAcrValues, isAmbiguous } from '../utils';
+import { inspect } from 'node:util';
 
 describe('utils', () => {
   describe('filterAcrValues', () => {
@@ -84,9 +85,11 @@ describe('utils', () => {
         expected: true,
       },
     ].forEach(({ input, expected }) => {
-      const actual = isAmbiguous(input.acrValue, input.acrValues);
+      it(`handles case: ${inspect(input)}`, () => {
+        const actual = isAmbiguous(input.acrValue, input.acrValues);
 
-      expect(actual).toStrictEqual(expected);
+        expect(actual).toStrictEqual(expected);
+      });
     });
   });
 });
