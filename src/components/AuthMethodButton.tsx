@@ -15,21 +15,18 @@ export type PopupParams = {
 };
 export type PopupOption = boolean | ((options: PopupParams) => boolean | React.ReactElement);
 
-export interface AuthMethodButtonProps {
+export interface AuthMethodButtonComponentProps {
   acrValue: string;
   href?: string;
   onClick?: React.MouseEventHandler;
   children?: React.ReactNode;
   'data-testid'?: string;
   className?: string;
-  redirectUri?: string;
-  popup?: PopupOption;
   /**
    * base64 image string, e.x. data:image/png;base64,
    * or a ReactElement
    */
   logo?: AuthMethodButtonLogoProps['logo'];
-
   /**
    * Impacts the button text rendered if no text is provided via props.children
    */
@@ -38,15 +35,69 @@ export interface AuthMethodButtonProps {
    * Impacts the button text rendered if no text is provided via props.children
    */
   action?: Action;
+}
+
+/**
+ * Display only components, does no state management and triggers no login flows on it's own
+ */
+export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps) {
+  const { acrValue, href } = props;
+  const group = useContext(AuthButtonGroupContext);
+  const standalone = !group.multiple || isSingle(props.acrValue, group.acrValues);
+  const language = (props.language ?? 'en') as Language;
+  const action = (props.action ?? 'login') as Action;
+  const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${
+    props.className ? ` ${props.className}` : ''
+  }`;
+
+  const { title, subtitle } = acrValueToTitle(language, acrValue, {
+    disambiguate: isAmbiguous(acrValue, group.acrValues),
+  });
+  const contents = props.children ?? (
+    <React.Fragment>
+      {stringifyAction(language, action) ? `${stringifyAction(language, action)} ` : ''}
+      {title}&nbsp;
+      {standalone ? null : lowercaseFirst(subtitle)}
+    </React.Fragment>
+  );
+
+  const inner = (
+    <React.Fragment>
+      <AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />
+      <span>{contents}</span>
+    </React.Fragment>
+  );
+
+  const button = href ? (
+    <React.Fragment>
+      <AnchorButton {...props} href={href} className={className} onClick={props.onClick}>
+        {inner}
+      </AnchorButton>
+    </React.Fragment>
+  ) : (
+    <React.Fragment>
+      <Button {...props} className={className} onClick={props.onClick}>
+        {inner}
+      </Button>
+    </React.Fragment>
+  );
+
+  return button;
+}
+
+export type AuthMethodButtonContainerProps = AuthMethodButtonComponentProps & {
+  redirectUri?: string;
+  popup?: PopupOption;
+
   /**
    * Will ammend the login_hint parameter with `message:{base64(message)}` which will set a login/aprove message where available (Danish MitID).
    */
   message?: string;
 
   userAgent?: string;
-}
+};
 
-export default function AuthMethodButton(props: AuthMethodButtonProps) {
+export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps) {
   const { acrValue } = props;
   const group = useContext(AuthButtonGroupContext);
   const standalone = !group.multiple || isSingle(props.acrValue, group.acrValues);
@@ -54,8 +105,9 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
   const { buildAuthorizeUrl } = context;
   const language = (props.language ?? context.uiLocales ?? 'en') as Language;
   const action = (props.action ?? context.action ?? 'login') as Action;
-  const message = props.message ?? context.message;
-  const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${props.className ? ` ${props.className}` : ''}`;
+  const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${
+    props.className ? ` ${props.className}` : ''
+  }`;
   const [backdrop, setBackdrop] = useState<React.ReactElement | null>(null);
 
   const [href, setHref] = useState(props.href);
@@ -137,25 +189,14 @@ export default function AuthMethodButton(props: AuthMethodButtonProps) {
     </React.Fragment>
   );
 
-  const inner = (
+  const button = (
     <React.Fragment>
-      <AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />
-      <span>{contents}</span>
-    </React.Fragment>
-  );
-
-  const button = href ? (
-    <React.Fragment>
-      <AnchorButton {...props} href={href} className={className} onClick={handleClick}>
-        {inner}
-      </AnchorButton>
-      {backdrop}
-    </React.Fragment>
-  ) : (
-    <React.Fragment>
-      <Button {...props} className={className} onClick={handleClick}>
-        {inner}
-      </Button>
+      <AuthMethodButtonComponent
+        {...props}
+        href={href}
+        className={className}
+        onClick={handleClick}
+      />
       {backdrop}
     </React.Fragment>
   );

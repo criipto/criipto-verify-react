@@ -17,6 +17,7 @@
 
   color: #fff;
   background: #604fed;
+  cursor: pointer;
 }
 
 @media (max-width: 320px) {
