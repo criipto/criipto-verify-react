@@ -13,7 +13,8 @@ import { default as SEBankIDQRCode } from './components/SEBankIDQRCode';
 import { default as useCriiptoVerify } from './use-criipto-verify';
 
 export { type Result, type Action, actions } from './context';
-export { type Language, filterAcrValues } from './utils';
+export { filterAcrValues } from './utils';
+export { type Language } from './i18n';
 export { OAuth2Error } from '@criipto/auth-js';
 export {
   CriiptoVerifyProvider,

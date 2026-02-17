@@ -2,7 +2,8 @@ import { OpenIDConfiguration } from '@criipto/auth-js';
 import React, { useContext, useEffect, useState } from 'react';
 import CriiptoVerifyContext from '../context';
 import { getUserAgent } from '../device';
-import { filterAcrValues, Language, acrValueToProviderPrefix } from '../utils';
+import { filterAcrValues } from '../utils';
+import { type Language } from '../i18n';
 import { AuthMethodButtonContainer, AuthMethodButtonContainerProps } from './AuthMethodButton';
 
 import './AuthMethodSelector/AuthMethodSelector.css';

@@ -1,4 +1,5 @@
 import { Action } from './context';
+import { getI18n, type Language } from './i18n';
 
 declare var __VERSION__: string;
 export const VERSION = typeof __VERSION__ === 'undefined' ? 'N/A' : __VERSION__;
@@ -38,48 +39,27 @@ function autoTitleCase(input: string) {
   return segments.join(' ');
 }
 
-function assertUnreachable(x: never): never {
+export function assertUnreachable(x: never): never {
   throw new Error("Didn't expect to get here");
 }
 
-export function assertUnreachableLanguage(x: never): never {
-  throw new Error(`Unsupported language ${x}`);
-}
-export type Language = 'en' | 'da' | 'sv' | 'nb';
-
 export function stringifyAction(language: Language, action: Action): string {
-  if (action === 'login') {
-    if (language === 'da') return 'Login med';
-    else if (language === 'sv') return 'Logga in med';
-    else if (language === 'nb') return 'Logg inn med';
-    return 'Login with';
-  }
-  if (action === 'approve') {
-    if (language === 'da') return 'Godkend med';
-    else if (language === 'sv') return 'Godkänn med';
-    else if (language === 'nb') return 'Godkjenne med';
-    return 'Approve with';
-  }
-  if (action === 'sign') {
-    if (language === 'da') return 'Underskriv med';
-    else if (language === 'sv') return 'Signera med';
-    else if (language === 'nb') return 'Signer med';
-    return 'Sign with';
-  }
-  if (action === 'confirm') {
-    if (language === 'da') return 'Bekræft med';
-    else if (language === 'sv') return 'Bekräfta med';
-    else if (language === 'nb') return 'Bekreft med';
-    return 'Confirm with';
-  }
-  if (action === 'accept') {
-    if (language === 'da') return 'Accepter med';
-    else if (language === 'sv') return 'Acceptera med';
-    else if (language === 'nb') return 'Aksepterer med';
-    return 'Accept with';
-  }
+  const i18n = getI18n(language);
 
-  assertUnreachable(action);
+  switch (action) {
+    case 'login':
+      return i18n.loginWith;
+    case 'approve':
+      return i18n.approveWith;
+    case 'sign':
+      return i18n.signWith;
+    case 'confirm':
+      return i18n.confirmWith;
+    case 'accept':
+      return i18n.acceptWith;
+    default:
+      assertUnreachable(action);
+  }
 }
 
 export function acrValueToProviderPrefix(value: string) {
@@ -99,32 +79,29 @@ export function acrValueToTitle(
   value: string,
   { disambiguate }: { disambiguate: boolean },
 ): { title: string; subtitle?: string } {
+  const i18n = getI18n(language);
   value = value.replace('urn:grn:authn:', '');
   const provider = acrValueToProviderPrefix(value);
 
   if (provider === 'dk:mitid') {
     let suffix = value.replace('dk:mitid:', '');
     if (suffix === 'business') {
-      if (language === 'en') return { title: 'MitID Business' };
-      if (language === 'da') return { title: 'MitID Erhverv' };
-      if (language === 'sv') return { title: 'MitID Erhverv' };
-      if (language === 'nb') return { title: 'MitID Erhverv' };
-      return { title: 'MitID Erhverv' };
+      return {
+        title: i18n.mitidBusiness,
+      };
     }
 
     return { title: 'MitID' };
   }
   if (value === 'fi:mobile-id') {
-    if (language === 'en') return { title: 'Finnish Mobile ID' };
-    if (language === 'da') return { title: 'Finsk Mobil ID' };
-    if (language === 'sv') return { title: 'Finskt Mobil ID' };
-    if (language === 'nb') return { title: 'Finsk Mobil ID' };
+    return {
+      title: i18n.finnishMobileID,
+    };
   }
   if (value === 'fi:bank-id') {
-    if (language === 'en') return { title: 'Finnish Bank ID' };
-    if (language === 'da') return { title: 'Finsk Bank ID' };
-    if (language === 'sv') return { title: 'Finskt Bank ID' };
-    if (language === 'nb') return { title: 'Finsk Bank ID' };
+    return {
+      title: i18n.finnishBankID,
+    };
   }
   if (provider === 'fi') {
     return { title: autoTitleCase(value).replace('FI', 'FTN') };
@@ -138,28 +115,16 @@ export function acrValueToTitle(
     let title = 'BankID';
 
     if (suffix === 'same-device') {
-      if (language === 'en') subtitle = 'On this device';
-      if (language === 'da') subtitle = 'På denne enhed';
-      if (language === 'sv') subtitle = 'På denna enhet';
-      if (language === 'nb') subtitle = 'På denne enhet';
+      subtitle = i18n.sameDevice;
     }
     if (suffix === 'another-device') {
-      if (language === 'en') subtitle = 'With your SSN';
-      if (language === 'da') subtitle = 'Med dit personnummer';
-      if (language === 'sv') subtitle = 'Med ditt personnummer';
-      if (language === 'nb') subtitle = 'Med personnummeret ditt';
+      subtitle = i18n.anotherDevice;
     }
     if (suffix === 'another-device:qr') {
-      if (language === 'en') subtitle = 'On another device';
-      if (language === 'da') subtitle = 'På anden enhed';
-      if (language === 'sv') subtitle = 'På annan enhet';
-      if (language === 'nb') subtitle = 'På annan enhet';
+      subtitle = i18n.anotherDeviceQR;
     }
     if (disambiguate) {
-      if (language === 'en') title = `Swedish ${title}`;
-      if (language === 'da') title = `Svensk ${title}`;
-      if (language === 'sv') title = `Svenskt ${title}`;
-      if (language === 'nb') title = `Svensk ${title}`;
+      title = i18n.swedishBankID;
     }
 
     return { title, subtitle };
@@ -168,16 +133,10 @@ export function acrValueToTitle(
     let subtitle: string | undefined = undefined;
     let title = 'BankID';
     if (value.endsWith(':substantial')) {
-      if (language === 'en') subtitle = 'Biometrics';
-      if (language === 'da') subtitle = 'Biometri ';
-      if (language === 'sv') subtitle = 'Biometri';
-      if (language === 'nb') subtitle = 'Biometri';
+      subtitle = i18n.biometrics;
     }
     if (disambiguate) {
-      if (language === 'en') title = `Norwegian ${title}`;
-      if (language === 'da') title = `Norsk ${title}`;
-      if (language === 'sv') title = `Norska ${title}`;
-      if (language === 'nb') title = `Norsk ${title}`;
+      title = i18n.norwegianBankID;
     }
     return { title, subtitle };
   }
