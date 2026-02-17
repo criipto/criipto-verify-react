@@ -10,7 +10,7 @@ export const da = {
   anotherDevice: 'Med dit personnummer',
   anotherDeviceQR: 'På anden enhed',
   mitidBusiness: 'MitID Erhverv',
-  finnishMobileID: 'Finsk Mobil ID',
+  finnishMobileID: 'Finsk Mobilcertifikat',
   finnishBankID: 'Finsk Bank ID',
   swedishBankID: 'Svensk BankID',
   norwegianBankID: 'Norsk BankID',

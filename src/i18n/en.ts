@@ -8,7 +8,7 @@ export const en = {
   anotherDevice: 'With your SSN',
   anotherDeviceQR: 'On another device',
   mitidBusiness: 'MitID Business',
-  finnishMobileID: 'Finnish Mobile ID',
+  finnishMobileID: 'Finnish Mobile Certificate',
   finnishBankID: 'Finnish Bank ID',
   swedishBankID: 'Swedish BankID',
   norwegianBankID: 'Norwegian BankID',
