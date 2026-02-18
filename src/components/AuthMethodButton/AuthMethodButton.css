@@ -18,6 +18,8 @@
   color: #fff;
   background: #604fed;
   cursor: pointer;
+
+  text-align: start;
 }
 
 @media (max-width: 320px) {

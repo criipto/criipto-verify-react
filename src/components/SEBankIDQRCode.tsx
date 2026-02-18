@@ -8,12 +8,13 @@ import React, {
 } from 'react';
 import { AuthorizeResponse, OAuth2Error, PKCE } from '@criipto/auth-js';
 import QRCode from 'qrcode';
-import { assertUnreachableLanguage, Language } from '../utils';
+import { type Language } from '../i18n';
 
 import CriiptoVerifyContext from '../context';
 
 import logo from './SEBankIDQRCode/logo@2x.png';
 import './SEBankIDQRCode/SEBankIDQRCode.css';
+import { getI18n } from '../i18n';
 
 interface Props {
   redirectUri?: string;
@@ -178,41 +179,11 @@ export default function SEBankIDQrCode(props: Props) {
     onError: handleError,
   });
 
-  const completingHelpText =
-    language === 'en'
-      ? 'Completing your login.'
-      : language == 'da'
-        ? 'Fuldfører dit login.'
-        : language == 'sv'
-          ? 'Slutför din inloggning.'
-          : language == 'nb'
-            ? 'Fullfører påloggingen.'
-            : assertUnreachableLanguage(language);
-  const initialHelpText =
-    language === 'en'
-      ? 'Open the BankID app on your mobile device and scan the QR code.'
-      : language == 'da'
-        ? 'Åben BankID appen på din telefon og scan QR koden.'
-        : language == 'sv'
-          ? 'Öppna BankID-appen på din mobila enhet och skanna QR-koden.'
-          : language == 'nb'
-            ? 'Åpne BankID-appen på mobilenheten din og skann QR-koden.'
-            : assertUnreachableLanguage(language);
-
-  const fullscreenHelpText =
-    language === 'en'
-      ? 'This is a BankID QR Code. You can click it to view it in full screen'
-      : language == 'da'
-        ? 'Dette er en BankID QR-kode. Du kan klikke på den for at se den i fuld skærm'
-        : language == 'sv'
-          ? 'Detta är en QR-kod från BankID. Du kan klicka på den för att visa den i fullskärm.'
-          : language == 'nb'
-            ? 'Dette er en BankID QR-kode. Du kan klikke på den for å se den i fullskjerm'
-            : assertUnreachableLanguage(language);
+  const i18n = getI18n(language);
 
   const imageElement = (
     <button
-      aria-label={fullscreenHelpText}
+      aria-label={i18n.thisIsTheQR}
       ref={wrapperRef}
       className="criipto-se-bankid-qr-canvas"
       onClick={() => setFullscreen((val) => !val)}
@@ -224,7 +195,7 @@ export default function SEBankIDQrCode(props: Props) {
   const qrElement = (
     <div className="criipto-se-bankid-qr">
       <aside className="criipto-se-bankid-qr--help-text">
-        {isCompleting ? completingHelpText : initialHelpText}
+        {isCompleting ? i18n.completingLogin : i18n.openAndScan}
         <img src={logo} />
       </aside>
 
