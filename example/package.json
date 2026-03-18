@@ -8,6 +8,7 @@
     "react-dom": "../node_modules/react-dom",
     "react-scripts": "5.0.1"
   },
+  "homepage": ".",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

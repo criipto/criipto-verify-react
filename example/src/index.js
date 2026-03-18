@@ -9,7 +9,7 @@ root.render(
   <React.StrictMode>
     <CriiptoVerifyProvider
       domain="samples.criipto.id"
-      clientID="urn:criipto:samples:criipto-verify-react"
+      clientID="urn:criipto:samples:criipto:verify-react"
       redirectUri="http://localhost:3000"
       sessionStore={window.localStorage}
     >
