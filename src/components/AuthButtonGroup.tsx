@@ -1,9 +1,9 @@
 import React, { createContext } from 'react';
 import {
   AuthMethodButtonContainer,
-  AuthMethodButtonContainerProps,
+  type AuthMethodButtonContainerProps,
   AuthMethodButtonComponent,
-  AuthMethodButtonComponentProps,
+  type AuthMethodButtonComponentProps,
 } from './AuthMethodButton';
 import SEBankIDQrCode from './SEBankIDQRCode';
 

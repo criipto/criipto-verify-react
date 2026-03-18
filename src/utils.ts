@@ -1,4 +1,4 @@
-import { Action } from './context';
+import type { Action } from './context';
 import { getI18n, type Language } from './i18n';
 
 declare var __VERSION__: string;

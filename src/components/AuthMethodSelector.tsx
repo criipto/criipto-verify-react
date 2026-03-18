@@ -1,10 +1,9 @@
-import { OpenIDConfiguration } from '@criipto/auth-js';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import CriiptoVerifyContext from '../context';
 import { getUserAgent } from '../device';
 import { filterAcrValues } from '../utils';
 import { type Language } from '../i18n';
-import { AuthMethodButtonContainer, AuthMethodButtonContainerProps } from './AuthMethodButton';
+import { AuthMethodButtonContainer, type AuthMethodButtonContainerProps } from './AuthMethodButton';
 
 import './AuthMethodSelector/AuthMethodSelector.css';
 import SEBankIDQrCode from './SEBankIDQRCode';

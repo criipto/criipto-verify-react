@@ -1,25 +1,25 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import CriiptoAuth, {
-  AuthorizeUrlParamsOptional,
+  type AuthorizeUrlParamsOptional,
   clearPKCEState,
   generatePKCE,
   OAuth2Error,
   OpenIDConfiguration,
-  PKCE,
-  PKCEPublicPart,
-  Prompt,
+  type PKCE,
+  type PKCEPublicPart,
+  type Prompt,
   parseAuthorizeResponseFromLocation,
 } from '@criipto/auth-js';
 
 import CriiptoVerifyContext, {
-  CriiptoVerifyContextInterface,
-  Action,
-  Result,
-  Claims,
+  type CriiptoVerifyContextInterface,
+  type Action,
+  type Result,
+  type Claims,
   actions,
-  ResultSource,
+  type ResultSource,
 } from './context';
-import {
+import type {
   AuthorizeResponse,
   RedirectAuthorizeParams,
   ResponseType,

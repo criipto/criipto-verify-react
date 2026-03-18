@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import usePageVisibility from '../../hooks/usePageVisibility';
-import { Links } from './shared';
+import type { Links } from './shared';
 import { usePoll } from './usePoll';
 
 interface Props {

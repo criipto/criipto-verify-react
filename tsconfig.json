@@ -5,7 +5,7 @@
     "jsx": "react-jsx",
     "module": "es2015",
     "moduleResolution": "bundler",
-    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true

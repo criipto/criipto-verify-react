@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import CriiptoVerifyContext from '../../context';
-import { Links } from './shared';
+import type { Links } from './shared';
 import { usePoll } from './usePoll';
 
 interface Props {
