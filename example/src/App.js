@@ -6,7 +6,7 @@ import Loading from './Loading';
 import Dashboard from './Dashboard';
 import Footer from './Footer';
 import './App.css';
-import '@criipto/verify-react/dist/criipto-verify-react.css';
+import '@criipto/verify-react/index.css';
 
 function App() {
   const { claims, isLoading, logout, error } = useCriiptoVerify();
