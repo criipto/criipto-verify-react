@@ -8,6 +8,7 @@ import ForegroundStrategy from './SEBankIDSameDeviceButton/Foreground';
 import ReloadStrategy from './SEBankIDSameDeviceButton/Reload';
 
 import { autoHydratedState, type Links } from './SEBankIDSameDeviceButton/shared';
+import { Spinner } from './Spinner/Spinner';
 
 interface Props {
   className: string;
@@ -242,7 +243,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     >
       {initiated ? (
         <div className="criipto-eid-logo">
-          <div className="criipto-eid-loader"></div>
+          <Spinner />
         </div>
       ) : (
         props.logo

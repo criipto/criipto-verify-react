@@ -48,6 +48,11 @@ export default {
       type: 'boolean',
       defaultValue: false,
     },
+    loading: {
+      name: 'Loading',
+      type: 'boolean',
+      defaultValue: false,
+    },
   },
 } as Meta<typeof AuthMethodButtonContainer>;
 
