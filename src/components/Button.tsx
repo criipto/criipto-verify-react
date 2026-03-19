@@ -1,15 +1,18 @@
 import React from 'react';
+import classNames from 'classnames';
 
 interface ButtonProps {
   className?: string;
   children: React.ReactNode;
   onClick?: React.MouseEventHandler;
+  disabled?: boolean;
 }
 export function AnchorButton(props: AnchorButtonProps) {
   return (
     <a
-      className={`criipto-verify-button ${props.className}`}
+      className={classNames(`criipto-verify-button`, props.className)}
       href={props.href}
+      aria-disabled={props.disabled}
       onClick={props.onClick}
     >
       {props.children}
@@ -23,8 +26,9 @@ interface AnchorButtonProps extends ButtonProps {
 export function Button(props: ButtonProps) {
   return (
     <button
-      className={`criipto-verify-button ${props.className}`}
+      className={classNames(`criipto-verify-button`, props.className)}
       type="button"
+      disabled={props.disabled}
       onClick={props.onClick}
     >
       {props.children}
