@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import type { StoryFn, Meta } from '@storybook/react';
 
 import QRCode from '../QRCode';
 import CriiptoVerifyProvider from '../../provider';
@@ -76,9 +75,9 @@ export default {
       defaultValue: undefined,
     },
   },
-} as ComponentMeta<typeof QRCode>;
+} as Meta<typeof QRCode>;
 
-const Template: ComponentStory<typeof QRCode> = (args, { globals }) => {
+const Template: StoryFn<typeof QRCode> = (args, { globals }) => {
   return (
     <CriiptoVerifyProvider
       completionStrategy={(args as any).completionStrategy}

@@ -1,5 +1,4 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import type { StoryFn, Meta } from '@storybook/react';
 
 import AuthMethodSelector from '../AuthMethodSelector';
 import CriiptoVerifyProvider from '../../provider';
@@ -89,9 +88,9 @@ export default {
       defaultValue: false,
     },
   },
-} as ComponentMeta<typeof AuthMethodSelector>;
+} as Meta<typeof AuthMethodSelector>;
 
-const Template: ComponentStory<typeof AuthMethodSelector> = (args, { globals }) => {
+const Template: StoryFn<typeof AuthMethodSelector> = (args, { globals }) => {
   return (
     <CriiptoVerifyProvider
       completionStrategy={(args as any).completionStrategy}
