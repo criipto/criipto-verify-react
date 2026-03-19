@@ -305,10 +305,19 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
     [client, buildOptions],
   );
 
+  const initializePAR = useCallback(
+    async (options?: AuthorizeUrlParamsOptional) => {
+      return (
+        await client.pushAuthorizationRequest(client.buildAuthorizeParams(buildOptions(options)))
+      ).authorizeUrl;
+    },
+    [client, buildOptions],
+  );
+
   const handleResponse = useCallback(
     async (
       response: AuthorizeResponse | (Error | OAuth2Error),
-      params: { pkce?: PKCE; redirectUri?: string; source?: ResultSource },
+      params: { pkce?: PKCE; redirectUri?: string; source?: ResultSource } = {},
     ) => {
       if (response instanceof OAuth2Error) {
         setResult(response);
@@ -404,6 +413,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
       logout,
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl,
+      initializePAR,
       generatePKCE: async () => {
         if (responseType !== 'token' || completionStrategy !== 'client') return;
         return await generatePKCE();
