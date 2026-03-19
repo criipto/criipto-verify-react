@@ -19,11 +19,7 @@ import CriiptoVerifyContext, {
   actions,
   type ResultSource,
 } from './context';
-import type {
-  AuthorizeResponse,
-  RedirectAuthorizeParams,
-  ResponseType,
-} from '@criipto/auth-js/dist/types';
+import type { AuthorizeResponse, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js';
 
 import { filterAcrValues, trySessionStorage, VERSION } from './utils';
 import jwtDecode from 'jwt-decode';

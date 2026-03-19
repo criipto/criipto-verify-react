@@ -6,7 +6,7 @@ import CriiptoAuth, {
   OAuth2Error,
   type PKCEPublicPart,
 } from '@criipto/auth-js';
-import type { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
+import type { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js';
 import { createContext } from 'react';
 
 export type ResultSource =

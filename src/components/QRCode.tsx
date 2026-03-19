@@ -1,5 +1,10 @@
-import { OAuth2Error, savePKCEState, UserCancelledError } from '@criipto/auth-js';
-import type CriiptoConfiguration from '@criipto/auth-js/dist/CriiptoConfiguration';
+import {
+  OAuth2Error,
+  savePKCEState,
+  UserCancelledError,
+  type CriiptoConfiguration,
+} from '@criipto/auth-js';
+
 import React, {
   useContext,
   useRef,
