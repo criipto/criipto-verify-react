@@ -51,8 +51,10 @@ export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps)
   const standalone = !group.multiple || isSingle(props.acrValue, group.acrValues);
   const language = (props.language ?? 'en') as Language;
   const action = (props.action ?? 'login') as Action;
+
+  const disabled = (props.disabled || group.disabled) && !props.loading;
   const className = classNames(`criipto-eid-btn`, acrValueToClassName(acrValue), props.className, {
-    'criipto-eid-btn--disabled': props.disabled,
+    'criipto-eid-btn--disabled': disabled,
     'criipto-eid-btn--loading': props.loading,
   });
 
@@ -74,17 +76,20 @@ export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps)
     </React.Fragment>
   );
 
+  const commonProps = {
+    ...props,
+    className,
+    disabled,
+  };
   const button = href ? (
     <React.Fragment>
-      <AnchorButton {...props} href={href} className={className} onClick={props.onClick}>
+      <AnchorButton {...commonProps} href={href}>
         {inner}
       </AnchorButton>
     </React.Fragment>
   ) : (
     <React.Fragment>
-      <Button {...props} className={className} onClick={props.onClick}>
-        {inner}
-      </Button>
+      <Button {...commonProps}>{inner}</Button>
     </React.Fragment>
   );
 
@@ -167,6 +172,7 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
 
     if (!event.isDefaultPrevented()) {
       setLoading(true);
+      group.setDisabled(true);
       initializePAR({
         redirectUri,
         acrValues: acrValue,
@@ -177,6 +183,7 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
         })
         .catch((error) => {
           setLoading(false);
+          group.setDisabled(false);
           context.handleResponse(error);
         });
     }
@@ -214,6 +221,7 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
         className={className}
         userAgent={props.userAgent}
         logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
+        disabled={props.disabled}
       >
         <span>{contents}</span>
       </SEBankIDSameDeviceButton>
