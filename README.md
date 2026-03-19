@@ -46,7 +46,7 @@ Use the `useCriiptoVerify` hook + the `AuthMethodSelector` component in your Rea
 // src/App.js
 import React from 'react';
 import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
-import '@criipto/verify-react/dist/criipto-verify-react.css';
+import '@criipto/verify-react/index.css';
 
 export default function App() {
   const { result } = useCriiptoVerify();

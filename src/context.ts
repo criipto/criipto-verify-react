@@ -1,12 +1,12 @@
 import CriiptoAuth, {
   OpenIDConfiguration,
-  AuthorizeUrlParamsOptional,
-  PKCE,
-  AuthorizeResponse,
+  type AuthorizeUrlParamsOptional,
+  type PKCE,
+  type AuthorizeResponse,
   OAuth2Error,
-  PKCEPublicPart,
+  type PKCEPublicPart,
 } from '@criipto/auth-js';
-import { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
+import type { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
 import { createContext } from 'react';
 
 export type ResultSource =

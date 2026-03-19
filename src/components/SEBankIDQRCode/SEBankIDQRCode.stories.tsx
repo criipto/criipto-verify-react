@@ -1,5 +1,5 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import type { StoryFn, Meta } from '@storybook/react';
 
 import SEBankIDQRCode from '../SEBankIDQRCode';
 import CriiptoVerifyProvider from '../../provider';
@@ -33,9 +33,9 @@ export default {
       options: ['token', 'code'],
     },
   },
-} as ComponentMeta<typeof SEBankIDQRCode>;
+} as Meta<typeof SEBankIDQRCode>;
 
-const DefaultTemplate: ComponentStory<typeof SEBankIDQRCode> = (args, { globals }) => {
+const DefaultTemplate: StoryFn<typeof SEBankIDQRCode> = (args, { globals }) => {
   return (
     <CriiptoVerifyProvider
       completionStrategy={(args as any).completionStrategy}
@@ -57,7 +57,7 @@ const DefaultTemplate: ComponentStory<typeof SEBankIDQRCode> = (args, { globals 
 
 export const Default = DefaultTemplate.bind({});
 
-const CustomRendererTemplate: ComponentStory<typeof SEBankIDQRCode> = (args, { globals }) => {
+const CustomRendererTemplate: StoryFn<typeof SEBankIDQRCode> = (args, { globals }) => {
   return (
     <CriiptoVerifyProvider
       completionStrategy={(args as any).completionStrategy}

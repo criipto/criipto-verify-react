@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import './AuthMethodButton/AuthMethodButton.css';
-import CriiptoVerifyContext, { Action } from '../context';
+import CriiptoVerifyContext, { type Action } from '../context';
 import SEBankIDSameDeviceButton from './SEBankIDSameDeviceButton';
 import { savePKCEState } from '@criipto/auth-js';
-import AuthMethodButtonLogo, { AuthMethodButtonLogoProps } from './AuthMethodButton/Logo';
+import AuthMethodButtonLogo, { type AuthMethodButtonLogoProps } from './AuthMethodButton/Logo';
 import { AnchorButton, Button } from './Button';
 import { acrValueToTitle, isAmbiguous, isSingle, stringifyAction } from '../utils';
 import { AuthButtonGroupContext } from './AuthButtonGroup';

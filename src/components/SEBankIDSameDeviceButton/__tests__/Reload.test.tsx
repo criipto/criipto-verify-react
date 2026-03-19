@@ -2,8 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import ReloadStrategy from '../Reload';
-import { Links, clearState } from '../shared';
-import { determineStrategy } from '../../SEBankIDSameDeviceButton';
+import { type Links, clearState } from '../shared';
 import { describe, beforeEach, it, vi, expect } from 'vitest';
 
 describe('SEBankID/SameDevice/ReloadStrategy', function () {

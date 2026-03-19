@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { useEffect } from 'react';
 
 import '../index.css';
 import CriiptoVerifyProvider from '../provider';

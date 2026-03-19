@@ -1,4 +1,4 @@
-import { I18N } from '.';
+import type { I18N } from '.';
 
 export const fi = {
   loginWith: 'Kirjaudu sisään',

@@ -1,12 +1,5 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
-import { AuthorizeResponse, OAuth2Error, PKCE } from '@criipto/auth-js';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { type AuthorizeResponse, OAuth2Error, type PKCE } from '@criipto/auth-js';
 import QRCode from 'qrcode';
 import { type Language } from '../i18n';
 

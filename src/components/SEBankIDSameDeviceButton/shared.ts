@@ -1,4 +1,4 @@
-import { PKCE } from '@criipto/auth-js';
+import type { PKCE } from '@criipto/auth-js';
 import { createMemoryStorage } from '../../memory-storage';
 import { trySessionStorage } from '../../utils';
 

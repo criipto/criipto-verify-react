@@ -1,4 +1,4 @@
-import { PKCE, AuthorizeResponse } from '@criipto/auth-js';
+import type { PKCE, AuthorizeResponse } from '@criipto/auth-js';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import CriiptoVerifyContext from '../context';
 import { getUserAgent } from '../device';
@@ -7,7 +7,7 @@ import PollStrategy from './SEBankIDSameDeviceButton/Poll';
 import ForegroundStrategy from './SEBankIDSameDeviceButton/Foreground';
 import ReloadStrategy from './SEBankIDSameDeviceButton/Reload';
 
-import { autoHydratedState, Links } from './SEBankIDSameDeviceButton/shared';
+import { autoHydratedState, type Links } from './SEBankIDSameDeviceButton/shared';
 
 interface Props {
   className: string;

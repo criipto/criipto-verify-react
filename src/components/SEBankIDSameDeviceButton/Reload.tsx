@@ -1,6 +1,6 @@
-import { PKCE } from '@criipto/auth-js';
+import type { PKCE } from '@criipto/auth-js';
 import React, { useEffect, useState } from 'react';
-import { Links, saveState, hydrateState, clearState } from './shared';
+import { type Links, saveState, hydrateState, clearState } from './shared';
 
 interface Props {
   children: React.ReactElement;

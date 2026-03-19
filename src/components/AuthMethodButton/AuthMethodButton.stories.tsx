@@ -1,13 +1,12 @@
 import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import type { StoryFn, Meta } from '@storybook/react';
 
 import {
   AuthMethodButtonContainer,
   AuthMethodButtonComponent,
-  PopupParams,
+  type PopupParams,
 } from '../AuthMethodButton';
 import CriiptoVerifyProvider from '../../provider';
-import { acrValueToTitle } from '../../utils';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
 import customLogo from './logos/ftnmobile@2x.png';
@@ -45,7 +44,7 @@ export default {
       defaultValue: undefined,
     },
   },
-} as ComponentMeta<typeof AuthMethodButtonContainer>;
+} as Meta<typeof AuthMethodButtonContainer>;
 
 function tryBase64Decode(input?: string) {
   if (!input) return null;
@@ -60,7 +59,7 @@ function tryBase64Decode(input?: string) {
 }
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const ContainerTemplate: ComponentStory<typeof AuthMethodButtonContainer> = (args, { globals }) => {
+const ContainerTemplate: StoryFn<typeof AuthMethodButtonContainer> = (args, { globals }) => {
   const loginHint = tryBase64Decode((args as any).loginHint) ?? (args as any).loginHint;
 
   return (
@@ -144,7 +143,7 @@ PopupCustom.args = {
 };
 PopupCustom.storyName = 'Popup - Custom react backdrop';
 
-const ComponentTemplate: ComponentStory<typeof AuthMethodButtonComponent> = (args, { globals }) => {
+const ComponentTemplate: StoryFn<typeof AuthMethodButtonComponent> = (args, { globals }) => {
   return (
     <div style={{ display: 'flex', flexFlow: 'column', gap: '5px' }}>
       {[
@@ -188,10 +187,7 @@ export const Components = ComponentTemplate.bind({});
 Components.args = {};
 Components.storyName = 'As components only';
 
-const GroupedComponentTemplate: ComponentStory<typeof AuthMethodButtonComponent> = (
-  args,
-  { globals },
-) => {
+const GroupedComponentTemplate: StoryFn<typeof AuthMethodButtonComponent> = (args, { globals }) => {
   return (
     <div style={{ display: 'flex', flexFlow: 'column', gap: '5px' }}>
       <AuthButtonGroup>
