@@ -224,6 +224,24 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
   }, [client]);
 
   const [result, setResult] = useState<Result | null>(null);
+
+  // Verify that domain and client id are valid; surface failures as the hook's `error`.
+  useEffect(() => {
+    let isSubscribed = true;
+    (async () => {
+      try {
+        await client.fetchCriiptoConfiguration();
+      } catch (error) {
+        if (!isSubscribed) return;
+        const err = error instanceof Error ? error : new Error(String(error));
+        setResult((prev) => prev ?? err);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [client]);
   const claims = useMemo(() => {
     if (!result) return null;
     if (!('id_token' in result)) return null;
