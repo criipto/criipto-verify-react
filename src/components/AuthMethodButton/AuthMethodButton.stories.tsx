@@ -9,7 +9,7 @@ import {
 import CriiptoVerifyProvider from '../../provider';
 import StoryResponseRenderer from '../../stories/StoryResponseRenderer';
 
-import customLogo from './logos/ftnmobile@2x.png';
+import customLogo from './logos/ftnmobile.png';
 import AuthButtonGroup from '../AuthButtonGroup';
 
 export default {

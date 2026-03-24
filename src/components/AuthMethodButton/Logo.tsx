@@ -1,14 +1,16 @@
 import React from 'react';
-import dkmitid from './logos/dkmitid@2x.png';
-import ftnmobile from './logos/ftnmobile@2x.png';
-import itsme from './logos/itsme@2x.png';
-import nobankid from './logos/nobankid@2x.png';
-import novipps from './logos/novipps@2x.png';
-import sebankid from './logos/sebankid@2x.png';
-import sefrejaid from './logos/sefrejaid@2x.png';
-import depersonalausweis from './logos/depersonalausweis@2x.png';
-import ukoneid from './logos/ukoneid@2x.png';
-import idin from './logos/idin@2x.png';
+import dkmitid from './logos/dkmitid.png';
+import dkmitiderhverv from './logos/dkmitiderhverv.png';
+import ftnmobile from './logos/ftnmobile.png';
+import itsme from './logos/itsme.png';
+import nobankid from './logos/nobankid.png';
+import novipps from './logos/novipps.png';
+import sebankid from './logos/sebankid.png';
+import sefrejaid from './logos/sefrejaid.png';
+import depersonalausweis from './logos/depersonalausweis.png';
+import ukoneid from './logos/ukoneid.png';
+import idin from './logos/idin.png';
+import ftn from './logos/ftn.png';
 
 export interface AuthMethodButtonLogoProps {
   acrValue: string;
@@ -36,11 +38,17 @@ export default function AuthMethodButtonLogo(props: AuthMethodButtonLogoProps) {
 }
 
 function acrValueToLogo(value: string) {
+  if (value.startsWith('urn:grn:authn:dk:mitid:business')) {
+    return dkmitiderhverv;
+  }
   if (value.startsWith('urn:grn:authn:dk:mitid')) {
     return dkmitid;
   }
   if (value.startsWith('urn:grn:authn:fi:mobile')) {
     return ftnmobile;
+  }
+  if (value.startsWith('urn:grn:authn:fi')) {
+    return ftn;
   }
   if (value.startsWith('urn:grn:authn:itsme')) {
     return itsme;
