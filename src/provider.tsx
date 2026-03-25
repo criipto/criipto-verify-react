@@ -216,15 +216,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
 
   const [configuration, setConfiguration] = useState<OpenIDConfiguration | null>(null);
   useEffect(() => {
-    let isSubscribed = true;
-    (async () => {
-      const configuration = await client.fetchOpenIDConfiguration();
-      if (isSubscribed) setConfiguration(configuration);
-    })();
-
-    return () => {
-      isSubscribed = false;
-    };
+    client.fetchOpenIDConfiguration().then(setConfiguration);
   }, [client]);
 
   const [result, setResult] = useState<Result | null>(null);
@@ -460,7 +452,6 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
       return;
     }
 
-    let isSubscribed = true;
     setIsLoading(true);
 
     const params = parseAuthorizeResponseFromLocation(window.location);
@@ -473,11 +464,9 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
 
     (async () => {
       await Promise.resolve(); // wait for the initial cleanup in Strict mode - avoids double mutation
-      if (!isSubscribed) return;
 
       try {
         const response = await client.redirect.match();
-        if (!isSubscribed) return;
 
         if (response?.code) {
           setResult({ code: response.code, source: 'redirect', state: response.state });
@@ -487,7 +476,6 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
           resetRedirectState(window);
         } else setResult(null);
       } catch (err: any) {
-        if (!isSubscribed) return;
         if (err instanceof OAuth2Error) {
           setResult(err);
         } else if (err instanceof Error) {
@@ -496,15 +484,10 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
           setResult(new Error(err?.toString() ?? 'Unknown error ocurred'));
         }
       } finally {
-        if (!isSubscribed) return;
         setIsLoading(false);
         refreshPKCE(); // Clear out session storage and recreate PKCE values if being used
       }
     })();
-
-    return () => {
-      isSubscribed = false;
-    };
   }, [props.pkce, responseType]);
 
   /*
@@ -549,7 +532,6 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
     if (!sessionStore) return;
     if (client.redirect.hasMatch()) return; // Do not issue SSO check if we're just being redirected back to
     if (sessionStore.getItem(SESSION_KEY)) return;
-    let isSubscribed = true;
 
     setIsLoading(true);
     checkSession()
@@ -557,12 +539,8 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
         console.error('session silent check error', err);
       })
       .finally(() => {
-        if (isSubscribed) setIsLoading(false);
+        setIsLoading(false);
       });
-
-    return () => {
-      isSubscribed = false;
-    };
   }, [sessionStore, client]);
 
   return (

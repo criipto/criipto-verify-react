@@ -60,16 +60,7 @@ const QRCode: React.FC<{
   const acrValues = props.acrValues ?? configurationAcrValues ?? [];
 
   useEffect(() => {
-    let isSubsribed = true;
-
-    client.fetchCriiptoConfiguration().then((c) => {
-      if (!isSubsribed) return;
-      setCriiptoConfiguration(c);
-    });
-
-    return () => {
-      isSubsribed = false;
-    };
+    client.fetchCriiptoConfiguration().then(setCriiptoConfiguration);
   }, [client]);
 
   const redirect = useCallback(async () => {

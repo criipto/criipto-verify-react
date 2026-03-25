@@ -235,7 +235,6 @@ export function useDraw(qrCode: string | null, options: UseDrawOptions) {
   useEffect(() => {
     if (!qrCode) return;
 
-    let isSubscribed = true;
     (async () => {
       const qrImage = await QRCode.toDataURL(qrCode, {
         errorCorrectionLevel: 'low',
@@ -244,13 +243,8 @@ export function useDraw(qrCode: string | null, options: UseDrawOptions) {
         margin: qrMargin ?? 4,
       });
 
-      if (!isSubscribed) return;
       setDataURL(qrImage);
     })();
-
-    return () => {
-      isSubscribed = false;
-    };
   }, [qrCode, qrMargin, width]);
 
   return dataURL;
@@ -270,12 +264,9 @@ export function usePoll(pollUrl: string | null, options: UsePollOptions) {
 
     const delay = 2500;
     let timeout: any;
-    let isSubscribed = true;
     const poll = async () => {
-      if (!isSubscribed) return;
       const response = await fetch(pollUrl);
 
-      if (!isSubscribed) return;
       if (response.status < 400) {
         const payload = (await response.json()) as PollResponse;
         if (payload.qrCode) onQrCode(payload.qrCode);
@@ -295,7 +286,6 @@ export function usePoll(pollUrl: string | null, options: UsePollOptions) {
 
     timeout = setTimeout(poll, delay);
     return () => {
-      isSubscribed = false;
       clearTimeout(timeout);
     };
   }, [pollUrl, onQrCode, onComplete, onError, enabled]);

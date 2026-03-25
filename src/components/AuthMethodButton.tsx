@@ -117,23 +117,13 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
   useEffect(() => {
     if (props.href) return;
 
-    let isSubscribed = true;
-    let loginHint: string | undefined = undefined;
-
     buildAuthorizeUrl({
       redirectUri,
       acrValues: acrValue,
-      loginHint,
     })
-      .then((href) => {
-        if (isSubscribed) setHref(href);
-      })
+      .then(setHref)
       .catch(console.error);
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [props.href, buildAuthorizeUrl, acrValue, context.pkce, redirectUri]);
+  }, [props.href, setHref, buildAuthorizeUrl, acrValue, context.pkce, redirectUri]);
 
   const handleClick: React.MouseEventHandler = (event) => {
     if (props.href) return;
