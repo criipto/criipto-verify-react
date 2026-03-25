@@ -24,8 +24,8 @@
     "prepare": "husky"
   },
   "peerDependencies": {
-    "react": "^16.11.0 || ^17 || ^18 || ^19",
-    "react-dom": "^16.11.0 || ^17 || ^18 || ^19"
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
   },
   "devDependencies": {
     "@storybook/react": "^10.3.0",
