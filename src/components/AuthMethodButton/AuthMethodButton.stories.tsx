@@ -43,6 +43,16 @@ export default {
       control: 'text',
       defaultValue: undefined,
     },
+    disabled: {
+      name: 'Disabled',
+      type: 'boolean',
+      defaultValue: false,
+    },
+    loading: {
+      name: 'Loading',
+      type: 'boolean',
+      defaultValue: false,
+    },
   },
 } as Meta<typeof AuthMethodButtonContainer>;
 

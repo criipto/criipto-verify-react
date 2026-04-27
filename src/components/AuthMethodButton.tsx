@@ -9,6 +9,8 @@ import { AnchorButton, Button } from './Button';
 import { acrValueToTitle, isAmbiguous, isSingle, stringifyAction } from '../utils';
 import { AuthButtonGroupContext } from './AuthButtonGroup';
 import { type Language } from '../i18n';
+import { Spinner } from './Spinner/Spinner';
+import classNames from 'classnames';
 
 export type PopupParams = {
   acrValue: string;
@@ -36,6 +38,8 @@ export interface AuthMethodButtonComponentProps {
    * Impacts the button text rendered if no text is provided via props.children
    */
   action?: Action;
+  disabled?: boolean;
+  loading?: boolean;
 }
 
 /**
@@ -47,9 +51,10 @@ export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps)
   const standalone = !group.multiple || isSingle(props.acrValue, group.acrValues);
   const language = (props.language ?? 'en') as Language;
   const action = (props.action ?? 'login') as Action;
-  const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${
-    props.className ? ` ${props.className}` : ''
-  }`;
+  const className = classNames(`criipto-eid-btn`, acrValueToClassName(acrValue), props.className, {
+    'criipto-eid-btn--disabled': props.disabled,
+    'criipto-eid-btn--loading': props.loading,
+  });
 
   const { title, subtitle } = acrValueToTitle(language, acrValue, {
     disambiguate: isAmbiguous(acrValue, group.acrValues),
@@ -64,7 +69,7 @@ export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps)
 
   const inner = (
     <React.Fragment>
-      <AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />
+      <AuthMethodButtonLogo acrValue={acrValue} logo={props.loading ? <Spinner /> : props.logo} />
       <span>{contents}</span>
     </React.Fragment>
   );
