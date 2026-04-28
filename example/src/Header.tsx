@@ -1,7 +1,13 @@
 import React from 'react';
+import type { useCriiptoVerify } from '@criipto/verify-react';
 import './App.css';
 
-function Header({ handleLogout, user }) {
+interface HeaderProps {
+  handleLogout: () => void;
+  user: ReturnType<typeof useCriiptoVerify>['claims'];
+}
+
+function Header({ handleLogout, user }: HeaderProps) {
   return (
     <header className="App-header">
       <p>Example Pension App</p>
