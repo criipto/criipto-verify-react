@@ -1,7 +1,16 @@
 import React from 'react';
+import type { useCriiptoVerify } from '@criipto/verify-react';
 import './App.css';
 
-function Dashboard({ user: { name, birthdate, country, cprNumberIdentifier, iat } }) {
+type Claims = NonNullable<ReturnType<typeof useCriiptoVerify>['claims']>;
+
+interface DashboardProps {
+  user: Claims;
+}
+
+function Dashboard({
+  user: { name, birthdate, country, cprNumberIdentifier, iat },
+}: DashboardProps) {
   return (
     <div className="user-dashboard main">
       <h2>Welcome to your savings dashboard, {name}</h2>

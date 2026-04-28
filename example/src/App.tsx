@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
+import { useCriiptoVerify, AuthMethodSelector, OAuth2Error } from '@criipto/verify-react';
 import Header from './Header';
 import Login from './Login';
 import Loading from './Loading';
@@ -12,7 +12,7 @@ function App() {
   const { claims, isLoading, logout, error } = useCriiptoVerify();
 
   const handleLogout = () => {
-    logout('http://localhost:3000');
+    logout({ redirectUri: 'http://localhost:3000' });
   };
 
   return (
@@ -21,7 +21,10 @@ function App() {
       {isLoading && <Loading />}
       {error ? (
         <p>
-          An error occurred: {error.error} ({error.error_description})
+          An error occurred:{' '}
+          {error instanceof OAuth2Error
+            ? `${error.error} (${error.error_description})`
+            : String(error)}
         </p>
       ) : null}
       {claims ? (
