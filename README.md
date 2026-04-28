@@ -66,6 +66,15 @@ export default function App() {
 
 Always render the `error` field from `useCriiptoVerify`. It surfaces both **configuration errors** (e.g. invalid `domain` or `clientID`, or CORS) raised when the provider mounts, and **runtime errors** raised during a login attempt (e.g. user cancellation, OAuth2 errors from the IdP). Without rendering `error`, misconfiguration and failed logins will appear silent to the user.
 
+## CORS
+
+The library makes fetch requests to Criipto for two reasons:
+
+1. To load application configuration when the provider mounts.
+2. To push the authorization request (PAR) when a user clicks a login button.
+
+Make sure that the origin your React app runs on is included in the list of callback URLs for your application. Otherwise, both calls will fail with CORS errors.
+
 ## Sessions
 
 If you want to use `@criipto/verify-react` for session management (rather than one-off authentication) you can configure a `sessionStore`:
@@ -154,10 +163,6 @@ useEffect(() => {
   loginWithRedirect();
 }, [isLoading, isInitializing]);
 ```
-
-## XHR/fetch caveats
-
-The library may require to do fetch requests against Criipto to fetch application configuration. Make sure that the host that the React app runs on is included in the list of callback URLs for your application. Otherwise, you will encounter CORS errors.
 
 ## Criipto
 
