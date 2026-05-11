@@ -1,4 +1,4 @@
-import UAParser from 'ua-parser-js';
+import { UAParser } from '@ua-parser-js/pro-enterprise';
 
 function testUA(userAgent: string, pattern: RegExp) {
   return pattern.test(navigator.userAgent);

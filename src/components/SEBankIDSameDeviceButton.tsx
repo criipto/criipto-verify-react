@@ -48,7 +48,7 @@ export function determineStrategy(
   const iOSSafari =
     mobileOS === 'iOS' && userAgent?.browser.name?.includes('Safari') ? true : false;
   const androidChrome =
-    mobileOS === 'android' && userAgent?.browser.name === 'Chrome' ? true : false;
+    mobileOS === 'android' && userAgent?.browser.name === 'Mobile Chrome' ? true : false;
   const redirect = iOSSafari && !loginHint?.includes('appswitch:resumeUrl:disable');
 
   const resume: Resume = mobileOS ? (iOSSafari && redirect ? 'Reload' : 'Foreground') : 'Poll';
