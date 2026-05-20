@@ -6,7 +6,7 @@ import CriiptoAuth, {
   OAuth2Error,
   type PKCEPublicPart,
 } from '@criipto/auth-js';
-import type { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js/dist/types';
+import type { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js';
 import { createContext } from 'react';
 
 export type ResultSource =
@@ -40,13 +40,14 @@ export interface CriiptoVerifyContextInterface {
   logout: (params?: { redirectUri?: string; state?: string }) => Promise<void>;
   fetchOpenIDConfiguration: () => Promise<OpenIDConfiguration>;
   buildAuthorizeUrl: (options?: AuthorizeUrlParamsOptional) => Promise<string>;
+  initializePAR: (options?: AuthorizeUrlParamsOptional) => Promise<URL>;
   generatePKCE: () => Promise<PKCE | undefined>;
   buildOptions: (
     options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams,
   ) => AuthorizeUrlParamsOptional;
   handleResponse: (
-    response: AuthorizeResponse,
-    params: { pkce?: PKCE; redirectUri?: string; source?: ResultSource },
+    response: AuthorizeResponse | (Error | OAuth2Error),
+    params?: { pkce?: PKCE; redirectUri?: string; source?: ResultSource },
   ) => Promise<void>;
   responseType: 'token' | 'code';
   completionStrategy: 'client' | 'openidprovider';
@@ -83,6 +84,7 @@ const initialContext = {
   logout: stub,
   fetchOpenIDConfiguration: stub,
   buildAuthorizeUrl: stub,
+  initializePAR: stub,
   generatePKCE: stub,
   buildOptions: stub,
   handleResponse: stub,

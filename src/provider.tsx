@@ -19,11 +19,7 @@ import CriiptoVerifyContext, {
   actions,
   type ResultSource,
 } from './context';
-import type {
-  AuthorizeResponse,
-  RedirectAuthorizeParams,
-  ResponseType,
-} from '@criipto/auth-js/dist/types';
+import type { AuthorizeResponse, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js';
 
 import { filterAcrValues, trySessionStorage, VERSION } from './utils';
 import jwtDecode from 'jwt-decode';
@@ -228,6 +224,24 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
   }, [client]);
 
   const [result, setResult] = useState<Result | null>(null);
+
+  // Verify that domain and client id are valid; surface failures as the hook's `error`.
+  useEffect(() => {
+    let isSubscribed = true;
+    (async () => {
+      try {
+        await client.fetchCriiptoConfiguration();
+      } catch (error) {
+        if (!isSubscribed) return;
+        const err = error instanceof Error ? error : new Error(String(error));
+        setResult((prev) => prev ?? err);
+      }
+    })();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [client]);
   const claims = useMemo(() => {
     if (!result) return null;
     if (!('id_token' in result)) return null;
@@ -309,10 +323,19 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
     [client, buildOptions],
   );
 
+  const initializePAR = useCallback(
+    async (options?: AuthorizeUrlParamsOptional) => {
+      return (
+        await client.pushAuthorizationRequest(client.buildAuthorizeParams(buildOptions(options)))
+      ).authorizeUrl;
+    },
+    [client, buildOptions],
+  );
+
   const handleResponse = useCallback(
     async (
       response: AuthorizeResponse | (Error | OAuth2Error),
-      params: { pkce?: PKCE; redirectUri?: string; source?: ResultSource },
+      params: { pkce?: PKCE; redirectUri?: string; source?: ResultSource } = {},
     ) => {
       if (response instanceof OAuth2Error) {
         setResult(response);
@@ -408,6 +431,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
       logout,
       fetchOpenIDConfiguration: () => client.fetchOpenIDConfiguration(),
       buildAuthorizeUrl,
+      initializePAR,
       generatePKCE: async () => {
         if (responseType !== 'token' || completionStrategy !== 'client') return;
         return await generatePKCE();

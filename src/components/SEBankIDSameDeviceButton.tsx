@@ -8,6 +8,8 @@ import ForegroundStrategy from './SEBankIDSameDeviceButton/Foreground';
 import ReloadStrategy from './SEBankIDSameDeviceButton/Reload';
 
 import { autoHydratedState, type Links } from './SEBankIDSameDeviceButton/shared';
+import { AuthButtonGroupContext } from './AuthButtonGroup';
+import classNames from 'classnames';
 import { Spinner } from './Spinner/Spinner';
 
 interface Props {
@@ -17,6 +19,7 @@ interface Props {
   fallback: React.ReactElement;
   redirectUri?: string;
   userAgent?: string;
+  disabled?: boolean;
 }
 
 function searchParamsToPOJO(input: URLSearchParams) {
@@ -79,6 +82,8 @@ async function fetchComplete(completeUrl: string) {
 }
 export default function SEBankIDSameDeviceButton(props: Props) {
   const { loginHint } = useContext(CriiptoVerifyContext);
+  const group = useContext(AuthButtonGroupContext);
+
   const rawUserAgent = typeof navigator !== 'undefined' ? navigator.userAgent : props.userAgent;
   const strategy = useMemo(
     () => determineStrategy(rawUserAgent, loginHint),
@@ -100,6 +105,8 @@ export default function SEBankIDSameDeviceButton(props: Props) {
     domain,
   } = useContext(CriiptoVerifyContext);
   const redirectUri = props.redirectUri || defaultRedirectURi;
+
+  const disabled = props.disabled || group.disabled || initiated;
 
   const reset = () => {
     setPKCE(undefined);
@@ -212,12 +219,14 @@ export default function SEBankIDSameDeviceButton(props: Props) {
 
   // Track when the button is clicked to stop refreshing URL
   const handleInitiate = () => {
+    group.setDisabled(true);
     handleLog('Initiated');
     setInitiated(true);
     setError(null);
   };
 
   const handleError = async (error: string) => {
+    group.setDisabled(false);
     setInitiated(false);
     setError(error);
 
@@ -237,7 +246,7 @@ export default function SEBankIDSameDeviceButton(props: Props) {
 
   const element = href ? (
     <a
-      className={`${props.className} ${initiated ? 'criipto-eid-btn--disabled' : ''}`}
+      className={classNames(props.className, { 'criipto-eid-btn--disabled': disabled })}
       href={href}
       onClick={handleInitiate}
     >

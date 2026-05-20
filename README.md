@@ -49,7 +49,7 @@ import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
 import '@criipto/verify-react/index.css';
 
 export default function App() {
-  const { result } = useCriiptoVerify();
+  const { result, error } = useCriiptoVerify();
 
   if (result?.id_token) {
     return <pre>{JSON.stringify(result.id_token, null, 2)}</pre>;
@@ -57,16 +57,23 @@ export default function App() {
 
   return (
     <React.Fragment>
-      {result?.error ? (
-        <p>
-          An error occurred: {result.error} ({result.error_description}). Please try again.
-        </p>
-      ) : null}
+      {error ? <p>An error occurred: {String(error)}. Please try again.</p> : null}
       <AuthMethodSelector />
     </React.Fragment>
   );
 }
 ```
+
+Always render the `error` field from `useCriiptoVerify`. It surfaces both **configuration errors** (e.g. invalid `domain` or `clientID`, or CORS) raised when the provider mounts, and **runtime errors** raised during a login attempt (e.g. user cancellation, OAuth2 errors from the IdP). Without rendering `error`, misconfiguration and failed logins will appear silent to the user.
+
+## CORS
+
+The library makes fetch requests to Criipto for two reasons:
+
+1. To load application configuration when the provider mounts.
+2. To push the authorization request (PAR) when a user clicks a login button.
+
+Make sure that the origin your React app runs on is included in the list of callback URLs for your application. Otherwise, both calls will fail with CORS errors.
 
 ## Sessions
 
@@ -102,7 +109,7 @@ You may wish to increase the "Token lifetime" setting of your Criipto Applicatio
 ```jsx
 // src/App.js
 import React from 'react';
-import { useCriiptoVerify, AuthMethodSelector } from '@criipto/verify-react';
+import { useCriiptoVerify, AuthMethodSelector, OAuth2Error } from '@criipto/verify-react';
 
 export default function App() {
   const { claims, error, isLoading } = useCriiptoVerify();
@@ -119,7 +126,11 @@ export default function App() {
     <React.Fragment>
       {error ? (
         <p>
-          An error occured: {error.error} ({error.error_description}). Please try again:
+          An error occured:{' '}
+          {error instanceof OAuth2Error
+            ? `${error.error} (${error.error_description})`
+            : String(error)}
+          . Please try again.
         </p>
       ) : null}
       <AuthMethodSelector />
@@ -152,10 +163,6 @@ useEffect(() => {
   loginWithRedirect();
 }, [isLoading, isInitializing]);
 ```
-
-## XHR/fetch caveats
-
-The library may require to do fetch requests against Criipto to fetch application configuration. Make sure that the host that the React app runs on is included in the list of callback URLs for your application. Otherwise, you will encounter CORS errors.
 
 ## Criipto
 

@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { createContext, useState } from 'react';
 import {
   AuthMethodButtonContainer,
   type AuthMethodButtonContainerProps,
@@ -10,10 +10,14 @@ import SEBankIDQrCode from './SEBankIDQRCode';
 interface AuthButtonGroupContextInterface {
   multiple: boolean;
   acrValues: string[];
+  disabled: boolean;
+  setDisabled: (disabled: boolean) => void;
 }
 const initialContext: AuthButtonGroupContextInterface = {
   multiple: false,
   acrValues: [],
+  disabled: false,
+  setDisabled: () => {},
 };
 export const AuthButtonGroupContext =
   createContext<AuthButtonGroupContextInterface>(initialContext);
@@ -36,10 +40,13 @@ export default function AuthButtonGroup(props: { children: React.ReactNode }) {
     }
     return [];
   });
+  const [disabled, setDisabled] = useState(false);
 
   const context: AuthButtonGroupContextInterface = {
     multiple: acrValues.length > 1,
     acrValues,
+    disabled,
+    setDisabled,
   };
   return (
     <AuthButtonGroupContext.Provider value={context}>
