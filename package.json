@@ -1,7 +1,7 @@
 {
   "name": "@criipto/verify-react",
   "private": false,
-  "version": "4.1.4",
+  "version": "5.0.0",
   "type": "module",
   "description": "Verify SDK for React Single Page Applications",
   "exports": {
