@@ -51,8 +51,10 @@ export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps)
   const standalone = !group.multiple || isSingle(props.acrValue, group.acrValues);
   const language = (props.language ?? 'en') as Language;
   const action = (props.action ?? 'login') as Action;
+
+  const disabled = (props.disabled || group.disabled) && !props.loading;
   const className = classNames(`criipto-eid-btn`, acrValueToClassName(acrValue), props.className, {
-    'criipto-eid-btn--disabled': props.disabled,
+    'criipto-eid-btn--disabled': disabled,
     'criipto-eid-btn--loading': props.loading,
   });
 
@@ -74,17 +76,20 @@ export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps)
     </React.Fragment>
   );
 
+  const commonProps = {
+    ...props,
+    className,
+    disabled,
+  };
   const button = href ? (
     <React.Fragment>
-      <AnchorButton {...props} href={href} className={className} onClick={props.onClick}>
+      <AnchorButton {...commonProps} href={href}>
         {inner}
       </AnchorButton>
     </React.Fragment>
   ) : (
     <React.Fragment>
-      <Button {...props} className={className} onClick={props.onClick}>
-        {inner}
-      </Button>
+      <Button {...commonProps}>{inner}</Button>
     </React.Fragment>
   );
 
@@ -108,37 +113,19 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
   const group = useContext(AuthButtonGroupContext);
   const standalone = !group.multiple || isSingle(props.acrValue, group.acrValues);
   const context = useContext(CriiptoVerifyContext);
-  const { buildAuthorizeUrl } = context;
+  const { initializePAR } = context;
   const language = (props.language ?? context.uiLocales ?? 'en') as Language;
   const action = (props.action ?? context.action ?? 'login') as Action;
   const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${
     props.className ? ` ${props.className}` : ''
   }`;
   const [backdrop, setBackdrop] = useState<React.ReactElement | null>(null);
-
-  const [href, setHref] = useState(props.href);
-  const redirectUri = props.redirectUri || context.redirectUri;
-
+  const [loading, setLoading] = useState<boolean>(props.loading ?? false);
   useEffect(() => {
-    if (props.href) return;
+    setLoading(props.loading ?? false);
+  }, [props.loading]);
 
-    let isSubscribed = true;
-    let loginHint: string | undefined = undefined;
-
-    buildAuthorizeUrl({
-      redirectUri,
-      acrValues: acrValue,
-      loginHint,
-    })
-      .then((href) => {
-        if (isSubscribed) setHref(href);
-      })
-      .catch(console.error);
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, [props.href, buildAuthorizeUrl, acrValue, context.pkce, redirectUri]);
+  const redirectUri = props.redirectUri || context.redirectUri;
 
   const handleClick: React.MouseEventHandler = (event) => {
     if (props.href) return;
@@ -182,11 +169,30 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
     }
 
     if (props.onClick) props.onClick(event);
+
+    if (!event.isDefaultPrevented()) {
+      setLoading(true);
+      group.setDisabled(true);
+      initializePAR({
+        redirectUri,
+        acrValues: acrValue,
+        loginHint: '',
+      })
+        .then((authorizeUrl) => {
+          window.location.href = authorizeUrl.toString();
+        })
+        .catch((error) => {
+          setLoading(false);
+          group.setDisabled(false);
+          context.handleResponse(error);
+        });
+    }
   };
 
   const { title, subtitle } = acrValueToTitle(language, acrValue, {
     disambiguate: isAmbiguous(acrValue, group.acrValues),
   });
+
   const contents = props.children ?? (
     <React.Fragment>
       {stringifyAction(language, action) ? `${stringifyAction(language, action)} ` : ''}
@@ -199,9 +205,9 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
     <React.Fragment>
       <AuthMethodButtonComponent
         {...props}
-        href={href}
         className={className}
         onClick={handleClick}
+        loading={loading}
       />
       {backdrop}
     </React.Fragment>
@@ -215,6 +221,7 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
         className={className}
         userAgent={props.userAgent}
         logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
+        disabled={props.disabled}
       >
         <span>{contents}</span>
       </SEBankIDSameDeviceButton>

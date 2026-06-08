@@ -20,7 +20,14 @@ export default function useCriiptoVerify() {
      * The claims of the decoded id_token (if available)
      */
     claims,
-    error: result && 'error' in result ? result : null,
+    /**
+     * Set when the provider failed to fetch configuration (e.g. invalid `domain`/`clientID`,
+     * or CORS), or when an authentication attempt failed (e.g. user cancellation, OAuth2 errors
+     * from the IdP). Always render this in your UI — failures are otherwise silent.
+     *
+     * `OAuth2Error` for IdP-returned errors, `Error` for everything else.
+     */
+    error: result && ('error' in result || result instanceof Error) ? result : null,
     loginWithRedirect,
     loginWithPopup,
     acrValues,
