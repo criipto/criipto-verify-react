@@ -20,7 +20,7 @@
     "check": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepublishOnly": "npm run check && npm run clean && npm run build",
+    "prepublishOnly": "npm run check && npm run build",
     "prepare": "husky"
   },
   "peerDependencies": {
