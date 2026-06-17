@@ -1,9 +1,6 @@
 import type { Action } from './context';
 import { getI18n, type Language } from './i18n';
 
-declare var __VERSION__: string;
-export const VERSION = typeof __VERSION__ === 'undefined' ? 'N/A' : __VERSION__;
-
 export const DKMITID_PREFIX = 'urn:grn:authn:dk:mitid';
 export const DKMITID_BUSINESS = 'urn:grn:authn:dk:mitid:business';
 export const FTN_PREFIX = 'urn:grn:authn:fi';

@@ -21,7 +21,8 @@ import CriiptoVerifyContext, {
 } from './context';
 import type { AuthorizeResponse, RedirectAuthorizeParams, ResponseType } from '@criipto/auth-js';
 
-import { filterAcrValues, trySessionStorage, VERSION } from './utils';
+import { version } from '../package.json';
+import { filterAcrValues, trySessionStorage } from './utils';
 import jwtDecode from 'jwt-decode';
 import { createMemoryStorage } from './memory-storage';
 
@@ -295,7 +296,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
                 criipto_sdk: props.criiptoSdk,
               }
             : {
-                criipto_sdk: `@criipto/verify-react@${VERSION}`,
+                criipto_sdk: `@criipto/verify-react@${version}`,
               },
       };
     },
