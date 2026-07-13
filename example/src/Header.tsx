@@ -10,7 +10,7 @@ interface HeaderProps {
 function Header({ handleLogout, user }: HeaderProps) {
   return (
     <header className="App-header">
-      <p>Example Pension App</p>
+      <h1>My Pension</h1>
       {user && (
         <button className="logout-btn" onClick={handleLogout}>
           Log Out

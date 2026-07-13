@@ -1,12 +1,24 @@
-# Example app with @criipto-verify-react
+# Example app with @criipto/verify-react
 
-`CriiptoVerifyProvider` is implemented in [src/index.js](src/index.js) and the primary app logic is in [src/App.js](src/App.js).
-You can run this sample app directly with example credentials, or use your own `domain`and `clientID` if you configure your application on the [Criipto Dashboard](https://dashboard.criipto.com/).
+A minimal app that logs users in with an eID and shows the [claims](https://docs.idura.app/verify/reference/glossary/#claims) from their [ID token](https://docs.idura.app/verify/reference/glossary/#id-token).
 
-_If using your own credentials, make sure to add the host that the app runs on in the list of callback URLs for your application._  
-_If using the default credentials, the app should run on `localhost:3000`._
+![Example app dashboard after login](./example-app-screenshot.png)
+
+`CriiptoVerifyProvider` is implemented in [src/index.tsx](src/index.tsx) and the primary app logic is in [src/App.tsx](src/App.tsx).
+
+## Running the app
+
+```sh
+npm install && npm start
+```
+
+The app is configured to run with the following example credentials:
 
 ```jsx
 domain = 'samples.criipto.id';
 clientID = 'urn:criipto:samples:criipto-verify-react';
 ```
+
+If using the default credentials, the app should run on `localhost:3000`.
+
+You can also run the app with your own [Idura application credentials](https://docs.idura.app/verify/getting-started/dashboard-setup/#register-an-application). To do so, update the `domain` and `clientID` values in [src/index.tsx](src/index.tsx) and make sure to add the host that the app runs on to the list of redirect URLs for your Idura application.
