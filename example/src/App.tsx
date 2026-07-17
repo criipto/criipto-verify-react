@@ -4,7 +4,6 @@ import Header from './Header';
 import Login from './Login';
 import Loading from './Loading';
 import Dashboard from './Dashboard';
-import Footer from './Footer';
 import './App.css';
 import '@criipto/verify-react/index.css';
 
@@ -34,7 +33,6 @@ function App() {
           <AuthMethodSelector />
         </Login>
       )}
-      <Footer />
     </React.Fragment>
   );
 }

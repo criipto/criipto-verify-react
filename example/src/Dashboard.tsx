@@ -8,31 +8,47 @@ interface DashboardProps {
   user: Claims;
 }
 
-function Dashboard({
-  user: { name, birthdate, country, cprNumberIdentifier, iat },
-}: DashboardProps) {
+function Dashboard({ user: { name, birthdate, country, cprNumberIdentifier } }: DashboardProps) {
+  const firstName = name != null ? String(name).split(' ')[0] : name;
+
   return (
     <div className="user-dashboard main">
-      <h2>Welcome to your savings dashboard, {name}</h2>
-      <h4>You have 1.000.000 DKK in pension savings</h4>
-      <ul className="dashboard-list">
-        <li>
-          <span>Name:</span> {name}
-        </li>
-        <li>
-          <span>Birthdate:</span> {birthdate}
-        </li>
-        <li>
-          <span>Country:</span> {country}
-        </li>
-        <li>
-          <span>cprNumberIdentifier: </span>
-          {cprNumberIdentifier}
-        </li>
-        <li>
-          <span>iat:</span> {iat}
-        </li>
-      </ul>
+      <h1 className="greeting">Hi, {firstName}</h1>
+
+      <div className="dashboard-items">
+        <div className="dashboard-card data-card">
+          <h3>Your data</h3>
+          <ul className="user-data">
+            <li>
+              <span className="fixed-width">Name</span>
+              <span className="data-name">{name}</span>
+            </li>
+            {birthdate && (
+              <li>
+                <span className="fixed-width">Birthdate</span>
+                <span className="data-name">{birthdate}</span>
+              </li>
+            )}
+            {cprNumberIdentifier && (
+              <li>
+                <span className="fixed-width">SSN</span>
+                <span className="data-name">{cprNumberIdentifier}</span>
+              </li>
+            )}
+            {country && (
+              <li>
+                <span className="fixed-width">Country</span>
+                <span className="data-name">{country}</span>
+              </li>
+            )}
+          </ul>
+        </div>
+
+        <div className="dashboard-card pension-card">
+          <h3>Pension savings</h3>
+          <span className="pension-amount">1.000.000 DKK</span>
+        </div>
+      </div>
     </div>
   );
 }

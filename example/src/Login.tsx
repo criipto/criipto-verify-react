@@ -8,7 +8,7 @@ interface LoginProps {
 function Login({ children }: LoginProps) {
   return (
     <div className="login main">
-      <p>Please login to access your pension savings.</p>
+      <p>Log in to view your pension savings</p>
       {children}
     </div>
   );
