@@ -8,7 +8,6 @@ import {
   AuthMethodButtonComponent,
 } from './components/AuthMethodButton';
 import { default as AuthButtonGroup } from './components/AuthButtonGroup';
-import { default as QRCode } from './components/QRCode';
 import { default as SEBankIDQRCode } from './components/SEBankIDQRCode';
 import { default as useCriiptoVerify } from './use-criipto-verify';
 
@@ -21,7 +20,6 @@ export {
   AuthMethodSelector,
   AuthMethodSelectorSweden,
   useCriiptoVerify,
-  QRCode,
   SEBankIDQRCode,
 };
 export {

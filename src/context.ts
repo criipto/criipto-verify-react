@@ -9,12 +9,7 @@ import CriiptoAuth, {
 import type { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js';
 import { createContext } from 'react';
 
-export type ResultSource =
-  | 'QRCode'
-  | 'SEBankIDQrCode'
-  | 'SEBankIDSameDeviceButton'
-  | 'redirect'
-  | 'popup';
+export type ResultSource = 'SEBankIDQrCode' | 'SEBankIDSameDeviceButton' | 'redirect' | 'popup';
 export type Result =
   | { id_token: string; state?: string; source?: ResultSource }
   | { code: string; state?: string; source?: ResultSource }
