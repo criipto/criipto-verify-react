@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import CriiptoAuth, {
   type AuthorizeUrlParamsOptional,
   clearPKCEState,
@@ -14,6 +14,8 @@ import CriiptoAuth, {
 import CriiptoVerifyContext, {
   type CriiptoVerifyContextInterface,
   type Action,
+  type BeforeAuthorizeOverrides,
+  type BeforeAuthorizeParams,
   type Result,
   type Claims,
   actions,
@@ -76,6 +78,15 @@ export interface CriiptoVerifyProviderOptions {
   completionStrategy?: 'client' | 'openidprovider';
 
   /**
+   * Called just before each authorize request is built, for every login flow
+   * (`AuthMethodSelector`, `AuthMethodButton`, `SEBankIDQRCode`, `loginWithRedirect` and `loginWithPopup`).
+   * Return the parameters you wish to change for that particular request, for instance a
+   * `loginHint` that depends on the acr_value the user picked. Returning nothing leaves the
+   * request as configured on the provider.
+   */
+  beforeAuthorize?: (params: BeforeAuthorizeParams) => BeforeAuthorizeOverrides | void;
+
+  /**
    * @deprecated Criipto internal use
    */
   criiptoSdk?: null | string;
@@ -105,18 +116,28 @@ export const MESSAGE_SUPPORTING_ACR_VALUES = [
   'urn:grn:authn:se:bankid:another-device:qr',
 ];
 
+export function normalizeAcrValues(acrValues?: string | string[]): string[] {
+  if (!acrValues) return [];
+  return Array.isArray(acrValues) ? acrValues : [acrValues];
+}
+
 export function buildLoginHint(
   loginHint: string | undefined | null,
-  params: { options?: AuthorizeUrlParamsOptional; action?: Action; message?: string },
+  params: {
+    options?: AuthorizeUrlParamsOptional;
+    action?: Action;
+    message?: string;
+    /**
+     * Additional hints, e.x. contributed by `beforeAuthorize`
+     */
+    extraLoginHint?: string;
+  },
 ) {
-  const { options, action, message } = params;
-  const acrValues = options?.acrValues
-    ? Array.isArray(options?.acrValues)
-      ? options?.acrValues
-      : [options?.acrValues]
-    : [];
+  const { options, action, message, extraLoginHint } = params;
+  const acrValues = normalizeAcrValues(options?.acrValues);
   let hints = (loginHint ? loginHint.split(' ') : [])
     .concat(options?.loginHint ? options?.loginHint.split(' ') : [])
+    .concat(extraLoginHint ? extraLoginHint.split(' ') : [])
     .filter((hint) => !hint.startsWith('message:') && !hint.startsWith('action:'));
   if (action) {
     hints = hints.filter((h) => !h.startsWith('action:'));
@@ -259,6 +280,17 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
   const message = props.message ?? parseMessage(loginHint);
   const sessionStore = props.sessionStore;
 
+  /*
+   * `beforeAuthorize` is only ever called imperatively, when a login is started.
+   * Keeping it in a ref (rather than in the `buildOptions` dependencies) means an inline
+   * function does not invalidate `buildAuthorizeUrl`, which components like `SEBankIDQRCode`
+   * memoize on and would otherwise restart their flow on every provider render.
+   */
+  const beforeAuthorizeRef = useRef(props.beforeAuthorize);
+  useEffect(() => {
+    beforeAuthorizeRef.current = props.beforeAuthorize;
+  }, [props.beforeAuthorize]);
+
   const refreshPKCE = async () => {
     if (props.pkce) return props.pkce;
     if (responseType !== 'token' || completionStrategy !== 'client') {
@@ -278,7 +310,7 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
     (
       options?: AuthorizeUrlParamsOptional | RedirectAuthorizeParams,
     ): AuthorizeUrlParamsOptional => {
-      return {
+      const resolved: AuthorizeUrlParamsOptional = {
         redirectUri: defaultRedirectUri(props.redirectUri),
         responseType: (props.responseType ?? 'code') as ResponseType,
         responseMode: props.responseMode,
@@ -298,6 +330,31 @@ const CriiptoVerifyProvider = (props: CriiptoVerifyProviderOptions): React.React
             : {
                 criipto_sdk: `@criipto/verify-react@${version}`,
               },
+      };
+
+      const overrides = beforeAuthorizeRef.current?.({
+        acrValues: normalizeAcrValues(resolved.acrValues),
+        options: resolved,
+      });
+      if (!overrides) return resolved;
+
+      return {
+        ...resolved,
+        state: overrides.state ?? resolved.state,
+        nonce: overrides.nonce ?? resolved.nonce,
+        prompt: overrides.prompt ?? resolved.prompt,
+        scope: overrides.scope ?? resolved.scope,
+        uiLocales: overrides.uiLocales ?? resolved.uiLocales,
+        loginHint: buildLoginHint(props.loginHint, {
+          options,
+          action: overrides.action ?? action,
+          message: overrides.message ?? message,
+          extraLoginHint: overrides.loginHint,
+        }),
+        extraUrlParams: {
+          ...resolved.extraUrlParams,
+          ...overrides.extraUrlParams,
+        },
       };
     },
     [
