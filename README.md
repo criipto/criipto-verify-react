@@ -111,6 +111,37 @@ To control eID methods from your code instead of the dashboard, pass `acrValues`
 
 See the [Authorize URL Builder](https://docs.idura.app/verify/guides/authorize-url-builder) or individual eID pages for the full list of supported `acr_values`.
 
+### Configure the request per eID
+
+`login_hint` and `scope` values are eID specific, so a single provider-level setting rarely fits every button. Pass a `beforeAuthorize` function to `CriiptoVerifyProvider` to adjust the request for the eID the user actually picked:
+
+```jsx
+<CriiptoVerifyProvider
+  domain="{YOUR_IDURA_DOMAIN}"
+  clientID="{YOUR_IDURA_APPLICATION_CLIENT_ID}"
+  beforeAuthorize={({ acrValues }) => {
+    if (acrValues[0].startsWith('urn:grn:authn:dk:mitid')) {
+      return { scope: 'openid address' };
+    }
+    if (acrValues[0].startsWith('urn:grn:authn:se:bankid')) {
+      return { loginHint: 'stepUp:mrtd' };
+    }
+  }}
+>
+  <App />
+</CriiptoVerifyProvider>
+```
+
+`beforeAuthorize` runs just before every authorize request is built, whichever way the login was started: `AuthMethodSelector`, `AuthMethodButton`, `SEBankIDQRCode`, `loginWithRedirect` or `loginWithPopup`. Return the values you want to change for that one request, or nothing at all to leave it as configured on the provider.
+
+- `acrValues` is always an array, and holds a single value for logins started from a button or `AuthMethodSelector`
+- `options` holds the request as the SDK would otherwise send it, in case you want to inspect it
+- you can override `loginHint`, `scope`, `prompt`, `uiLocales`, `state`, `nonce`, `extraUrlParams` and the `action`/`message` shorthands
+- `loginHint` is appended to the hints the SDK already adds, so use `action` and `message` rather than writing `action:`/`message:` hints yourself
+- `acrValues`, `redirectUri` and the PKCE and response parameters are managed by the SDK and cannot be overridden here. Use `redirectUri` on the button or selector to change where a single eID returns the user
+
+The hint and scope values differ per eID, see the individual eID pages in the [Idura docs](https://docs.idura.app/verify/e-ids/) for what each one supports.
+
 ## Send the user directly to an eID login screen
 
 If you don't need the method selector, use `loginWithRedirect` (or `loginWithPopup`) and pass a single eID method identifier in `acrValues`.
