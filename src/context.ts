@@ -5,6 +5,7 @@ import CriiptoAuth, {
   type AuthorizeResponse,
   OAuth2Error,
   type PKCEPublicPart,
+  type Prompt,
 } from '@criipto/auth-js';
 import type { PopupAuthorizeParams, RedirectAuthorizeParams } from '@criipto/auth-js';
 import { createContext } from 'react';
@@ -27,6 +28,41 @@ export type Claims = {
   exp: number;
   [key: string]: string | number;
 };
+
+export interface BeforeAuthorizeParams {
+  /**
+   * The acr_values of the authorize request that is about to be made, always normalized to an array.
+   * For logins started from a button or `AuthMethodSelector` this will hold exactly one value.
+   */
+  acrValues: string[];
+  /**
+   * The parameters the SDK is about to use, with `CriiptoVerifyProvider` configuration already applied.
+   */
+  options: AuthorizeUrlParamsOptional;
+}
+
+/**
+ * Parameters to override for a single authorize request. Any field left out (or set to `undefined`)
+ * keeps the value configured on `CriiptoVerifyProvider`.
+ */
+export interface BeforeAuthorizeOverrides {
+  /**
+   * Appended to the login_hint of this request, just like a `loginHint` passed directly to
+   * `loginWithRedirect`. Use `action` and `message` rather than `action:`/`message:` hints,
+   * as those are managed by the SDK.
+   */
+  loginHint?: string;
+  action?: Action;
+  message?: string;
+  scope?: string;
+  prompt?: Prompt;
+  uiLocales?: string;
+  state?: string;
+  nonce?: string;
+  extraUrlParams?: {
+    [key: string]: string | null;
+  };
+}
 
 export interface CriiptoVerifyContextInterface {
   loginWithRedirect: (params?: RedirectAuthorizeParams) => Promise<void>;
