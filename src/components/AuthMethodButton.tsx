@@ -40,6 +40,7 @@ export interface AuthMethodButtonComponentProps {
   action?: Action;
   disabled?: boolean;
   loading?: boolean;
+  loginHint?: string;
 }
 
 /**
@@ -60,6 +61,7 @@ export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps)
 
   const { title, subtitle } = acrValueToTitle(language, acrValue, {
     disambiguate: isAmbiguous(acrValue, group.acrValues),
+    loginHint: props.loginHint,
   });
   const contents = props.children ?? (
     <React.Fragment>
@@ -71,7 +73,11 @@ export function AuthMethodButtonComponent(props: AuthMethodButtonComponentProps)
 
   const inner = (
     <React.Fragment>
-      <AuthMethodButtonLogo acrValue={acrValue} logo={props.loading ? <Spinner /> : props.logo} />
+      <AuthMethodButtonLogo
+        acrValue={acrValue}
+        loginHint={props.loginHint}
+        logo={props.loading ? <Spinner /> : props.logo}
+      />
       <span>{contents}</span>
     </React.Fragment>
   );
@@ -116,7 +122,7 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
   const { initializePAR } = context;
   const language = (props.language ?? context.uiLocales ?? 'en') as Language;
   const action = (props.action ?? context.action ?? 'login') as Action;
-  const className = `criipto-eid-btn ${acrValueToClassName(acrValue)}${
+  const className = `criipto-eid-btn ${acrValueToClassName(acrValue)} ${loginHintToClassName(context.loginHint ?? '')} ${
     props.className ? ` ${props.className}` : ''
   }`;
   const [backdrop, setBackdrop] = useState<React.ReactElement | null>(null);
@@ -191,6 +197,7 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
 
   const { title, subtitle } = acrValueToTitle(language, acrValue, {
     disambiguate: isAmbiguous(acrValue, group.acrValues),
+    loginHint: context.loginHint,
   });
 
   const contents = props.children ?? (
@@ -208,6 +215,7 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
         className={className}
         onClick={handleClick}
         loading={loading}
+        loginHint={context.loginHint}
       />
       {backdrop}
     </React.Fragment>
@@ -220,7 +228,9 @@ export function AuthMethodButtonContainer(props: AuthMethodButtonContainerProps)
         fallback={button}
         className={className}
         userAgent={props.userAgent}
-        logo={<AuthMethodButtonLogo acrValue={acrValue} logo={props.logo} />}
+        logo={
+          <AuthMethodButtonLogo acrValue={acrValue} loginHint={props.loginHint} logo={props.logo} />
+        }
         disabled={props.disabled}
       >
         <span>{contents}</span>
@@ -243,6 +253,15 @@ function acrValueToClassName(value: string) {
   }, []);
 
   return classNames.map((className) => `criipto-eid-btn--${className}`).join(' ');
+}
+
+function loginHintToClassName(value: string) {
+  const hints = value.split(' ');
+  const marketHint = hints.find((s) => s.startsWith('market:'));
+
+  return [marketHint ? `criipto-eid-btn--${marketHint?.replace(':', '-')}` : undefined].filter(
+    (id) => id !== undefined,
+  );
 }
 
 function lowercaseFirst(input?: string) {

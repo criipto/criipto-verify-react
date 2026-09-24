@@ -74,7 +74,7 @@ export function acrValueToProviderPrefix(value: string) {
 export function acrValueToTitle(
   language: Language,
   value: string,
-  { disambiguate }: { disambiguate: boolean },
+  { disambiguate, loginHint }: { disambiguate: boolean; loginHint?: string },
 ): { title: string; subtitle?: string } {
   const i18n = getI18n(language);
   value = value.replace('urn:grn:authn:', '');
@@ -138,6 +138,10 @@ export function acrValueToTitle(
     return { title, subtitle };
   }
   if (provider === 'no:vipps') {
+    const marketHint = loginHint?.split(' ').find((s) => s.startsWith('market:'));
+    if (marketHint === 'market:DK' || marketHint === 'market:FI') {
+      return { title: 'MobilePay' };
+    }
     return { title: autoTitleCase(value).replace('NO ', '') };
   }
   if (provider === 'se:frejaid') {
