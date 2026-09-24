@@ -242,3 +242,10 @@ const GroupedComponentTemplate: StoryFn<typeof AuthMethodButtonComponent> = (arg
 export const GroupedComponnet = GroupedComponentTemplate.bind({});
 GroupedComponnet.args = {};
 GroupedComponnet.storyName = 'As components only (grouped)';
+
+export const VippsMobilepayFinland = ContainerTemplate.bind({});
+VippsMobilepayFinland.args = {
+  acrValue: 'urn:grn:authn:no:vipps',
+  loginHint: 'market:FI',
+};
+VippsMobilepayFinland.storyName = 'Vipps MobilePay (Finland)';

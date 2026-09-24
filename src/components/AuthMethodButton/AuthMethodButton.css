@@ -77,6 +77,10 @@
 .criipto-eid-btn.criipto-eid-btn--no-vipps {
   background-color: hsl(15.07 100% calc(57.06% + var(--bg-lightness-mod)) / var(--bg-alpha-mod));
 }
+.criipto-eid-btn.criipto-eid-btn--no-vipps.criipto-eid-btn--market-FI,
+.criipto-eid-btn.criipto-eid-btn--no-vipps.criipto-eid-btn--market-DK {
+  background-color: hsl(229 100% calc(68% + var(--bg-lightness-mod)) / var(--bg-alpha-mod));
+}
 .criipto-eid-btn.criipto-eid-btn--itsme {
   background-color: hsl(9.72 98.18% calc(56.86% + var(--bg-lightness-mod)) / var(--bg-alpha-mod));
 }

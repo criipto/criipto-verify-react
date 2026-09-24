@@ -178,3 +178,11 @@ MitIDNorwayMessage.args = {
   onSelect: console.log.bind(console),
   loginHint: `message:${btoa('asda43123123')}`,
 };
+
+export const FinlandMobilePay = Template.bind({});
+FinlandMobilePay.storyName = 'All (MobilePay finland)';
+FinlandMobilePay.args = {
+  redirectUri: window.location.href,
+  acrValues: ALL_ACR_VALUES,
+  loginHint: 'market:FI',
+};

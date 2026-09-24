@@ -5,6 +5,7 @@ import ftnmobile from './logos/ftnmobile.png';
 import itsme from './logos/itsme.png';
 import nobankid from './logos/nobankid.png';
 import novipps from './logos/novipps.png';
+import mobilepay from './logos/mobilepay.png';
 import sebankid from './logos/sebankid.png';
 import sefrejaid from './logos/sefrejaid.png';
 import depersonalausweis from './logos/depersonalausweis.png';
@@ -14,6 +15,7 @@ import ftn from './logos/ftn.png';
 
 export interface AuthMethodButtonLogoProps {
   acrValue: string;
+  loginHint?: string;
   /**
    * base64 image string, e.x. data:image/png;base64,
    * or a ReactElement
@@ -26,8 +28,8 @@ export default function AuthMethodButtonLogo(props: AuthMethodButtonLogoProps) {
       <img src={props.logo} alt="" />
     ) : (
       (props.logo ??
-      (acrValueToLogo(props.acrValue) ? (
-        <img src={acrValueToLogo(props.acrValue)} alt="" />
+      (acrValueToLogo(props.acrValue, props.loginHint) ? (
+        <img src={acrValueToLogo(props.acrValue, props.loginHint)} alt="" />
       ) : (
         <span>&nbsp;</span>
       )))
@@ -37,7 +39,7 @@ export default function AuthMethodButtonLogo(props: AuthMethodButtonLogoProps) {
   return null;
 }
 
-function acrValueToLogo(value: string) {
+function acrValueToLogo(value: string, loginHint: string | undefined) {
   if (value.startsWith('urn:grn:authn:dk:mitid:business')) {
     return dkmitiderhverv;
   }
@@ -60,6 +62,10 @@ function acrValueToLogo(value: string) {
     return nobankid;
   }
   if (value.startsWith('urn:grn:authn:no:vipps')) {
+    const marketHint = loginHint?.split(' ').find((s) => s.startsWith('market:'));
+    if (marketHint === 'market:DK' || marketHint === 'market:FI') {
+      return mobilepay;
+    }
     return novipps;
   }
   if (value.startsWith('urn:grn:authn:se:frejaid')) {
